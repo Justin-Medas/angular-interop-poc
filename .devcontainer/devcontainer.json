@@ -1,0 +1,28 @@
+{
+  // Zero-install environment: open in GitHub Codespaces, or "Reopen in Container" with Docker.
+  // Toolchain versions match .nvmrc and CLAUDE.md "Verified stack".
+  "name": "angular-interop-poc",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "26" },
+    "ghcr.io/devcontainers/features/go:1": { "version": "1.27.1" },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "npm run setup",
+  "forwardPorts": [4200, 8080, 8090],
+  "portsAttributes": {
+    "4200": { "label": "Angular shell" },
+    "8080": { "label": "Go API" },
+    "8090": { "label": "FDC3 Sail" }
+  },
+  "secrets": {
+    "ANTHROPIC_API_KEY": {
+      "description": "Optional. Without it the agent endpoint uses its deterministic fallback."
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["angular.ng-template", "golang.go"]
+    }
+  }
+}
