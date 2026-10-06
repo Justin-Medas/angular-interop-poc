@@ -39,7 +39,13 @@ One persona: a trader or the interviewer. Demo flow (about 3 minutes):
 | FR9 | The eval runner prints a per-case pass/fail table and an overall rate, and exits non-zero below the threshold | run it |
 
 ## 6. Non-functional
-- Local only. Everything runs with three commands (API, web, Sail).
+- Local only.
+- **Fresh-clone reproducibility (NFR-R).** On macOS, Linux and Windows:
+  - NFR-R1: `docker compose up` starts the API (:8080), web (:4200) and Sail (:8090). Docker is the only host dependency.
+  - NFR-R2: the native path `npm run setup && npm start` works with only Node (per `.nvmrc`) and Go ≥ 1.24.
+  - NFR-R3: the repo opens in a Dev Container or Codespace with no other setup.
+  - NFR-R4: every toolchain and third-party checkout is pinned (Node range, Go toolchain, `package-lock.json`, Sail commit SHA).
+  - NFR-R5: GitHub Actions runs the native quickstart and tests on all three OSes for every PR.
 - The agent endpoint p95 is under 8 s; the fallback responds in under 50 ms.
 - No secrets in the repo. `ANTHROPIC_API_KEY` comes from the environment.
 - Every Angular component uses OnPush, is standalone and uses signals.
@@ -57,6 +63,8 @@ One persona: a trader or the interviewer. Demo flow (about 3 minutes):
 ## 8. Acceptance criteria (done = all true)
 - [ ] The demo script in §4 runs end to end, recorded.
 - [ ] `go test ./...` and `ng test` pass.
+- [ ] NFR-R1–R5 hold: the `fresh-clone` workflow is green on ubuntu, macos and windows on the final PR, and the README quickstart was followed verbatim from a fresh clone.
+- [ ] The repo's history reads as a story: one squash-merged PR per Bolt or Unit, each linking its FR IDs.
 - [ ] Eval pass rate ≥ 90% on the recorded run, with the report committed under `docs/eval-report.md`.
 - [ ] README has an architecture diagram, setup steps, and an "honest limitations" section (no OpenFin, mock data, Sail not production-ready).
 

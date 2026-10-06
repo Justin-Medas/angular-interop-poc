@@ -37,7 +37,7 @@ docs/                  plan, decisions, architecture diagram, demo notes
 | Angular | 22.2.x | Requires Node `^22.22.3 \|\| ^24.15.0 \|\| >=26` |
 | PrimeNG | 22.1.x | Peer `@angular/core ^22.1.0`. **License changed; see DECISIONS #1** |
 | @finos/fdc3 | 2.2.3 | API + `getAgent()` only, no Desktop Agent included |
-| FDC3 Sail | v2 (browser), cloned at `../FDC3-Sail` | Runs on :8090, Electron removed, "not production ready". Itself uses `@finos/fdc3@2.2.3` |
+| FDC3 Sail | v2 (browser), pinned SHA in `scripts/setup-sail.mjs`, installed to `.sail/` | Runs on :8090, Electron removed, "not production ready". Itself uses `@finos/fdc3@2.2.3` |
 | Go | 1.27.1 (Homebrew) | anthropic-sdk-go needs ≥ 1.24 |
 | anthropic-sdk-go | v1.78.x | Model `claude-opus-5-5` |
 
@@ -70,9 +70,23 @@ cd api && go run ./evals -cases ../specs/evals/cases.yaml
 cd web && npm ci && npx ng serve shell                 # :4200
 cd web && npx ng test
 
-# FDC3 Sail (separate clone, outside this repo)
-cd ../FDC3-Sail && npm install && npm run build && npm start   # :8090
+# Setup + FDC3 Sail (pinned commit, installed into .sail/)
+npm run setup        # check toolchain, install git hooks, fetch + build Sail
+npm run sail         # :8090
+npm run check-env
 ```
+
+## Git workflow (mandatory)
+- `main` gets one bootstrap commit. After that, everything lands through `<type>/<slug>` branches (`feat/`, `fix/`, `chore/`, `docs/`, `test/`) and squash-merged PRs.
+- Commit at every green test run with Conventional Commits (`feat(api): …`). Push the branch often.
+- Open PRs with `gh pr create`. The body lists the FR IDs and spec files covered, plus test output.
+- **Never merge without the user's explicit approval in chat.** Never push to or force-push `main`. The `pre-push` hook blocks it.
+- The history is context for future agents. Read `git log` and closed PRs before re-deciding something.
+
+## Reproducibility (mandatory)
+- A fresh clone must work on macOS, Linux and Windows through `docker compose up`, a Dev Container or Codespace, or `npm run setup && npm start`.
+- Scripts are Node `.mjs`, not bash. Pin every version. Never rely on a globally installed tool beyond Node, Go, git and Docker.
+- Any PR that touches setup must keep the `fresh-clone` workflow green on all three OSes.
 
 ## Scope guard
 In scope: the specs, Go API, shell, blotter, detail, one intent (`ViewChart`), agent endpoint, ~15 evals, README with diagram, demo recording.

@@ -8,13 +8,22 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] Resolve PrimeNG license question (DECISIONS #1)
 - [ ] `ANTHROPIC_API_KEY` available in the shell
 - [x] AI tooling: AI-DLC 2.10, Angular skills, Angular CLI MCP, design-system skill (see CLAUDE.md "AI tooling layers")
-- [ ] Restart Claude Code, approve AI-DLC hooks and the `angular-cli` MCP server, run `/aidlc --doctor`
+- [x] Restart Claude Code, approve AI-DLC hooks and the `angular-cli` MCP server, run `/aidlc --doctor`
+- [ ] GitHub: `gh auth login`, private repo `angular-interop-poc`, bootstrap commit on `main`, then everything else through PRs
+- [ ] Docker Desktop installed and running (to test `docker compose up` and the Dev Container locally)
+- [x] Cross-platform setup: `npm run setup` (pinned Sail, git hooks), `.gitattributes`, `.nvmrc`, Dev Container, `fresh-clone` CI on 3 OSes
+
+## Working rules (every block)
+- One feature branch and one PR per Bolt or Unit. Commit at every green test run. Squash-merge only after CI is green and you approve.
+- When a block adds a service (api, web), add it to `docker-compose.yml` and to the `fresh-clone` workflow in the same PR.
 
 ## Day 1 AM: Specs + scaffolding
 - [ ] Review and finalize `specs/SPEC.md`, `openapi.yaml`, `fdc3-contract.md`, `agent-tool-schema.json`, `evals/cases.yaml` (drop DRAFT markers)
 - [ ] `api/` Go module skeleton, `/healthz`
 - [ ] `web/` Angular 22 workspace with `shell`, `blotter`, `detail`, `ui`, `interop` projects
 - [ ] Root README stub
+- [ ] Root `npm start` / `npm test` that run api + web (+ Sail) cross-platform; `api/go.mod` declares `toolchain go1.27.1`
+- [ ] `docker-compose.yml` with `api`, `web`, `sail` services and healthchecks; CI job runs `docker compose up --wait` on ubuntu
 
 ## Day 1 PM: Go API + shell + blotter
 - [ ] Mock data (6 to 10 tickers, deterministic random walk for history)
@@ -37,6 +46,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] Shell command bar → renders selected module, shows `source` badge
 - [ ] Eval runner → `docs/eval-report.md`, pass rate ≥ 90%
 - [ ] README: architecture diagram, setup, honest limitations
+- [ ] Fresh-clone rehearsal: clone into a temp dir, follow the README quickstart verbatim (Docker path and native path)
 - [ ] Demo recording (~3 min, follows SPEC §4)
 - [ ] Interview prep: `/explain` on shell, blotter, interop service, agent handler
 

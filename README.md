@@ -4,10 +4,24 @@ Angular 22 shell + two FDC3 micro-apps (Blotter → Detail), a contract-first Go
 
 > Status: specs drafted; implementation not started. See `docs/PLAN.md`.
 
-## Start here
-1. `./scripts/check-env.sh`
-2. Read `specs/SPEC.md`
-3. In Claude Code: `/implement-spec go-api`
+## Quickstart
+Pick one. Each works from a fresh clone on macOS, Linux and Windows.
+
+**Docker** (only Docker required). Available once the services land; see docs/PLAN.md.
+```bash
+docker compose up
+```
+
+**Dev Container / Codespaces.** Open the repo in a Codespace, or choose "Reopen in Container" in VS Code.
+
+**Native** (Node per `.nvmrc`, Go ≥ 1.24):
+```bash
+npm run setup     # checks toolchain, installs git hooks, fetches + builds FDC3 Sail at a pinned commit
+npm run sail      # FDC3 Sail on http://localhost:8090
+```
+
+## Contributing
+Feature branch → Conventional Commits → PR → squash merge. Direct pushes to `main` are blocked by `.githooks/pre-push`, which `npm run setup` installs.
 
 ## Honest limitations
 - Market data is mock. No auth.
