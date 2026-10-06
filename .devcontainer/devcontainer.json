@@ -8,7 +8,11 @@
     "ghcr.io/devcontainers/features/go:1": { "version": "1.27.1" },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "postCreateCommand": "npm run setup",
+  // .sail/ holds OS-specific native binaries; keep the container's copy separate from the host's.
+  "mounts": [
+    "source=angular-interop-poc-sail,target=${containerWorkspaceFolder}/.sail,type=volume"
+  ],
+  "postCreateCommand": "sudo chown -R vscode:vscode .sail && npm run setup",
   "forwardPorts": [4200, 8080, 8090],
   "portsAttributes": {
     "4200": { "label": "Angular shell" },
