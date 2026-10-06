@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://poc.local/specs/agent-tool-schema.json",
+  "title": "ModuleSelection",
+  "description": "DRAFT v0.1. The only shape the agent may return. Used as the Claude structured-output schema (output_config.format) AND to validate responses server-side. Keep it strict: additionalProperties false everywhere.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["module", "payload", "rationale"],
+  "properties": {
+    "module": {
+      "type": "string",
+      "enum": ["blotter", "instrument-detail", "price-chart", "watchlist-movers", "compare", "none"]
+    },
+    "payload": {
+      "description": "Shape depends on module; see SPEC.md §7. All fields are listed so the schema stays strict; unused fields are null.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol", "symbols", "range", "direction", "limit", "reason"],
+      "properties": {
+        "symbol":    { "type": ["string", "null"], "description": "Single ticker, upper-case. instrument-detail, price-chart." },
+        "symbols":   { "type": ["array", "null"], "items": { "type": "string" }, "description": "blotter (optional filter), compare (2-4)." },
+        "range":     { "type": ["string", "null"], "enum": ["1D", "5D", "1M", null], "description": "price-chart." },
+        "direction": { "type": ["string", "null"], "enum": ["up", "down", "both", null], "description": "watchlist-movers." },
+        "limit":     { "type": ["integer", "null"], "description": "watchlist-movers, 1-10." },
+        "reason":    { "type": ["string", "null"], "description": "none: why the request is out of scope." }
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "description": "One sentence shown in the UI explaining the choice. Max ~160 chars."
+    }
+  }
+}

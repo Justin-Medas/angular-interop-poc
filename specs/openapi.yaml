@@ -1,0 +1,228 @@
+openapi: 3.1.0
+info:
+  title: Angular Interop POC API
+  version: 0.1.0
+  description: |
+    DRAFT. Mock market data and an agentic module-selection endpoint.
+    All data is in-memory and fake. No auth (non-goal).
+servers:
+  - url: http://localhost:8080
+paths:
+  /healthz:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, enum: [ok] }
+
+  /quotes:
+    get:
+      operationId: listQuotes
+      parameters:
+        - name: symbols
+          in: query
+          required: false
+          description: Comma-separated tickers. Defaults to the current watchlist.
+          schema: { type: string, example: "AAPL,MSFT" }
+      responses:
+        "200":
+          description: Quotes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Quote" }
+
+  /quotes/{symbol}:
+    get:
+      operationId: getQuote
+      parameters:
+        - $ref: "#/components/parameters/Symbol"
+      responses:
+        "200":
+          description: Quote
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Quote" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /quotes/{symbol}/history:
+    get:
+      operationId: getHistory
+      parameters:
+        - $ref: "#/components/parameters/Symbol"
+        - name: range
+          in: query
+          schema: { type: string, enum: ["1D", "5D", "1M"], default: "1D" }
+      responses:
+        "200":
+          description: Price series
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PricePoint" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /watchlist:
+    get:
+      operationId: getWatchlist
+      responses:
+        "200":
+          description: Watchlist
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Watchlist" }
+    put:
+      operationId: putWatchlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Watchlist" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Watchlist" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /appd/v2/apps:
+    get:
+      operationId: getAppDirectory
+      description: |
+        Serves specs/appd.json (FDC3 AppD v2) so FDC3 Sail can add this POC as an app directory.
+        Must send CORS headers allowing http://localhost:8090.
+      responses:
+        "200":
+          description: AppD v2 application list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [applications]
+                properties:
+                  applications:
+                    type: array
+                    items: { type: object }
+
+  /agent/select-module:
+    post:
+      operationId: selectModule
+      description: |
+        Asks the model which UI module to load. Always returns a valid ModuleSelection.
+        On model failure, timeout or invalid output, returns the deterministic fallback (source=fallback).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SelectModuleRequest" }
+      responses:
+        "200":
+          description: Selection
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ModuleSelectionResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+components:
+  parameters:
+    Symbol:
+      name: symbol
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[A-Z.]{1,10}$" }
+
+  responses:
+    NotFound:
+      description: Unknown symbol
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+
+    Quote:
+      type: object
+      required: [symbol, name, last, change, changePct, currency, asOf]
+      properties:
+        symbol: { type: string, example: AAPL }
+        name: { type: string, example: Apple Inc. }
+        last: { type: number, format: double }
+        change: { type: number, format: double }
+        changePct: { type: number, format: double }
+        volume: { type: integer, format: int64 }
+        currency: { type: string, example: USD }
+        asOf: { type: string, format: date-time }
+
+    PricePoint:
+      type: object
+      required: [t, price]
+      properties:
+        t: { type: string, format: date-time }
+        price: { type: number, format: double }
+
+    Watchlist:
+      type: object
+      required: [symbols]
+      properties:
+        symbols:
+          type: array
+          maxItems: 25
+          items: { type: string, pattern: "^[A-Z.]{1,10}$" }
+
+    InstrumentContext:
+      description: FDC3 fdc3.instrument context (subset). See specs/fdc3-contract.md.
+      type: object
+      required: [type, id]
+      properties:
+        type: { type: string, const: fdc3.instrument }
+        name: { type: string }
+        id:
+          type: object
+          required: [ticker]
+          properties:
+            ticker: { type: string }
+
+    SelectModuleRequest:
+      type: object
+      required: [prompt]
+      properties:
+        prompt: { type: string, minLength: 1, maxLength: 500 }
+        context: { $ref: "#/components/schemas/InstrumentContext" }
+
+    ModuleSelectionResponse:
+      description: |
+        ModuleSelection (specs/agent-tool-schema.json) plus metadata.
+        Contract tests must validate `selection` against that JSON schema.
+      type: object
+      required: [selection, source, latencyMs]
+      properties:
+        selection:
+          type: object
+          description: Validates against specs/agent-tool-schema.json
+        source: { type: string, enum: [model, fallback] }
+        model: { type: string, example: claude-opus-5-5 }
+        latencyMs: { type: integer }
+        fallbackReason:
+          type: string
+          enum: [no_api_key, timeout, model_error, invalid_output, refusal]

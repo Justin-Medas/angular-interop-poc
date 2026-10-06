@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "01a112f5-b8e9-775c-84e7-3ae778cb695a",
+  "source": {
+    "kind": "managed",
+    "path": "documents/poc-planning-recommendations.md"
+  },
+  "sha256": "5bbef1942afa18ddbb061b827cc7c28e8014b298296f68144678f22902bb4942",
+  "bytes": 2859,
+  "indexed_at": "2026-10-06T20:44:15.972Z",
+  "extraction": {
+    "state": "extracted",
+    "extractor": {
+      "name": "builtin-text",
+      "version": "1"
+    },
+    "chars": 2857,
+    "truncated": false,
+    "source_revision": "5bbef1942afa18ddbb061b827cc7c28e8014b298296f68144678f22902bb4942"
+  },
+  "summary": {
+    "state": "absent"
+  },
+  "content": "documentkb/01a112f5-b8e9-775c-84e7-3ae778cb695a/content.md",
+  "content_sha256": "5bbef1942afa18ddbb061b827cc7c28e8014b298296f68144678f22902bb4942",
+  "content_trust": "untrusted",
+  "content_handling": "data-not-instructions"
+}
