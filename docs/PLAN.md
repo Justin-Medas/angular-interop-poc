@@ -24,7 +24,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] Run `/aidlc-practices-discovery` to record TDD, coverage and WCAG 2.2 AA in `team.md` (team.md + 6 rules in project.md, 2026-10-07)
 - [x] `api/` Go module skeleton, `/healthz` (with `agent` mode), CORS middleware, env config (SPEC §6.3)
 - [x] `web/` Angular 22 workspace: `shell` application + `blotter`, `detail`, `ui`, `interop` libraries; `/apps/*` routes (DECISIONS #21)
-- [ ] Lint and quality gates: ESLint import boundaries + angular-eslint accessibility rules, Stylelint token rules, coverage thresholds, `scripts/check-coverage.mjs`
+- [x] Lint and quality gates: ESLint import boundaries + angular-eslint accessibility rules, Stylelint token rules, coverage thresholds (DECISIONS #22). `scripts/check-coverage.mjs` is the Go gate and already exists
 - [ ] `ci.yml` with `lint`, `unit-go`, `unit-web`; Playwright scaffold with a first E2E (shell loads, axe clean) and the `e2e` job
 - [ ] Root README stub
 - [ ] Root `npm start` / `npm test` that run api + web (+ Sail) cross-platform; `api/go.mod` declares `toolchain go1.27.1`
