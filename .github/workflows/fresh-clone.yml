@@ -1,6 +1,6 @@
 # Proves the native quickstart works from a fresh clone on macOS, Linux and Windows.
 # Grows with the project: add `npm test` (Go + Angular) and a `docker compose up --wait`
-# smoke job once api/ and web/ exist (see docs/PLAN.md).
+# smoke job (added: `docker`).
 name: fresh-clone
 
 on:
@@ -43,3 +43,27 @@ jobs:
       - name: Sail build output exists
         shell: bash
         run: test -f .sail/fdc3-sail/packages/web/dist/html/index.html
+
+  docker:
+    name: docker compose up (ubuntu-latest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: docker compose up --wait
+        run: docker compose up --build --wait --wait-timeout 900 -d
+
+      - name: Services answer
+        run: |
+          curl -fsS http://localhost:8080/healthz
+          curl -fsS -o /dev/null http://localhost:4200
+          curl -fsS -o /dev/null http://localhost:8090/html/index.html
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: docker compose down
+        if: always()
+        run: docker compose down -v
