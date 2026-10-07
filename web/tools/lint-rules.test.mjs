@@ -168,6 +168,42 @@ test('NFR-DS2 custom properties must be --poc-*', async () => {
   );
 });
 
+for (const [name, css] of [
+  ['px length', 'a { min-height: 28px; }'],
+  ['rem length', 'a { padding: 1rem; }'],
+  ['border width', 'a { border: 1px solid var(--poc-color-border); }'],
+  ['duration', 'a { transition: color 200ms; }'],
+  ['font-weight', 'a { font-weight: 600; }'],
+  ['opacity', 'a { opacity: 0.6; }'],
+  ['line-height', 'a { line-height: 1.5; }'],
+  ['z-index', 'a { z-index: 10; }'],
+]) {
+  test(`NFR-DS5 physical value is banned outside tokens.css: ${name}`, async () => {
+    assert.ok(
+      (await cssRules(css, 'projects/blotter/src/lib/x.scss')).includes(
+        'declaration-property-value-disallowed-list',
+      ),
+    );
+  });
+}
+
+test('NFR-DS5 physical values are allowed in tokens.css', async () => {
+  assert.deepEqual(
+    await cssRules(':root { --poc-size-target: 1.75rem; }', 'projects/ui/src/styles/tokens.css'),
+    [],
+  );
+});
+
+test('NFR-DS5 zero, percentages and tokens pass', async () => {
+  assert.deepEqual(
+    await cssRules(
+      'a { margin: 0; width: 100%; clip-path: inset(50%); font-weight: var(--poc-font-weight-strong); min-height: var(--poc-size-target); border: var(--poc-border-width) solid var(--poc-color-border); }',
+      'projects/blotter/src/lib/x.scss',
+    ),
+    [],
+  );
+});
+
 test('NFR-DS2 semantic tokens via var(--poc-*) pass', async () => {
   assert.deepEqual(
     await cssRules('a { color: var(--poc-color-text); }', 'projects/blotter/src/lib/x.scss'),

@@ -112,6 +112,7 @@ Locally, both agent variables come from the developer's environment or a gitigno
 - NFR-DS1: components use semantic or component tokens only, never primitives or raw values.
 - NFR-DS2: no hex, `rgb()`, `hsl()` or named colors outside `tokens.css` (Stylelint, blocking).
 - NFR-DS3: the AG Grid theme is built from the same semantic tokens.
+- NFR-DS5: no physical values (lengths, times, font weights, opacities, line heights) in component styles; they come from tokens (Stylelint, blocking).
 - NFR-DS4: every text/background token pair meets its contrast minimum in both themes (unit test, blocking).
 
 ### 6.8 Accessibility (NFR-A) — details in `specs/accessibility.md`
