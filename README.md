@@ -2,7 +2,7 @@
 
 Angular 22 shell + two FDC3 micro-apps (Blotter → Detail), a contract-first Go API, and a Claude-backed endpoint that picks which UI module to load, with a deterministic fallback and a pass-rate eval.
 
-> Status: specs drafted; implementation not started. See `docs/PLAN.md`.
+> Status: in progress (API and workspace scaffolding landed; UI and agent next). See `docs/PLAN.md`.
 
 ## Quickstart
 Pick one. Each works from a fresh clone on macOS, Linux and Windows.
@@ -17,8 +17,11 @@ docker compose up
 **Native** (Node per `.nvmrc`, Go ≥ 1.24):
 ```bash
 npm run setup     # checks toolchain, installs git hooks, fetches + builds FDC3 Sail at a pinned commit
-npm run sail      # FDC3 Sail on http://localhost:8090
+npm start         # Go API :8080, Angular shell :4200, and Sail :8090 if installed (Ctrl+C stops all)
+npm test          # Go unit tests, then Angular unit tests
 ```
+
+Put `ANTHROPIC_API_KEY` in a repo-root `.env` (gitignored) to enable the live agent; without it the deterministic fallback answers.
 
 ## Contributing
 Feature branch → Conventional Commits → PR → squash merge. Direct pushes to `main` are blocked by `.githooks/pre-push`, which `npm run setup` installs.
