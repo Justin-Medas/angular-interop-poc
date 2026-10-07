@@ -37,6 +37,7 @@ One persona: a trader or the interviewer. Demo flow (about 3 minutes):
 | FR7 | On model error, timeout (> 8 s) or invalid output, return the deterministic fallback with `source: "fallback"` | unit tests |
 | FR8 | Shell maps `module` to a lazy-loaded component and passes `payload` as inputs; an unknown module shows an error card | component test |
 | FR9 | The eval runner prints a per-case pass/fail table and an overall rate, and exits non-zero below the threshold | run it |
+| FR10 | Apps load `/config.json` before bootstrap. It must validate against `specs/runtime-config.schema.json`; if it doesn't, the app shows a config error screen instead of starting half-configured. `auth.enabled` is always `false` (auth is a non-goal) | unit test with valid and invalid config |
 
 ## 6. Non-functional
 - Local only.
@@ -49,11 +50,13 @@ One persona: a trader or the interviewer. Demo flow (about 3 minutes):
 - The agent endpoint p95 is under 8 s; the fallback responds in under 50 ms.
 - No secrets in the repo. `ANTHROPIC_API_KEY` comes from the environment.
 - Every Angular component uses OnPush, is standalone and uses signals.
+- One UI library only: AG Grid Community (MIT) for tabular data. All other components are our own token-based components in `projects/ui` (DECISIONS #7).
+- One build runs in every environment; environment differences live only in `config.json` (DECISIONS #8).
 
 ## 7. Module catalog (what the agent can choose)
 | module | Purpose | payload |
 |---|---|---|
-| `blotter` | Watchlist table | `{ symbols?: string[] }` |
+| `blotter` | Watchlist grid (AG Grid via `poc-data-table`) | `{ symbols?: string[] }` |
 | `instrument-detail` | Single instrument quote + info | `{ symbol: string }` |
 | `price-chart` | Intraday chart | `{ symbol: string, range: "1D"\|"5D"\|"1M" }` |
 | `watchlist-movers` | Top gainers/losers in the watchlist | `{ direction: "up"\|"down"\|"both", limit: int }` |
@@ -69,5 +72,5 @@ One persona: a trader or the interviewer. Demo flow (about 3 minutes):
 - [ ] README has an architecture diagram, setup steps, and an "honest limitations" section (no OpenFin, mock data, Sail not production-ready).
 
 ## 9. Open questions
-- PrimeNG license for v22 (DECISIONS #1).
+- ~~PrimeNG license for v22 (DECISIONS #1).~~ **Resolved:** replaced by AG Grid Community plus our own components (DECISIONS #7).
 - ~~Does Sail v2 support custom app entries with local URLs?~~ **Yes (verified 2026-10-06):** register them in Sail settings under "Custom Apps" (URL plus intents), or add a directory URL under "Directories". The plan is to serve `specs/appd.json` from the Go API and add it as a directory.

@@ -25,7 +25,7 @@ web/                   Angular workspace
   projects/shell/      host shell, renders agent-selected module
   projects/blotter/    ticker blotter micro-app (broadcasts fdc3.instrument)
   projects/detail/     instrument detail micro-app (listens; handles ViewChart)
-  projects/ui/         thin design-system wrappers around PrimeNG (the swappable seam)
+  projects/ui/         design tokens + our own components + AG Grid wrapper (the swappable seam)
   projects/interop/    InteropService interface + FDC3 adapter + in-memory mock adapter
 docs/                  plan, decisions, architecture diagram, demo notes
 ```
@@ -35,7 +35,7 @@ docs/                  plan, decisions, architecture diagram, demo notes
 |---|---|---|
 | Node | 26.10 (Homebrew) | Satisfies Angular 22's `>=26` engine range |
 | Angular | 22.2.x | Requires Node `^22.22.3 \|\| ^24.15.0 \|\| >=26` |
-| PrimeNG | 22.1.x | Peer `@angular/core ^22.1.0`. **License changed; see DECISIONS #1** |
+| AG Grid Community | 36.2.x (`ag-grid-angular`, `ag-grid-community`) | MIT, peer `@angular/core >= 20`. Community features only (DECISIONS #7) |
 | @finos/fdc3 | 2.2.3 | API + `getAgent()` only, no Desktop Agent included |
 | FDC3 Sail | v2 (browser), pinned SHA in `scripts/setup-sail.mjs`, installed to `.sail/` | Runs on :8090, Electron removed, "not production ready". Itself uses `@finos/fdc3@2.2.3` |
 | Go | 1.27.1 (Homebrew) | anthropic-sdk-go needs ≥ 1.24 |
@@ -43,7 +43,8 @@ docs/                  plan, decisions, architecture diagram, demo notes
 
 ## Architecture rules
 - **Interop is behind an interface.** Components inject an `InteropService` token and never call `window.fdc3` directly. Provide two adapters: `Fdc3InteropService` (real, uses `getAgent()`) and `InMemoryInteropService` (BroadcastChannel, for tests and the no-Sail fallback). OpenFin would be a third adapter. **Never claim OpenFin was run.** Say it is a config swap behind this seam.
-- **Components get the design system through wrappers.** Feature code imports from `projects/ui` (`<poc-data-table>`, `<poc-button>`), never from `primeng/*` directly. This seam is a talking point, so keep it clean.
+- **Components get the design system through wrappers.** Feature code imports from `projects/ui` (`<poc-data-table>`, `<poc-button>`), never from `ag-grid-*` directly. Everything except the grid is our own token-styled component. This seam is a talking point, so keep it clean.
+- **One build, many environments.** Apps read `/config.json` (validated against `specs/runtime-config.schema.json`) through the `RUNTIME_CONFIG` token. No `environment.ts` switching. The `auth` block is a reserved seam with `enabled: false`, so don't implement login.
 - **The agent returns data, not UI.** The Go endpoint returns JSON that validates against `specs/agent-tool-schema.json`. The shell maps `module` to a lazy-loaded component. On model error, timeout or schema-invalid output, the deterministic fallback runs and the response sets `"source": "fallback"`.
 
 ## Angular conventions (expect to explain these in the interview)

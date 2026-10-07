@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://poc.local/specs/runtime-config.schema.json",
+  "title": "RuntimeConfig",
+  "description": "DRAFT v0.1. Per-environment config the Angular apps fetch from /config.json before bootstrap (provideAppInitializer). Lets one build run in any environment (native, docker compose, Codespaces) without a rebuild. Contains no secrets. See SPEC FR10 and DECISIONS #8.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["environment", "apiBaseUrl", "interop", "auth"],
+  "properties": {
+    "environment": {
+      "type": "string",
+      "enum": ["local", "docker", "codespaces", "ci"],
+      "description": "Shown in the shell header so a demo always states where it is running."
+    },
+    "apiBaseUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Base URL of the Go API, e.g. http://localhost:8080."
+    },
+    "interop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "connectTimeoutMs"],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": ["fdc3", "in-memory"],
+          "description": "fdc3 = getAgent() against a Desktop Agent (falls back to in-memory on timeout); in-memory = BroadcastChannel only."
+        },
+        "connectTimeoutMs": { "type": "integer", "minimum": 500, "maximum": 30000 }
+      }
+    },
+    "auth": {
+      "description": "Reserved seam for an OAuth2/OIDC provider. Auth is a non-goal (SPEC §3): `enabled` must be false in this POC and no login is implemented. The shape mirrors common MSAL/OIDC SPA settings so a real provider could be wired in behind an AUTH token without changing callers.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "clientId", "authority", "redirectUri", "cacheLocation", "scopes"],
+      "properties": {
+        "enabled": { "const": false },
+        "clientId": { "type": "string", "description": "Public client ID (not a secret). Empty in this POC." },
+        "authority": { "type": "string", "description": "Issuer/authority URL. Empty in this POC." },
+        "redirectUri": { "type": "string" },
+        "cacheLocation": { "type": "string", "enum": ["sessionStorage", "localStorage", "memory"] },
+        "scopes": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

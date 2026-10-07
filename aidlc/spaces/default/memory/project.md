@@ -48,7 +48,7 @@ relaxed
 
 ## Tech Stack
 
-- Angular 22.x (Node 26 installed), PrimeNG 22.x behind `projects/ui` wrappers (license pending, DECISIONS #1), `@finos/fdc3` 2.2.3, FINOS FDC3 Sail v2 (browser) as the Desktop Agent, Go 1.27, anthropic-sdk-go with model `claude-opus-5-5`.
+- Angular 22.x (Node 26 installed), AG Grid Community 36.x behind the `projects/ui` `poc-data-table` wrapper plus our own token-based components (DECISIONS #7), runtime `config.json` (DECISIONS #8), `@finos/fdc3` 2.2.3, FINOS FDC3 Sail v2 (browser) as the Desktop Agent, Go 1.27, anthropic-sdk-go with model `claude-opus-5-5`.
 
 ## Decided
 
@@ -56,6 +56,8 @@ DECIDED: Desktop Agent is FINOS FDC3 Sail v2 in the browser; InMemoryInteropServ
 DECIDED: Agent returns JSON validated against specs/agent-tool-schema.json via structured outputs; forced tool_choice is not used because Opus 5.5 rejects it (pre-AI-DLC planning, 2026-10-06)
 DECIDED: OpenFin is described as an adapter swap and is never run (pre-AI-DLC planning, 2026-10-06)
 DECIDED: Cut list is auth, real market data, mobile, OpenFin runtime, persistence, mixed UI libraries (pre-AI-DLC planning, 2026-10-06)
+DECIDED: UI is AG Grid Community for the grid plus our own token-based components; PrimeNG dropped (DECISIONS #7, 2026-10-06)
+DECIDED: Environment config comes from a runtime config.json validated against specs/runtime-config.schema.json (DECISIONS #8, 2026-10-06)
 
 ## Scope Overrides
 
@@ -63,7 +65,9 @@ DECIDED: Cut list is auth, real market data, mobile, OpenFin runtime, persistenc
 
 ## Forbidden
 
-NEVER import primeng/* outside web/projects/ui (affirmed 2026-10-06)
+NEVER import ag-grid-* outside web/projects/ui (affirmed 2026-10-06)
+NEVER add a second UI component library; build non-grid components in web/projects/ui from design tokens (affirmed 2026-10-06)
+NEVER implement login or token handling; the auth block in config.json is a reserved seam with enabled=false (affirmed 2026-10-06)
 NEVER call window.fdc3 or import @finos/fdc3 outside web/projects/interop (affirmed 2026-10-06)
 NEVER claim OpenFin or any commercial container was run (affirmed 2026-10-06)
 NEVER commit ANTHROPIC_API_KEY or any .env file (affirmed 2026-10-06)
