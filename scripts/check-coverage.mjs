@@ -14,7 +14,7 @@ const run = (args) => spawnSync('go', args, { cwd: api, encoding: 'utf8' });
 
 // main.go is wiring only (testing.md §4), so only ./internal/... is measured.
 const profile = join(mkdtempSync(join(tmpdir(), 'cov-')), 'cover.out');
-const test = run(['test', '-covermode=atomic', `-coverprofile=${profile}`, './internal/...']);
+const test = run(['test', '-covermode=atomic', `-coverprofile=${profile}`, '-coverpkg=./internal/...', './internal/...']);
 process.stdout.write(test.stdout);
 if (test.status !== 0) { process.stderr.write(test.stderr); process.exit(1); }
 

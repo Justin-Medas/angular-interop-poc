@@ -2,17 +2,31 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
+	"github.com/Justin-Medas/angular-interop-poc/api/internal/appd"
 	"github.com/Justin-Medas/angular-interop-poc/api/internal/config"
 	"github.com/Justin-Medas/angular-interop-poc/api/internal/httpx"
+	"github.com/Justin-Medas/angular-interop-poc/api/internal/mock"
+	"github.com/Justin-Medas/angular-interop-poc/api/internal/quotes"
 )
+
+const tickInterval = 2 * time.Second // tickIntervalMs in specs/mock-data.yaml
 
 // New returns the API handler. Later blocks register quotes, watchlist, appd and agent routes here.
 func New(cfg config.Config) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", healthz(cfg))
+	mux.HandleFunc("GET /appd/v2/apps", appd.Handler)
+
+	store := mock.NewStore(cfg.MockSeed, cfg.MockNow)
+	if cfg.MockTick {
+		go store.RunTicker(context.Background(), tickInterval, time.Now)
+	}
+	quotes.Register(mux, store)
 	return httpx.CORS(cfg.CORSAllowedOrigins)(mux)
 }
 
