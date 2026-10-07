@@ -15,7 +15,7 @@ func TestLoad_SPEC63_Defaults(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Port != "8080" || c.AnthropicAPIKey != "" || c.AgentTimeout != 10*time.Second {
+	if c.Port != "8080" || c.AnthropicAPIKey != "" || c.AgentModel != "claude-sonnet-5-5" || c.AgentTimeout != 10*time.Second {
 		t.Errorf("unexpected defaults: %+v", c)
 	}
 	want := []string{"http://localhost:4200", "http://localhost:8090"}
@@ -31,6 +31,7 @@ func TestLoad_SPEC63_Overrides(t *testing.T) {
 	c, err := Load(env(map[string]string{
 		"PORT":                 "9000",
 		"ANTHROPIC_API_KEY":    "k",
+		"AGENT_MODEL":          "claude-opus-5-5",
 		"AGENT_TIMEOUT_MS":     "2500",
 		"CORS_ALLOWED_ORIGINS": " http://a.test , http://b.test ",
 		"MOCK_SEED":            "7",
@@ -40,7 +41,7 @@ func TestLoad_SPEC63_Overrides(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Port != "9000" || c.AnthropicAPIKey != "k" || c.AgentTimeout != 2500*time.Millisecond ||
+	if c.Port != "9000" || c.AnthropicAPIKey != "k" || c.AgentModel != "claude-opus-5-5" || c.AgentTimeout != 2500*time.Millisecond ||
 		c.MockSeed != 7 || !c.MockTick || c.MockNow.Day() != 2 {
 		t.Errorf("unexpected config: %+v", c)
 	}
@@ -56,6 +57,7 @@ func TestLoad_SPEC63_Invalid(t *testing.T) {
 	}{
 		{"port not numeric", map[string]string{"PORT": "abc"}},
 		{"port out of range", map[string]string{"PORT": "70000"}},
+		{"model not allowed", map[string]string{"AGENT_MODEL": "claude-haiku-4-5"}},
 		{"timeout not numeric", map[string]string{"AGENT_TIMEOUT_MS": "x"}},
 		{"timeout not positive", map[string]string{"AGENT_TIMEOUT_MS": "0"}},
 		{"cors wildcard", map[string]string{"CORS_ALLOWED_ORIGINS": "http://a.test,*"}},
