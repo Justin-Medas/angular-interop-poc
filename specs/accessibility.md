@@ -15,7 +15,7 @@ Status: **v0.2**. The source of truth for SPEC §6.8 (NFR-A).
 | Keyboard (A3) | Playwright keyboard-only tests | E2E | yes |
 | Visible focus (A3) | visual snapshot of focus states in the UI gallery | visual job | yes |
 | Forced colors (A4) | Playwright `forcedColors: "active"`: axe scan plus one gallery snapshot | E2E + visual | yes |
-| Reduced motion (A5) | Playwright `reducedMotion: "reduce"`: motion tokens resolve to `0ms`, grid cell flash off | E2E | yes |
+| Reduced motion (A5) | Unit: transition tokens are built only from motion tokens, which are `0ms` under the media query; the grid sets `animateRows` from it. E2E with Playwright `reducedMotion: "reduce"` vs `"no-preference"`: computed `transition-duration` of every interactive gallery component is `0s` vs non-zero, and grid rows have no animation class. Lint: NFR-DS6 | Unit, lint, E2E | yes |
 | Screen readers (A8) | VoiceOver (macOS) and NVDA (Windows), demo flow in SPEC §4 | manual, `docs/a11y-report.md` | release check |
 
 ## 3. Automated scans in E2E

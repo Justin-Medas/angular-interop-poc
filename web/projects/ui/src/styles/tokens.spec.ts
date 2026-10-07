@@ -72,6 +72,28 @@ describe('NFR-DS tokens.css', () => {
     expect(reduced).toMatch(/--poc-motion-base:\s*0ms/);
   });
 
+  it('NFR-DS6 transition tokens exist for color and focus', () => {
+    expect(Object.keys(primitives)).toEqual(
+      expect.arrayContaining(['--poc-transition-color', '--poc-transition-focus']),
+    );
+  });
+
+  it('NFR-A5 NFR-DS6 transition tokens use only motion tokens, never literal times', () => {
+    const transitions = Object.entries(primitives).filter(([n]) =>
+      n.startsWith('--poc-transition-'),
+    );
+    expect(transitions.length).toBeGreaterThan(0);
+    for (const [name, value] of transitions) {
+      expect(value, name).not.toMatch(/\d(ms|s)\b/);
+      expect(value, name).toContain('var(--poc-motion-fast)');
+      expect(value, name).toContain('var(--poc-motion-ease)');
+    }
+  });
+
+  it('NFR-DS6 the idle focus ring is transparent so the ring can animate in', () => {
+    expect(primitives['--poc-focus-ring-idle']).toContain('transparent');
+  });
+
   for (const theme of Object.keys(themes)) {
     describe(`NFR-DS4 contrast, ${theme} theme`, () => {
       for (const [name, min] of texts) {

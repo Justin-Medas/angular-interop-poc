@@ -24,6 +24,8 @@ Naming: `--poc-<category>-<role>[-<variant>]`, kebab-case. Categories: `color`, 
 
 Rule NFR-DS5: no physical values in component styles. Lengths (`px`, `rem`, `em`), times (`ms`, `s`), and the numbers for `font-weight`, `opacity`, `line-height` and `z-index` come from a token. `0`, `auto`, `inherit` and percentages are allowed. Stylelint enforces it (§7).
 
+Rule NFR-DS6: component styles animate only through `--poc-transition-*` tokens (`transition: var(--poc-transition-color)`). `animation`, `animation-duration` and raw `transition` values are banned, so one switch (`prefers-reduced-motion`) turns every animation off. Every interactive component defines its hover and focus-visible states with these tokens. JavaScript-driven motion (AG Grid row animation, cell flash) reads the same media query.
+
 ## 3. Primitives
 
 The brand palette is a green primary with warm neutrals and blue links. Light-theme values were chosen first; dark-theme values are lighter tints picked to meet the same contrast minimums.
@@ -105,7 +107,11 @@ The brand palette is a green primary with warm neutrals and blue links. Light-th
 - **Line height:** `--poc-line-sm: 1.25rem` (badges).
 - **Opacity:** `--poc-opacity-disabled: 0.6`. Disabled controls are exempt from contrast (WCAG 1.4.3), but keep the label legible.
 - **Shadow:** `--poc-shadow-raised` for menus only.
-- **Motion:** `--poc-motion-fast: 120ms`, `--poc-motion-base: 200ms`. Under `prefers-reduced-motion: reduce`, both are `0ms` and grid cell flash is off.
+- **Motion:** `--poc-motion-fast: 120ms`, `--poc-motion-base: 200ms`, `--poc-motion-ease: ease-out`. Under `prefers-reduced-motion: reduce`, both durations are `0ms` and grid row animation and cell flash are off.
+- **Transitions** (composed from the motion tokens, so they zero out with them):
+  - `--poc-transition-color`: `background-color`, `color` and `border-color` over `--poc-motion-fast`. For hover and selected states.
+  - `--poc-transition-focus`: `outline-offset` over `--poc-motion-fast`. For the focus ring, which components draw with an idle transparent outline (`--poc-focus-ring-idle`) and switch to `--poc-focus-ring` on `:focus-visible`. The transparent idle outline also keeps focus visible in forced-colors mode.
+  - Add a new `--poc-transition-<purpose>` token before animating a new property (Rule NFR-DS6).
 - **Focus:** `--poc-focus-ring: 2px solid var(--poc-color-focus)` with `--poc-focus-offset: 2px`, applied with `:focus-visible`.
 
 ## 6. Theming mechanics and the grid
@@ -133,7 +139,7 @@ Exact parameter names are checked against the installed AG Grid version when the
 
 ## 7. Enforcement (all blocking in CI)
 
-- **Stylelint** (pinned devDependency): `color-no-hex`, `color-named: "never"`, and `function-disallowed-list: [rgb, rgba, hsl, hsla]` everywhere except `tokens.css`. A custom-property pattern allows only `--poc-*` names. A `declaration-property-value-disallowed-list` bans physical lengths and times in every declaration, and bare numbers for `font-weight`, `opacity`, `line-height` and `z-index` (NFR-DS5).
+- **Stylelint** (pinned devDependency): `color-no-hex`, `color-named: "never"`, and `function-disallowed-list: [rgb, rgba, hsl, hsla]` everywhere except `tokens.css`. A custom-property pattern allows only `--poc-*` names. A `declaration-property-value-disallowed-list` bans physical lengths and times in every declaration, and bare numbers for `font-weight`, `opacity`, `line-height` and `z-index` (NFR-DS5). A `declaration-property-value-allowed-list` allows `transition` only as `var(--poc-transition-*)` lists or `none`, and bans `animation` (NFR-DS6).
 - **Contrast unit test:** parses `tokens.css`, resolves each theme's semantic tokens to hex, and checks every pair in §4's matrix against its minimum. Adding a semantic color means adding its pairs to the test.
 - **Visual tests:** the `/dev/ui-gallery` route renders every `projects/ui` component in dark, light and forced-colors mode (testing.md §6).
 - **Rebrand check:** changing only primitive values must not require editing any component file. The `spec-reviewer` agent checks this when the palette changes.

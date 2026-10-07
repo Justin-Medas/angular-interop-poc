@@ -23,6 +23,14 @@ const ROWS: Row[] = [
 
 const tick = () => new Promise((r) => setTimeout(r, 20));
 
+function stubReducedMotion(reduce: boolean): void {
+  vi.stubGlobal('matchMedia', (query: string) => ({
+    matches: reduce && query === '(prefers-reduced-motion: reduce)',
+  }));
+}
+
+afterEach(() => vi.unstubAllGlobals());
+
 async function render(rows: Row[] = ROWS, selected: Row | null = null) {
   const fixture = TestBed.createComponent(PocDataTable<Row>);
   fixture.componentRef.setInput('rows', rows);
@@ -140,5 +148,18 @@ describe('FR1 PocDataTable', () => {
     const { host } = await render();
     expect(host.querySelector('[role="treegrid"], [role="grid"]')).not.toBeNull();
     expect(await a11yViolations(host)).toEqual([]);
+  });
+
+  it('NFR-A5 rows animate when motion is allowed', async () => {
+    stubReducedMotion(false);
+    const { host } = await render();
+    expect(host.querySelector('.ag-row-animation')).not.toBeNull();
+  });
+
+  it('NFR-A5 rows do not animate under prefers-reduced-motion', async () => {
+    stubReducedMotion(true);
+    const { host } = await render();
+    expect(host.querySelector('.ag-row')).not.toBeNull();
+    expect(host.querySelector('.ag-row-animation')).toBeNull();
   });
 });

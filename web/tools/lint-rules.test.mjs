@@ -187,6 +187,30 @@ for (const [name, css] of [
   });
 }
 
+for (const [name, css] of [
+  ['raw transition with a motion token', 'a { transition: color var(--poc-motion-fast); }'],
+  ['animation shorthand', 'a { animation: spin var(--poc-motion-base); }'],
+  ['animation-name', 'a { animation-name: spin; }'],
+]) {
+  test(`NFR-DS6 only transition tokens may animate: ${name}`, async () => {
+    assert.ok(
+      (await cssRules(css, 'projects/blotter/src/lib/x.scss')).includes(
+        'declaration-property-value-allowed-list',
+      ),
+    );
+  });
+}
+
+test('NFR-DS6 transition tokens, lists of them and none pass', async () => {
+  assert.deepEqual(
+    await cssRules(
+      'a { transition: var(--poc-transition-color), var(--poc-transition-focus); } b { transition: none; }',
+      'projects/blotter/src/lib/x.scss',
+    ),
+    [],
+  );
+});
+
 test('NFR-DS5 physical values are allowed in tokens.css', async () => {
   assert.deepEqual(
     await cssRules(':root { --poc-size-target: 1.75rem; }', 'projects/ui/src/styles/tokens.css'),
