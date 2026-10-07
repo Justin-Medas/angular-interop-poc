@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "eslint . && stylelint \"projects/**/*.{css,scss}\" --allow-empty-input",
-    "test:lint": "node --test tools/lint-rules.test.mjs"
+    "test:lint": "node --test tools/lint-rules.test.mjs",
+    "test:e2e": "playwright test"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
@@ -26,7 +27,9 @@
     "@angular/build": "22.2.2",
     "@angular/cli": "22.2.2",
     "@angular/compiler-cli": "22.2.1",
+    "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
     "@vitest/coverage-istanbul": "5.0.3",
     "angular-eslint": "22.5.0",
     "eslint": "10.12.0",

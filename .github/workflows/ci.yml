@@ -70,3 +70,31 @@ jobs:
         run: npx ng build shell
       - name: unit tests with 100% coverage thresholds
         run: npx ng test --watch=false --coverage
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.sum }
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Playwright functional + axe
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-${{ matrix.os }}
+          path: web/playwright-report
