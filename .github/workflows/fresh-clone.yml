@@ -1,0 +1,41 @@
+# Proves the native quickstart works from a fresh clone on macOS, Linux and Windows.
+# Grows with the project: add `npm test` (Go + Angular) and a `docker compose up --wait`
+# smoke job once api/ and web/ exist (see docs/PLAN.md).
+name: fresh-clone
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quickstart:
+    name: quickstart (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.1'
+
+      - name: npm run setup
+        run: npm run setup
+
+      - name: Sail build output exists
+        shell: bash
+        run: test -f .sail/fdc3-sail/packages/web/dist/html/index.html

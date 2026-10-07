@@ -95,3 +95,6 @@ aidlc/diagnostics/
 # aidlc/spaces/*/intents/*/<phase>/<stage>/*.md (artifacts + diary).
 .claude/settings.local.json
 # END AI-DLC:gitignore
+
+# Pinned FDC3 Sail checkout (scripts/setup-sail.mjs)
+.sail/

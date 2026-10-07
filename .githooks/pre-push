@@ -1,0 +1,12 @@
+#!/bin/sh
+# Blocks direct pushes to main: all work lands through a feature branch + PR.
+# Installed by `npm run setup` (git config core.hooksPath .githooks).
+# One-off bypass for the bootstrap commit only: ALLOW_MAIN_PUSH=1 git push ...
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ] && [ "${ALLOW_MAIN_PUSH:-0}" != "1" ]; then
+    echo "✗ Direct push to main is blocked. Push a feature branch and open a PR:" >&2
+    echo "    git switch -c feat/<slug> && git push -u origin HEAD && gh pr create --fill" >&2
+    exit 1
+  fi
+done
+exit 0

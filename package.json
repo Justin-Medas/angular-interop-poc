@@ -1,0 +1,20 @@
+{
+  "name": "angular-interop-poc",
+  "private": true,
+  "description": "Angular shell + FDC3 micro-apps, contract-first Go API, and an agent that picks UI modules. Root scripts are the cross-platform task runner.",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^22.22.3 || ^24.15.0 || >=26",
+      "onFail": "error"
+    }
+  },
+  "scripts": {
+    "check-env": "node scripts/check-env.mjs",
+    "setup": "node scripts/check-env.mjs && git config core.hooksPath .githooks && node scripts/setup-sail.mjs",
+    "sail": "npm --prefix .sail/fdc3-sail start"
+  }
+}

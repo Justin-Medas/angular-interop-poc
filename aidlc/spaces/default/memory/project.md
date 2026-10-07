@@ -12,6 +12,16 @@
 - `specs/` holds the contracts and is the source of truth: `SPEC.md`, `openapi.yaml`, `fdc3-contract.md`, `agent-tool-schema.json`, `evals/cases.yaml`. AI-DLC requirements and design artifacts must reference these files instead of restating them. When a stage would change a contract, it edits the file in `specs/` and records the change in `docs/DECISIONS.md`.
 - This is a two-day interview POC (see `docs/PLAN.md`). The author must explain every file live, so prefer small, readable code over abstraction.
 - The project skills `/implement-spec`, `/spec-check`, `/run-evals` and `/explain` remain available inside Code Generation and Build & Test.
+- **The GitHub repo is part of the deliverable.** The commit history is context for future agents and for reviewers, so it must read as a clear story.
+  - All work happens on a short-lived feature branch named `<type>/<short-slug>` (`feat/`, `fix/`, `chore/`, `docs/`, `test/`). A Construction Bolt or Unit uses its slug, for example `feat/go-quotes-api`.
+  - Commit often: at every green test run and at every completed checklist item, not only at stage end. Use Conventional Commits (`feat(api): add GET /quotes contract test`). Each commit leaves the build passing.
+  - Every branch lands through a pull request (`gh pr create`). The PR body links the FR IDs and spec files it implements, and includes the test output. Merge with squash (`gh pr merge --squash --delete-branch`) only after CI is green **and** the human approves the merge.
+- **"It just works" from a fresh clone on macOS, Linux and Windows** is a deliverable, not polish.
+  - Primary quickstart: `git clone … && cd angular-interop-poc && docker compose up` with Docker as the only host dependency.
+  - Secondary quickstart: open in a Dev Container or GitHub Codespaces.
+  - Native path: `npm run setup && npm start` with only Node and Go installed.
+  - Every toolchain is pinned: Node through `engines`/`devEngines` in `package.json` and `.nvmrc`, Go through the `toolchain` directive in `go.mod`, npm dependencies through `package-lock.json` with `npm ci`, and FDC3 Sail through a pinned commit SHA in `scripts/setup-sail.mjs`.
+  - Repo scripts are cross-platform Node (`.mjs`), not bash. Git hooks are the only shell scripts, because Git for Windows runs them through its bundled `sh`.
 
 ## Walking Skeleton
 
@@ -57,11 +67,18 @@ NEVER import primeng/* outside web/projects/ui (affirmed 2026-10-06)
 NEVER call window.fdc3 or import @finos/fdc3 outside web/projects/interop (affirmed 2026-10-06)
 NEVER claim OpenFin or any commercial container was run (affirmed 2026-10-06)
 NEVER commit ANTHROPIC_API_KEY or any .env file (affirmed 2026-10-06)
+NEVER commit or push directly to main after the bootstrap commit; all changes land through a feature branch and pull request (affirmed 2026-10-06)
+NEVER merge a pull request without explicit human approval in chat (affirmed 2026-10-06)
+NEVER force-push to main or rewrite published history on main (affirmed 2026-10-06)
+NEVER add a setup step that only works on one OS, or that depends on a tool installed globally outside the documented prerequisites (affirmed 2026-10-06)
 
 ## Mandated
 
 ALWAYS validate agent output against specs/agent-tool-schema.json and fall back deterministically on failure (affirmed 2026-10-06)
 ALWAYS change specs/ before changing behavior that contradicts them (affirmed 2026-10-06)
+ALWAYS commit with a Conventional Commit message at every green test run, and push the feature branch (affirmed 2026-10-06)
+ALWAYS open a pull request per Bolt or Unit that links its FR IDs and spec files and includes test output (affirmed 2026-10-06)
+ALWAYS keep the fresh-clone quickstarts in README working; a PR that changes setup must show the GitHub Actions OS matrix passing (affirmed 2026-10-06)
 
 ## Corrections
 
