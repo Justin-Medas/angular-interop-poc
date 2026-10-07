@@ -21,6 +21,8 @@ const ROWS: Row[] = [
   { symbol: 'MSFT', last: 415.1, change: -5, changePct: -1.2 },
 ];
 
+const tick = () => new Promise((r) => setTimeout(r, 20));
+
 async function render(rows: Row[] = ROWS, selected: Row | null = null) {
   const fixture = TestBed.createComponent(PocDataTable<Row>);
   fixture.componentRef.setInput('rows', rows);
@@ -39,11 +41,12 @@ async function render(rows: Row[] = ROWS, selected: Row | null = null) {
 describe('FR1 PocDataTable', () => {
   it('FR1 renders a header per column and a row per item', async () => {
     const { host } = await render();
-    const headers = Array.from(host.querySelectorAll('.ag-header-cell-text')).map(
-      (h) => h.textContent,
-    );
-    expect(headers).toEqual(['Symbol', 'Last', 'Chg', 'Chg %']);
-    expect(host.querySelectorAll('.ag-center-cols-container [role="row"]').length).toBe(2);
+    const headers = Array.from(
+      host.querySelectorAll('.ag-header-cell[col-id] .ag-header-cell-text'),
+    ).map((h) => h.textContent);
+    // AG Grid adds an unnamed filler header next to a pinned column.
+    expect(headers.filter(Boolean)).toEqual(['Symbol', 'Last', 'Chg', 'Chg %']);
+    expect(host.querySelectorAll('[role="row"][row-id]').length).toBe(2);
   });
 
   it('FR1 formats numbers to 2 decimals, signed with an explicit sign, percents with sign and %', async () => {
@@ -81,6 +84,7 @@ describe('FR1 PocDataTable', () => {
     const emitted: Row[] = [];
     fixture.componentInstance.rowSelect.subscribe((r) => emitted.push(r));
     cell('MSFT', 'symbol')!.click();
+    await tick();
     expect(emitted).toEqual([ROWS[1]]);
   });
 
@@ -89,8 +93,31 @@ describe('FR1 PocDataTable', () => {
     const emitted: Row[] = [];
     fixture.componentInstance.rowSelect.subscribe((r) => emitted.push(r));
     const el = cell('AAPL', 'symbol')!;
+    el.focus();
     el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await tick();
     expect(emitted).toEqual([ROWS[0]]);
+  });
+
+  it('FR2 Space emits rowSelect and other keys do not', async () => {
+    const { fixture, cell } = await render();
+    const emitted: Row[] = [];
+    fixture.componentInstance.rowSelect.subscribe((r) => emitted.push(r));
+    const el = cell('AAPL', 'symbol')!;
+    el.focus();
+    el.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+    await tick();
+    expect(emitted).toEqual([]);
+    el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    await tick();
+    expect(emitted).toEqual([ROWS[0]]);
+  });
+
+  it('FR1 an unchanged value shows +0.00 with no direction color', async () => {
+    const { cell } = await render([{ symbol: 'FLAT', last: 10, change: 0, changePct: 0 }]);
+    expect(cell('FLAT', 'change')?.textContent?.trim()).toBe('+0.00');
+    expect(cell('FLAT', 'change')?.classList).not.toContain('poc-up');
+    expect(cell('FLAT', 'change')?.classList).not.toContain('poc-down');
   });
 
   it('FR3 the selected input marks the row selected', async () => {
