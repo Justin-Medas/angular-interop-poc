@@ -1,0 +1,32 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.mod }
+      - name: gofmt
+        working-directory: api
+        run: test -z "$(gofmt -l .)"
+      - name: go vet
+        working-directory: api
+        run: go vet ./...
+  unit-go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.mod }
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc }
+      - run: node scripts/check-coverage.mjs
