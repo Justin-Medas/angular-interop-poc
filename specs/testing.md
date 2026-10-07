@@ -85,7 +85,7 @@ The runner (`api/evals`, Go) calls `internal/agent` in-process with an injected 
 | `live` | real Claude | no | PRs that change `api/internal/agent/**`, `specs/agent-tool-schema.json`, `specs/mock-data.yaml` or `specs/evals/**`; nightly; manual dispatch |
 
 - `replay` checks the whole validation, semantic-check and grading pipeline against real past model output, at no cost.
-- `live` uses the `ANTHROPIC_API_KEY` repo secret and is blocking when it runs. A live run with `-record` refreshes the recordings. One live run is 22 model cases × 3 runs = 66 requests.
+- `live` uses the `ANTHROPIC_API_KEY` repo secret and is blocking when it runs. It calls the model named by `AGENT_MODEL` (SPEC §6.3), which defaults to `claude-sonnet-5-5`; every live run during development uses that default. The report and each recording name the model they came from. A live run with `-record` refreshes the recordings. One live run is 22 model cases × 3 runs = 66 requests.
 - The report is uploaded as an artifact. The committed `docs/eval-report.md` comes from the recorded demo run (SPEC §8).
 
 ## 8. CI pipeline

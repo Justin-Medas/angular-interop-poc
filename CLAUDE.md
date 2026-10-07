@@ -47,7 +47,7 @@ docs/                  plan, decisions, architecture diagram, demo notes
 | @finos/fdc3 | 2.2.3 | API + `getAgent()` only, no Desktop Agent included |
 | FDC3 Sail | v2 (browser), pinned SHA in `scripts/setup-sail.mjs`, installed to `.sail/` | Runs on :8090, Electron removed, "not production ready". Itself uses `@finos/fdc3@2.2.3` |
 | Go | 1.27.1 (Homebrew) | anthropic-sdk-go needs ≥ 1.24 |
-| anthropic-sdk-go | v1.78.x | Model `claude-opus-5-5` |
+| anthropic-sdk-go | v1.78.x | Model from `AGENT_MODEL`: `claude-sonnet-5-5` (default) or `claude-opus-5-5` (DECISIONS #20) |
 
 ## Architecture rules
 - **Interop is behind an interface.** Components inject an `InteropService` token and never call `window.fdc3` directly. Provide two adapters: `Fdc3InteropService` (real, uses `getAgent()`) and `InMemoryInteropService` (BroadcastChannel, for tests and the no-Sail fallback). OpenFin would be a third adapter. **Never claim OpenFin was run.** Say it is a config swap behind this seam.
@@ -68,7 +68,7 @@ docs/                  plan, decisions, architecture diagram, demo notes
 ## Go conventions
 - Standard library `net/http` with the 1.22+ pattern routing. No framework unless it earns its place.
 - Handlers must match `openapi.yaml`. Contract tests in `api/internal/.../*_contract_test.go` load the OpenAPI file and validate real responses against it.
-- Claude call (SPEC §7.2): `claude-opus-5-5`, **structured outputs** (`output_config.format` with `specs/agent-tool-schema.json`), one `strict: true` read-only tool (`get_watchlist_quotes`) with `tool_choice: auto`, at most 3 tool calls. **Forced `tool_choice` (`any` or `tool`) returns a 400 on Opus 5.5.** Omit `thinking` (it can't be disabled on this model) and set `output_config.effort: "low"` explicitly. Read `ANTHROPIC_API_KEY` from env and never commit it.
+- Claude call (SPEC §7.2): model from `AGENT_MODEL` (default `claude-sonnet-5-5`, opt-in `claude-opus-5-5`; same request shape for both), **structured outputs** (`output_config.format` with `specs/agent-tool-schema.json`), one `strict: true` read-only tool (`get_watchlist_quotes`) with `tool_choice: auto`, at most 3 tool calls. **Forced `tool_choice` (`any` or `tool`) returns a 400 on both models.** Omit `thinking` (neither model accepts disabling it) and set `output_config.effort: "low"` explicitly. Read `ANTHROPIC_API_KEY` and `AGENT_MODEL` from env (locally via the gitignored repo-root `.env`) and never commit the key. Tests and dev eval runs use the default model; Opus is opt-in.
 - Every agent response is validated against the schema and the SPEC §7.3 semantic checks before it is returned.
 - Env vars and mock-data determinism are in SPEC §6.3. Tests always run with the defaults.
 
