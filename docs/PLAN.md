@@ -5,7 +5,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 ## Day 0 (before the clock starts, ~30 min)
 - [x] Install Node (26.10) and Go (1.27.1) (`scripts/check-env.sh` verifies)
 - [x] Clone and run FDC3 Sail v2 at `../FDC3-Sail` (`npm start` → :8090). **Go:** UI renders; custom apps and directories are supported
-- [ ] Resolve PrimeNG license question (DECISIONS #1)
+- [x] Resolve UI library question → AG Grid Community + own token components (DECISIONS #7)
 - [ ] `ANTHROPIC_API_KEY` available in the shell
 - [x] AI tooling: AI-DLC 2.10, Angular skills, Angular CLI MCP, design-system skill (see CLAUDE.md "AI tooling layers")
 - [x] Restart Claude Code, approve AI-DLC hooks and the `angular-cli` MCP server, run `/aidlc --doctor`
@@ -29,7 +29,8 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] Mock data (6 to 10 tickers, deterministic random walk for history)
 - [ ] `/quotes`, `/quotes/{symbol}`, `/quotes/{symbol}/history`, `/watchlist` GET/PUT
 - [ ] Contract tests validating responses against `openapi.yaml`
-- [ ] `projects/ui` wrappers: `poc-data-table`, `poc-button`, `poc-card`
+- [ ] `projects/ui`: `tokens.css`, `poc-data-table` (AG Grid Community, theme from tokens), `poc-button`, `poc-card`, `poc-badge`
+- [ ] Runtime config: `/config.json` + schema validation in `provideAppInitializer`, `RUNTIME_CONFIG` token, config error screen (FR10); compose and Codespaces variants
 - [ ] Shell layout + routing (lazy `loadComponent`)
 - [ ] Blotter: table bound to `/quotes`, row select (local only)
 

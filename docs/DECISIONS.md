@@ -2,7 +2,7 @@
 
 Format: context → decision → consequences. Add entries; don't rewrite history.
 
-## #1 UI library: PrimeNG 22, behind wrappers (OPEN: license)
+## #1 UI library: PrimeNG 22, behind wrappers (SUPERSEDED by #7)
 - **Context:** PrimeNG 22.1.x matches Angular 22 (peer `@angular/core ^22.1.0`). In June 2026 PrimeFaces moved development to "PrimeUI". The old GitHub repo says it gets security fixes only and that "existing MIT versions remain MIT". The npm package for 22.x and 21.x now declares `"SEE LICENSE IN LICENSE.md"` and points at a different repo (`primeng-nextchapter`).
 - **Action before installing:** read `node_modules/primeng/LICENSE.md` after a trial install. If it is free for non-commercial or demo use, proceed. If it is not:
   - **Option A:** pin the last MIT-licensed PrimeNG release (find the matching Angular major and accept an older Angular).
@@ -35,3 +35,18 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - Repo scripts are Node `.mjs` rather than bash so they run on Windows. `.gitattributes` forces LF line endings.
 - **Alternatives rejected:** a Makefile (not native on Windows); mise or asdf for toolchains (adds a global tool reviewers must install); a git submodule for Sail (fragile UX on clone, and it still needs an install and build step).
 - **Consequences:** the `fresh-clone` CI runs on macOS and Windows runners, which bill private-repo minutes at 10× and 2× on GitHub Free (2,000 min/month). Keep the job lean and cancel superseded runs. Branch protection on private repos needs GitHub Pro, so on Free the pre-push hook and agent rules are the guardrail.
+
+## #7 UI: AG Grid Community for the grid, our own token-based components for everything else (supersedes #1)
+- **Context:** #1 left PrimeNG's license unresolved. PrimeNG 21 and 22 on npm now declare "SEE LICENSE IN LICENSE.md" after development moved to a new project. The only component that needs a heavyweight library is the blotter. It needs a data grid with sorting, column sizing and pinning, row selection, and efficient updates of individual cells as prices tick.
+- **Decision:**
+  - The grid is AG Grid Community through `ag-grid-angular` 36.x (MIT, peer `@angular/core >= 20`, verified 2026-10-06). It is used only through the `poc-data-table` wrapper in `projects/ui`, and only Community features are used (no Enterprise license key).
+  - Everything else (button, card, badge, tabs, command bar) is a small standalone component of our own in `projects/ui`, styled only by design tokens (CSS custom properties). `@angular/cdk` is allowed for accessibility primitives because it's first-party Angular, not a UI library.
+  - The AG Grid theme takes its colors and spacing from the same tokens, so the grid and our components can't drift apart visually.
+- **Alternatives rejected:** PrimeNG pinned to its last MIT release (forces an older Angular); PrimeNG 22 (unclear license); Angular Material (its table is weaker as a trading grid, and it would be a second library next to a grid library); a hand-rolled table (high effort, and it would neither impress nor be fast).
+- **Consequences:** a token-driven component set is the design-system demonstration, which is the author's strength. The swap test becomes: replacing AG Grid touches only `projects/ui/data-table`.
+
+## #8 Runtime configuration via `config.json`, with a reserved auth seam
+- **Context:** the same app must run natively, under docker compose, in Codespaces and in CI (NFR-R1 to R3). Angular build-time `environment.ts` files would need one build per environment.
+- **Decision:** apps fetch `/config.json` in `provideAppInitializer`, validate it against `specs/runtime-config.schema.json` (FR10), and expose it through a `RUNTIME_CONFIG` InjectionToken. Docker compose and Codespaces supply their own file. The file carries no secrets.
+- **Auth seam:** the schema has an `auth` block shaped like typical OAuth2/OIDC SPA settings (clientId, authority, redirectUri, cacheLocation, scopes), with `enabled` fixed to `false`. Auth stays a non-goal: there is no login and no token handling. A real provider (for example an MSAL or other OIDC client library) would bind behind an `AUTH` token without changing callers. In an interview this is a talking point, not a feature.
+- **Alternatives rejected:** build-time `environment.ts` (a rebuild per environment breaks "one artifact"); environment variables injected at container start into a generated JS file (more moving parts for the same result).

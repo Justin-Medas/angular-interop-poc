@@ -18,6 +18,7 @@ A two-day POC for an interview. The role is about 30–40% hands-on Angular, so 
 2. **OpenFin.** Not run. It sits behind the `InteropService` adapter as a configuration swap. Never claim otherwise.
 3. **Versions.** Angular 22.2.x needs Node `^22.22.3 || ^24.15.0 || >=26`. PrimeNG 22.1.x has peer `@angular/core ^22.1.0`, so the versions are compatible. **However**, PrimeNG moved development to "PrimeUI" in June 2026. The npm license is now "SEE LICENSE IN LICENSE.md", so check it before relying on PrimeNG; Angular Material is the fallback.
 4. **Agent call.** `claude-opus-5-5` rejects forced `tool_choice` (`any` or `tool`). Use structured outputs (`output_config.format`) with an explicit `effort`, and validate server-side.
+5. **UI library (superseded later the same day).** PrimeNG was replaced by AG Grid Community plus our own token-based components; see `docs/DECISIONS.md` #7.
 
 ## Two-day budget
 - Day 1 AM: specs and scaffolding.
