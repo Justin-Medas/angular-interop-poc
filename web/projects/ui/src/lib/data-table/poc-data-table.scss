@@ -6,7 +6,7 @@ ag-grid-angular {
   width: 100%;
 }
 
-/* Numbers are right-aligned (AG Grid's rightAligned type) in tabular figures. */
+/* Numbers are right-aligned via the ag-right-aligned-* classes) in tabular figures. */
 :host ::ng-deep .poc-num {
   font-variant-numeric: tabular-nums;
 }

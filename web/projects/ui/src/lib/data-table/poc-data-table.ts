@@ -77,6 +77,7 @@ const POC_THEME = themeQuartz.withParams({
       [rowData]="rows()"
       [columnDefs]="columnDefs()"
       [getRowId]="getRowId()"
+      [defaultColDef]="defaultColDef"
       [rowSelection]="rowSelection"
       [domLayout]="'autoHeight'"
       (modelUpdated)="syncSelection()"
@@ -97,7 +98,12 @@ export class PocDataTable<T> {
   rowSelect = output<T>();
 
   protected readonly theme = POC_THEME;
-  protected readonly rowSelection = { mode: 'singleRow', enableClickSelection: false } as const;
+  protected readonly rowSelection = {
+    mode: 'singleRow',
+    checkboxes: false,
+    enableClickSelection: false,
+  } as const;
+  protected readonly defaultColDef: ColDef = { flex: 1, minWidth: 90 };
 
   private readonly api = signal<GridApi<T> | null>(null);
 
@@ -108,7 +114,7 @@ export class PocDataTable<T> {
         field: c.key,
         headerName: c.header,
         pinned: c.pinned,
-        type: numeric ? 'rightAligned' : undefined,
+        headerClass: numeric ? 'ag-right-aligned-header' : undefined,
         valueFormatter: numeric
           ? (p) => fmt(p.value as number, c.format as 'number' | 'percent' | 'signed')
           : undefined,
@@ -116,7 +122,7 @@ export class PocDataTable<T> {
           if (!numeric) return [];
           const v = p.value as number;
           const direction = c.format === 'number' || v === 0 ? [] : [v > 0 ? 'poc-up' : 'poc-down'];
-          return ['poc-num', ...direction];
+          return ['poc-num', 'ag-right-aligned-cell', ...direction];
         },
       };
     }),

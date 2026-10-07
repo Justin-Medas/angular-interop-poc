@@ -1,0 +1,18 @@
+main {
+  padding: var(--poc-space-4);
+}
+
+.theme {
+  display: grid;
+  gap: var(--poc-space-4);
+  margin-block: var(--poc-space-4);
+  padding: var(--poc-space-4);
+  background: var(--poc-color-bg);
+  color: var(--poc-color-text);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--poc-space-2);
+}

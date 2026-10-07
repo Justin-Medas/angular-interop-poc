@@ -38,4 +38,12 @@ describe('NFR-DS /dev/ui-gallery', () => {
       'Chart',
     );
   });
+
+  it('FR3 clicking a gallery row selects it', async () => {
+    const el = await visit();
+    const dark = el.querySelector('[data-theme="dark"]')!;
+    dark.querySelector<HTMLElement>('[row-id="AAPL"] [col-id="symbol"]')!.click();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(dark.querySelector('[row-id="AAPL"]')?.getAttribute('aria-selected')).toBe('true');
+  });
 });

@@ -9,4 +9,8 @@ export const routes: Routes = [
     path: 'apps/detail',
     loadComponent: () => import('@poc/detail').then((m) => m.DetailPage),
   },
+  {
+    path: 'dev/ui-gallery',
+    loadComponent: () => import('./dev/ui-gallery').then((m) => m.UiGallery),
+  },
 ];

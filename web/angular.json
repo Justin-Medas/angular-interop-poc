@@ -29,7 +29,7 @@
                 "input": "projects/shell/public"
               }
             ],
-            "styles": ["projects/shell/src/styles.scss"]
+            "styles": ["projects/ui/src/styles/tokens.css", "projects/shell/src/styles.scss"]
           },
           "configurations": {
             "production": {
@@ -76,7 +76,8 @@
               "functions": 100,
               "lines": 100
             },
-            "coverageExclude": ["**/public-api.ts", "**/main.ts"]
+            "coverageExclude": ["**/public-api.ts", "**/main.ts"],
+            "coverageInclude": ["projects/shell/**/*.ts"]
           }
         }
       }
@@ -109,7 +110,8 @@
               "functions": 100,
               "lines": 100
             },
-            "coverageExclude": ["**/public-api.ts", "**/main.ts"]
+            "coverageExclude": ["**/public-api.ts", "**/main.ts"],
+            "coverageInclude": ["projects/ui/**/*.ts"]
           }
         }
       }
@@ -162,7 +164,8 @@
               "functions": 100,
               "lines": 100
             },
-            "coverageExclude": ["**/public-api.ts", "**/main.ts"]
+            "coverageExclude": ["**/public-api.ts", "**/main.ts"],
+            "coverageInclude": ["projects/blotter/**/*.ts"]
           }
         }
       }
@@ -195,7 +198,8 @@
               "functions": 100,
               "lines": 100
             },
-            "coverageExclude": ["**/public-api.ts", "**/main.ts"]
+            "coverageExclude": ["**/public-api.ts", "**/main.ts"],
+            "coverageInclude": ["projects/detail/**/*.ts"]
           }
         }
       }
