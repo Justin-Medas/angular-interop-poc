@@ -166,3 +166,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - **OnPush:** in Angular 22 `OnPush` is the default strategy. `prefer-on-push-component-change-detection` therefore reports components that opt out (`ChangeDetectionStrategy.Eager`) and accepts an explicit `OnPush`. We keep writing it explicitly (CLAUDE.md, SPEC NFR-ARCH3) so the intent is visible in each file.
 - **Alternatives rejected:** `eslint-plugin-boundaries` or Nx module-boundary tags (another dependency for four libraries); trusting the config without tests; `stylelint-config-standard-scss` (formatting rules unrelated to tokens, noisy on generated code).
 - **Consequences:** a new library needs its own block in `eslint.config.mjs` and a test case here. The `tools/` folder is excluded from ESLint.
+
+## #23 CI OS matrix: E2E on Linux and Windows, macOS only for fresh-clone
+- **Context:** the `e2e` job runs on `ubuntu-latest` and `windows-latest`; `fresh-clone` runs on all three OSes. The spec did not say why macOS is absent from E2E, which could read as an oversight.
+- **Decision:** keep macOS out of `e2e`. The reasons are cost and value. GitHub bills private-repo minutes at 1× for Linux, 2× for Windows and 10× for macOS. E2E drives the same Chromium on every OS, so a macOS leg would add little signal. macOS is still verified where it matters, the native setup path, by `fresh-clone`. Visual baselines are rendered in one Linux container, so they match on every OS.
+- **Alternatives rejected:** adding `macos-latest` to the `e2e` matrix (about 10× the cost of the Linux leg for the same browser, plus a slower pipeline); dropping Windows too (Windows has real path and process differences that the `webServer` commands touch, so it earns its 2×).
+- **Consequences:** a macOS-only browser or tooling bug in E2E would not be caught by CI. If one appears, add `macos-latest` to the matrix and record it here. The README should say which OSes run which jobs.
