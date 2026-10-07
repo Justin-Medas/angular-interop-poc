@@ -19,9 +19,11 @@ func TestEmbedded_FR18_EqualsSpecFile(t *testing.T) {
 	}
 }
 
-func TestHandler_FR18_ServesJSON(t *testing.T) {
+func TestRegister_FR18_ServesDirectoryJSON(t *testing.T) {
+	mux := http.NewServeMux()
+	Register(mux)
 	w := httptest.NewRecorder()
-	Handler(w, httptest.NewRequest(http.MethodGet, "/appd/v2/apps", nil))
+	mux.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/appd/v2/apps", nil))
 	if w.Code != 200 || w.Header().Get("Content-Type") != "application/json" || !bytes.Equal(w.Body.Bytes(), appdJSON) {
 		t.Errorf("status %d, type %q", w.Code, w.Header().Get("Content-Type"))
 	}
