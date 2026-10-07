@@ -1,9 +1,4 @@
-# Team-Level Rules
-
-> This team's affirmed practices and corrections. Loaded after `org.md` as
-> strict-additive guidance; contradictions with broader policy are rejected.
-> Populated by the practices-discovery affirmation gate. Edit at the gate,
-> not directly.
+# Team Practices
 
 ## Way of Working
 
@@ -35,10 +30,6 @@
 - Tests assert observable output (rendered roles and text, HTTP bodies, broadcasts, plans), not internal wiring.
 - The existing suite stays green on every push.
 
-## Guard Policy
-
-<!-- Affirmed by the team. Mode: strict, relaxed, or off. Strict here holds for every intent and cannot be changed from chat. A section under the retired Change Control heading, written by an earlier release, is still read. -->
-
 ## Deployment
 
 - This work has no hosted environment, so a merge to `main` is the release. This specialises the org's deploy-on-merge default for a local-only project; it does not contradict it.
@@ -63,14 +54,3 @@
   - Every HTTP error goes through `httpx.WriteError` with an OpenAPI `Error.code`.
   - Angular turns HTTP and interop failures into visible state; nothing is swallowed silently.
 - Naming is language-idiomatic. Test names carry their spec ID (`specs/testing.md` § 10). Framework conventions are in `project.md` § Code Style.
-## Forbidden
-
-<!-- Team-specific forbidden patterns -->
-
-## Mandated
-
-<!-- Team-specific mandates -->
-
-## Corrections
-
-<!-- Self-learning loop appends here. -->

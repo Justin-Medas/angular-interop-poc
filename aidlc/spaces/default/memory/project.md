@@ -86,6 +86,16 @@ NEVER merge a pull request without explicit human approval in chat (affirmed 202
 NEVER force-push to main or rewrite published history on main (affirmed 2026-10-06)
 NEVER add a setup step that only works on one OS, or that depends on a tool installed globally outside the documented prerequisites (affirmed 2026-10-06)
 
+NEVER add a line-level coverage-ignore comment; coverage exclusions are whole files listed in specs/testing.md §4 with a DECISIONS entry (affirmed 2026-10-07)
+
+NEVER lower a coverage threshold, add a coverage exclusion, or add a CI retry without a docs/DECISIONS.md entry (affirmed 2026-10-07)
+
+NEVER import one feature library from another or reach into a library's internals instead of its public API (affirmed 2026-10-07)
+
+NEVER use primitive tokens or raw color values in component styles (affirmed 2026-10-07)
+
+NEVER render agent output or other untrusted text with `[innerHTML]` or `bypassSecurityTrust*` (affirmed 2026-10-07)
+
 ## Mandated
 
 ALWAYS validate agent output against specs/agent-tool-schema.json and fall back deterministically on failure (affirmed 2026-10-06)
@@ -93,6 +103,8 @@ ALWAYS change specs/ before changing behavior that contradicts them (affirmed 20
 ALWAYS commit with a Conventional Commit message at every green test run, and push the feature branch (affirmed 2026-10-06)
 ALWAYS open a pull request per Bolt or Unit that links its FR IDs and spec files and includes test output (affirmed 2026-10-06)
 ALWAYS keep the fresh-clone quickstarts in README working; a PR that changes setup must show the GitHub Actions OS matrix passing (affirmed 2026-10-06)
+
+ALWAYS keep the pushed head of every branch green; a failing `test(...)` commit is allowed only below a green head (affirmed 2026-10-07)
 
 ## Corrections
 
