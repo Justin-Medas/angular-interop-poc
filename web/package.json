@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "eslint . && stylelint \"projects/**/*.{css,scss}\" --allow-empty-input",
-    "test:lint": "node --test tools/lint-rules.test.mjs"
+    "test:lint": "node --test tools/lint-rules.test.mjs",
+    "test:e2e": "playwright test"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
