@@ -115,3 +115,15 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision** (details in `specs/accessibility.md`): WCAG 2.2 AA. axe scans every E2E state (zero serious or critical), axe runs in component tests, angular-eslint accessibility rules, keyboard-only E2E for every demo flow, forced-colors and reduced-motion checks, a token contrast test, and a recorded VoiceOver and NVDA pass of the demo flow.
 - **Alternatives rejected:** automated scans only (they miss most keyboard and screen-reader problems); AAA (not realistic for a dense numeric grid).
 - **Consequences:** the row menu, tabs and chart have explicit keyboard and ARIA requirements. The README states that automated checks cover only part of WCAG.
+
+## #17 Contract tests: santhosh-tekuri/jsonschema v6 against openapi.yaml
+- **Context:** the plan left the OpenAPI 3.1 validator open. Go OpenAPI libraries (kin-openapi) cover 3.0 well but 3.1 only partly.
+- **Decision:** OpenAPI 3.1 schemas are JSON Schema 2020-12, so the test loads `specs/openapi.yaml`, registers it as a schema resource and compiles `#/components/schemas/…` (and the inline appd response schema) with `jsonschema/v6` (format assertions on). Real handler responses are validated per route, including error bodies. It already caught an empty watchlist serializing as `null`.
+- **Alternatives rejected:** kin-openapi (3.1 gaps); hand-written assertions (they drift from the spec).
+- **Consequences:** it validates schemas, not routing or status codes, so the tests assert status separately. The agent route will reuse the same helper, resolving `./agent-tool-schema.json`.
+
+## #18 Mock data: Go table plus drift tests; simplified history timestamps
+- **Context:** `go:embed` cannot read `specs/` from inside `api/`, and a runtime path would add an env var that SPEC §6.3 forbids.
+- **Decision:** the universe is a Go table and `appd.json` is an embedded copy; tests fail if either differs from `specs/mock-data.yaml` / `specs/appd.json`. History is a seeded walk generated backwards from `last`, so it ends exactly there. Bars are evenly spaced back from `MOCK_NOW` (1D opens 09:30 New York; 5D and 1M do not skip nights or weekends).
+- **Alternatives rejected:** parsing the YAML at runtime (a path or env var, and a runtime dependency); a real market calendar (nothing in the demo needs it).
+- **Consequences:** the charts show a continuous series, which is fine for fake data. Keeping the spec and the code in step is a test failure, not a convention.
