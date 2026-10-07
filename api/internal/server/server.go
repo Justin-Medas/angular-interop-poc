@@ -3,7 +3,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"time"
 
@@ -20,7 +19,7 @@ const tickInterval = 2 * time.Second // tickIntervalMs in specs/mock-data.yaml
 func New(cfg config.Config) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", healthz(cfg))
-	mux.HandleFunc("GET /appd/v2/apps", appd.Handler)
+	appd.Register(mux)
 
 	store := mock.NewStore(cfg.MockSeed, cfg.MockNow)
 	if cfg.MockTick {
@@ -36,7 +35,6 @@ func healthz(cfg config.Config) http.HandlerFunc {
 		agent = "model"
 	}
 	return func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok", "agent": agent})
+		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok", "agent": agent})
 	}
 }

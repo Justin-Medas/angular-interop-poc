@@ -31,7 +31,7 @@ Scaffolding with no behavior (a generated workspace, config files) has no red st
 
 ## 4. Coverage
 - **Target: 100%.** TypeScript: lines, branches, functions and statements. Go: statements (the only metric Go reports), measured with `go test -covermode=atomic -coverprofile`.
-- **Enforced in CI.** Angular via the test runner's coverage thresholds. Go via `scripts/check-coverage.mjs`, which reads `go tool cover -func` and fails below 100%. The same script fails if it finds a line-level ignore comment (`istanbul ignore`, `c8 ignore`, `v8 ignore`) anywhere in source.
+- **Enforced in CI.** Angular via the test runner's coverage thresholds. Go via `scripts/check-coverage.mjs`, which tests and measures every package in `api/` except the exclusions below (so `api/evals` counts), reads `go tool cover -func` and fails below 100%. The same script fails if it finds a line-level ignore comment (`istanbul ignore`, `c8 ignore`, `v8 ignore`) anywhere in our source: `api/`, `web/` and `scripts/`.
 - **Exclusions are whole files with a reason.** Adding one needs a DECISIONS entry.
 
 | Excluded | Reason |
@@ -93,7 +93,7 @@ The runner (`api/evals`, Go) calls `internal/agent` in-process with an injected 
 
 | Job | Runner | Blocking | Runs |
 |---|---|---|---|
-| `lint` | ubuntu | yes | ESLint (import boundaries, angular-eslint template accessibility), Stylelint, `gofmt -l`, `go vet` |
+| `lint` | ubuntu | yes | ESLint (import boundaries, angular-eslint template accessibility), Stylelint, `gofmt -l`, `go vet`, `govulncheck`, a gitleaks scan of the full history (both pinned and run with `go run`, no global install) |
 | `unit-go` | ubuntu | yes | `go test` with coverage, then `check-coverage.mjs` |
 | `unit-web` | ubuntu | yes | `ng test` with coverage thresholds (includes the contrast and fixture tests) |
 | `e2e` | ubuntu, windows | yes | Playwright functional + axe |

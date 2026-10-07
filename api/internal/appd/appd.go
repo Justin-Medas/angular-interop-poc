@@ -11,7 +11,10 @@ import (
 //go:embed appd.json
 var appdJSON []byte
 
-func Handler(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	_, _ = w.Write(appdJSON)
+// Register adds GET /appd/v2/apps, which serves the embedded directory as-is.
+func Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /appd/v2/apps", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(appdJSON)
+	})
 }
