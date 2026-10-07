@@ -10,7 +10,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] AI tooling: AI-DLC 2.10, Angular skills, Angular CLI MCP, design-system skill (see CLAUDE.md "AI tooling layers")
 - [x] Restart Claude Code, approve AI-DLC hooks and the `angular-cli` MCP server, run `/aidlc --doctor`
 - [ ] GitHub: `gh auth login`, private repo `angular-interop-poc`, bootstrap commit on `main`, then everything else through PRs
-- [ ] Docker Desktop installed and running (to test `docker compose up` and the Dev Container locally)
+- [x] Docker Desktop installed and running (to test `docker compose up` and the Dev Container locally)
 - [x] Cross-platform setup: `npm run setup` (pinned Sail, git hooks), `.gitattributes`, `.nvmrc`, Dev Container, `fresh-clone` CI on 3 OSes
 
 ## Working rules (every block)
@@ -28,7 +28,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] `ci.yml` with `lint`, `unit-go`, `unit-web`; Playwright scaffold with a first E2E (/apps/* load, axe clean) and the `e2e` job (ubuntu + windows)
 - [x] Root README stub
 - [x] Root `npm start` / `npm test` that run api + web (+ Sail) cross-platform; `api/go.mod` declares `toolchain go1.27.1`
-- [ ] `docker-compose.yml` with `api`, `web`, `sail` services and healthchecks; CI job runs `docker compose up --wait` on ubuntu
+- [x] `docker-compose.yml` with `api`, `web`, `sail` services and healthchecks; CI job runs `docker compose up --wait` on ubuntu
 
 ## Day 1 PM: Go API + design system + blotter
 - [x] Mock data from `specs/mock-data.yaml` (`MOCK_SEED`, `MOCK_NOW`, `MOCK_TICK`), deterministic history

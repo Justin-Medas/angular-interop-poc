@@ -7,9 +7,9 @@ Angular 22 shell + two FDC3 micro-apps (Blotter → Detail), a contract-first Go
 ## Quickstart
 Pick one. Each works from a fresh clone on macOS, Linux and Windows.
 
-**Docker** (only Docker required). Available once the services land; see docs/PLAN.md.
+**Docker** (only Docker required). The first build takes several minutes (it builds Sail).
 ```bash
-docker compose up
+docker compose up --build   # API :8080, Angular shell :4200, FDC3 Sail :8090
 ```
 
 **Dev Container / Codespaces.** Open the repo in a Codespace, or choose "Reopen in Container" in VS Code.
