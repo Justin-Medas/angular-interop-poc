@@ -124,7 +124,7 @@ If a task drifts into a cut item, stop and flag it. Don't build it.
 AI-DLC owns `.claude/settings.json` and `.claude/CLAUDE.md`. Don't hand-edit them, because `aidlc config` refreshes them. Project-specific permissions live in `.claude/settings.local.json`.
 
 ## Workflow
-0. Run `/aidlc-practices-discovery` once to record TDD, the coverage target and WCAG 2.2 AA in `team.md` (the `poc` scope skips that stage, and its default is test-after). Then run AI-DLC with the `poc` scope: `/aidlc poc Build the Angular interop POC described in specs/SPEC.md`. At the Requirements Analysis gate, check that it references `specs/` rather than restating it.
+0. Run `/aidlc-practices-discovery` once to record TDD, the coverage target and WCAG 2.2 AA in `team.md` (the `poc` scope skips that stage, and its default is test-after). Then run AI-DLC with the `poc` scope: `/aidlc poc Build the Angular interop POC described in specs/SPEC.md`. As soon as the workflow exists, run `/aidlc --test-strategy comprehensive`. The setting is per workflow, so it can't be set in advance, and the `poc` default plans unit tests only (`team.md` § Testing Posture). At the Requirements Analysis gate, check that it references `specs/` rather than restating it.
 1. Before implementing an area, run `/implement-spec <area>`. It reads the relevant specs and writes failing tests from them first.
 2. After implementing, run `/spec-check` (or the `spec-reviewer` agent) to catch drift.
 3. Run `/explain <file>` on anything you'd be asked to walk through in the interview.
