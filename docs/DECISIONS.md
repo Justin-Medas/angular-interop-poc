@@ -42,7 +42,12 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - The grid is AG Grid Community through `ag-grid-angular` 36.x (MIT, peer `@angular/core >= 20`, verified 2026-10-06). It is used only through the `poc-data-table` wrapper in `projects/ui`, and only Community features are used (no Enterprise license key).
   - Everything else (button, card, badge, tabs, command bar) is a small standalone component of our own in `projects/ui`, styled only by design tokens (CSS custom properties). `@angular/cdk` is allowed for accessibility primitives because it's first-party Angular, not a UI library.
   - The AG Grid theme takes its colors and spacing from the same tokens, so the grid and our components can't drift apart visually.
-- **Alternatives rejected:** PrimeNG pinned to its last MIT release (forces an older Angular); PrimeNG 22 (unclear license); Angular Material (its table is weaker as a trading grid, and it would be a second library next to a grid library); a hand-rolled table (high effort, and it would neither impress nor be fast).
+- **Alternatives rejected:** PrimeNG pinned to its last MIT release (forces an older Angular); PrimeNG 22 (see the license findings below); Angular Material (its table is weaker as a trading grid, and it would be a second library next to a grid library); a hand-rolled table (high effort, and it would neither impress nor be fast).
+- **PrimeNG license findings (re-checked 2026-10-07, from the npm tarballs):**
+  - **PrimeNG 22.x** (`LICENSE.md`: "PrimeUI License") is a commercial, compiled package. It has a free Community License for individuals, which needs annual renewal. "A valid license key is required." It depends on `@primeui/license-manager`, and with a missing or invalid key `primeng-license.mjs` pins a fixed red "Invalid PrimeUI License" banner to every page and logs a console warning.
+  - So a fresh clone without the author's key shows the banner (which breaks NFR-R1 to R3), and committing the key would distribute a personal license key. Neither is acceptable.
+  - **PrimeNG 20.x and 21.x** are still MIT with no key, but 21.x peers `@angular/core ^21` and would force a downgrade from Angular 22.
+  - **Decision unchanged:** non-grid components stay our own, built from tokens. Don't revisit unless PrimeNG's licensing changes.
 - **Consequences:** a token-driven component set is the design-system demonstration, which is the author's strength. The swap test becomes: replacing AG Grid touches only `projects/ui/data-table`.
 
 ## #8 Runtime configuration via `config.json`, with a reserved auth seam
