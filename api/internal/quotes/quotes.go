@@ -15,6 +15,7 @@ var symbolRE = regexp.MustCompile(`^[A-Z.]{1,10}$`)
 
 const maxWatchlist = 25
 
+// Register adds the /quotes and /watchlist routes, all served from s.
 func Register(mux *http.ServeMux, s *mock.Store) {
 	mux.HandleFunc("GET /quotes", listQuotes(s))
 	mux.HandleFunc("GET /quotes/{symbol}", getQuote(s))

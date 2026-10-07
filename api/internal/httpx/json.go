@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// WriteJSON sends v as a JSON body with the given status. Every JSON response goes through it.
 func WriteJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
