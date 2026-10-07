@@ -1,0 +1,37 @@
+:host {
+  display: inline-block;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 var(--poc-space-2);
+  border: 1px solid var(--poc-color-border-control);
+  border-radius: var(--poc-radius-pill);
+  background: var(--poc-color-surface);
+  color: var(--poc-color-text);
+  font-size: var(--poc-text-xs);
+  line-height: 1.25rem;
+}
+
+.ok {
+  color: var(--poc-color-accent-text);
+}
+
+.warn {
+  color: var(--poc-color-text);
+  border-style: dashed;
+}
+
+.danger {
+  color: var(--poc-color-danger);
+  border-color: var(--poc-color-danger);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
