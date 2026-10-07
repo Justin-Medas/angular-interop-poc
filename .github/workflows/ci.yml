@@ -28,6 +28,20 @@ jobs:
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
       - name: gitleaks (full history)
         run: go run github.com/zricethezav/gitleaks/v8@v8.30.1 git --redact --no-banner -v .
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: web dependencies
+        working-directory: web
+        run: npm ci
+      - name: ESLint + Stylelint (import boundaries, template accessibility, token-only styles)
+        working-directory: web
+        run: npm run lint
+      - name: lint rules fire (NFR-ARCH2, NFR-A7, NFR-DS2)
+        working-directory: web
+        run: npm run test:lint
   unit-go:
     runs-on: ubuntu-latest
     steps:

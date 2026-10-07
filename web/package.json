@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "eslint . && stylelint \"projects/**/*.{css,scss}\" --allow-empty-input",
+    "test:lint": "node --test tools/lint-rules.test.mjs"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
@@ -24,6 +26,7 @@
     "@angular/build": "22.2.2",
     "@angular/cli": "22.2.2",
     "@angular/compiler-cli": "22.2.1",
+    "@eslint/js": "10.0.1",
     "@vitest/coverage-istanbul": "5.0.3",
     "angular-eslint": "22.5.0",
     "eslint": "10.12.0",

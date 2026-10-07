@@ -155,3 +155,14 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - Every dependency is pinned to an exact version. `ui` and `interop` have no test target until they contain code.
 - **Alternatives rejected:** Karma/Jasmine (deprecated in the CLI); building libraries to `dist/` before use (slower loop, nothing gained at this size); Module Federation (DECISIONS #10); line-level ignore comments (forbidden by testing.md §4).
 - **Consequences:** a separate `.html` file per component, which also keeps templates easy to read in the interview. Adding a test target to `ui` and `interop` is part of their first PR.
+
+## #22 Lint gates: flat ESLint config, rule tests, OnPush is the Angular 22 default
+- **Context:** SPEC NFR-ARCH2, NFR-ARCH3, NFR-A7 and NFR-DS2 promise that lint proves the seams. A lint config nobody tests can silently stop firing.
+- **Decision:**
+  - `web/eslint.config.mjs` (flat config) bans `ag-grid-*` outside `projects/ui`, `@finos/fdc3` outside `projects/interop`, deep `@poc/*/*` imports, and sibling imports between `blotter` and `detail`. Flat config lets a later `no-restricted-imports` block replace an earlier one, so each library gets one complete list.
+  - `web/.stylelintrc.json` bans hex, named colors and `rgb/rgba/hsl/hsla`, and allows only `--poc-*` custom properties; `tokens.css` is the one exemption.
+  - `[innerHTML]`, `[outerHTML]` and `bypassSecurityTrust*` are banned with core `no-restricted-syntax`, because angular-eslint 22.5 has no rule for them.
+  - `web/tools/lint-rules.test.mjs` (`npm run test:lint`) lints sample snippets and asserts the right rule reports. It runs in the `lint` job, so a config that stops firing fails CI.
+  - **OnPush:** in Angular 22 `OnPush` is the default strategy. `prefer-on-push-component-change-detection` therefore reports components that opt out (`ChangeDetectionStrategy.Eager`) and accepts an explicit `OnPush`. We keep writing it explicitly (CLAUDE.md, SPEC NFR-ARCH3) so the intent is visible in each file.
+- **Alternatives rejected:** `eslint-plugin-boundaries` or Nx module-boundary tags (another dependency for four libraries); trusting the config without tests; `stylelint-config-standard-scss` (formatting rules unrelated to tokens, noisy on generated code).
+- **Consequences:** a new library needs its own block in `eslint.config.mjs` and a test case here. The `tools/` folder is excluded from ESLint.
