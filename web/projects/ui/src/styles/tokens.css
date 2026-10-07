@@ -61,6 +61,7 @@
 
   --poc-motion-fast: 120ms;
   --poc-motion-base: 200ms;
+  --poc-motion-ease: ease-out;
 
   --poc-focus-offset: 2px;
 }
@@ -112,6 +113,12 @@
 /* Theme-independent semantic tokens. */
 :root {
   --poc-focus-ring: 2px solid var(--poc-color-focus);
+  --poc-focus-ring-idle: 2px solid transparent;
+  --poc-transition-color:
+    background-color var(--poc-motion-fast) var(--poc-motion-ease),
+    color var(--poc-motion-fast) var(--poc-motion-ease),
+    border-color var(--poc-motion-fast) var(--poc-motion-ease);
+  --poc-transition-focus: outline-offset var(--poc-motion-fast) var(--poc-motion-ease);
   --poc-shadow-raised: 0 4px 12px rgb(0 0 0 / 0.35);
 }
 

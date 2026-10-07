@@ -190,3 +190,14 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision:** add `size`, `border`, `font-weight`, `line` and `opacity` tokens (design-tokens.md §5) and a blocking Stylelint rule, `declaration-property-value-disallowed-list`, that bans lengths and times in every declaration and bare numbers for `font-weight`, `opacity`, `line-height` and `z-index`. `tokens.css` is exempt. `0`, `auto` and percentages stay allowed. The AG Grid wrapper drops its `minWidth` and takes row sizing from the `spacing` token.
 - **Alternatives rejected:** review-only enforcement (the same mistake returns); banning every number (`0` and `50%` are legitimate).
 - **Consequences:** a new kind of value (for example `z-index`) needs a token first; `lint-rules.test.mjs` proves the rule fires.
+
+## #26 Motion tokens: one switch for every animation (NFR-DS6, NFR-A5)
+- **Context:** only `--poc-motion-fast` and `-base` existed, and `poc-button` was the only component with a transition. Tabs had none, nothing animated focus, and nothing proved that reduced motion turns animation off.
+- **Decision:**
+  - Add `--poc-motion-ease`, composed `--poc-transition-color` (hover and selected states) and `--poc-transition-focus` (`outline-offset`), and `--poc-focus-ring-idle` (a transparent outline that the focus ring animates from, and that keeps focus visible in forced-colors mode). The transition tokens use only motion tokens, so the existing `prefers-reduced-motion` block zeroes them.
+  - Stylelint allows `transition` only as `var(--poc-transition-*)` lists or `none` and bans `animation*`, so a component cannot add motion that bypasses the switch.
+  - JS-driven motion reads the same media query: `poc-data-table` sets `animateRows` from it.
+  - Tests: unit (transition tokens contain no literal times; grid rows get `ag-row-no-animation` under reduce), lint (allow-list cases), E2E on `/dev/ui-gallery` (computed `transition-duration` is non-zero with no preference and `0s` under `reducedMotion: reduce`, for button, tab and grid rows).
+  - Unit tests get a `matchMedia` stub from `projects/ui/src/testing/match-media.ts` (`setupFiles`), because jsdom has none.
+- **Alternatives rejected:** a global `* { transition: none !important }` reduced-motion reset (hides what each component does and fights AG Grid's own CSS); per-component media queries (easy to forget).
+- **Consequences:** a new animated property needs a `--poc-transition-<purpose>` token first. The grid's "cell flash off" (FR1) is applied when the blotter adds it, with a test in that block. The unit suite cannot see rows animating (jsdom has no layout); E2E covers that side.

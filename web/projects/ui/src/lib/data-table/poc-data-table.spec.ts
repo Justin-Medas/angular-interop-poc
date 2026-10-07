@@ -21,7 +21,7 @@ const ROWS: Row[] = [
   { symbol: 'MSFT', last: 415.1, change: -5, changePct: -1.2 },
 ];
 
-const tick = () => new Promise((r) => setTimeout(r, 20));
+const tick = (ms = 20) => new Promise((r) => setTimeout(r, ms));
 
 function stubReducedMotion(reduce: boolean): void {
   vi.stubGlobal('matchMedia', (query: string) => ({
@@ -150,16 +150,12 @@ describe('FR1 PocDataTable', () => {
     expect(await a11yViolations(host)).toEqual([]);
   });
 
-  it('NFR-A5 rows animate when motion is allowed', async () => {
-    stubReducedMotion(false);
-    const { host } = await render();
-    expect(host.querySelector('.ag-row-animation')).not.toBeNull();
-  });
-
+  // Rows animating when motion is allowed needs real layout, so E2E covers it (ui-gallery.e2e.ts).
   it('NFR-A5 rows do not animate under prefers-reduced-motion', async () => {
     stubReducedMotion(true);
     const { host } = await render();
-    expect(host.querySelector('.ag-row')).not.toBeNull();
+    await tick(400);
+    expect(host.querySelector('.ag-row-no-animation')).not.toBeNull();
     expect(host.querySelector('.ag-row-animation')).toBeNull();
   });
 });

@@ -79,6 +79,7 @@ const POC_THEME = themeQuartz.withParams({
       [getRowId]="getRowId()"
       [defaultColDef]="defaultColDef"
       [rowSelection]="rowSelection"
+      [animateRows]="animateRows"
       [domLayout]="'autoHeight'"
       (modelUpdated)="syncSelection()"
       (gridReady)="onGridReady($event)"
@@ -98,6 +99,8 @@ export class PocDataTable<T> {
   rowSelect = output<T>();
 
   protected readonly theme = POC_THEME;
+  /** Motion driven by JS must honor prefers-reduced-motion like the CSS tokens do (NFR-A5). */
+  protected readonly animateRows = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   protected readonly rowSelection = {
     mode: 'singleRow',
     checkboxes: false,

@@ -18,6 +18,8 @@
   font: inherit;
   font-size: var(--poc-text-sm);
   cursor: pointer;
+  outline: var(--poc-focus-ring-idle);
+  transition: var(--poc-transition-color), var(--poc-transition-focus);
 }
 
 [role='tab'][aria-selected='true'] {

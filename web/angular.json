@@ -77,7 +77,8 @@
               "lines": 100
             },
             "coverageExclude": ["**/public-api.ts", "**/main.ts"],
-            "coverageInclude": ["projects/shell/**/*.ts"]
+            "coverageInclude": ["projects/shell/**/*.ts"],
+            "setupFiles": ["projects/ui/src/testing/match-media.ts"]
           }
         }
       }
@@ -111,7 +112,8 @@
               "lines": 100
             },
             "coverageExclude": ["**/public-api.ts", "**/main.ts"],
-            "coverageInclude": ["projects/ui/**/*.ts"]
+            "coverageInclude": ["projects/ui/**/*.ts"],
+            "setupFiles": ["projects/ui/src/testing/match-media.ts"]
           }
         }
       }

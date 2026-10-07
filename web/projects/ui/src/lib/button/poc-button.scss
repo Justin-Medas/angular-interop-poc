@@ -16,7 +16,8 @@ button {
   font: inherit;
   font-size: var(--poc-text-sm);
   cursor: pointer;
-  transition: background-color var(--poc-motion-fast);
+  outline: var(--poc-focus-ring-idle);
+  transition: var(--poc-transition-color), var(--poc-transition-focus);
 }
 
 button.secondary {
