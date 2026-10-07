@@ -2,4 +2,4 @@
  * Public API Surface of blotter
  */
 
-export {};
+export { BlotterPage } from './lib/blotter-page';

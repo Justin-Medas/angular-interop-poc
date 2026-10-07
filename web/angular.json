@@ -68,7 +68,16 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverageThresholds": {
+              "statements": 100,
+              "branches": 100,
+              "functions": 100,
+              "lines": 100
+            },
+            "coverageExclude": ["**/public-api.ts", "**/main.ts"]
+          }
         }
       }
     },
@@ -89,12 +98,6 @@
             }
           },
           "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test",
-          "options": {
-            "tsConfig": "projects/ui/tsconfig.spec.json"
-          }
         }
       }
     },
@@ -115,12 +118,6 @@
             }
           },
           "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test",
-          "options": {
-            "tsConfig": "projects/interop/tsconfig.spec.json"
-          }
         }
       }
     },
@@ -145,7 +142,14 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/blotter/tsconfig.spec.json"
+            "tsConfig": "projects/blotter/tsconfig.spec.json",
+            "coverageThresholds": {
+              "statements": 100,
+              "branches": 100,
+              "functions": 100,
+              "lines": 100
+            },
+            "coverageExclude": ["**/public-api.ts", "**/main.ts"]
           }
         }
       }
@@ -171,7 +175,14 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/detail/tsconfig.spec.json"
+            "tsConfig": "projects/detail/tsconfig.spec.json",
+            "coverageThresholds": {
+              "statements": 100,
+              "branches": 100,
+              "functions": 100,
+              "lines": 100
+            },
+            "coverageExclude": ["**/public-api.ts", "**/main.ts"]
           }
         }
       }

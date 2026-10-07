@@ -37,3 +37,22 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version-file: .nvmrc }
       - run: node scripts/check-coverage.mjs
+  unit-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: prettier
+        run: npx prettier --check .
+      - name: build shell
+        run: npx ng build shell
+      - name: unit tests with 100% coverage thresholds
+        run: npx ng test --watch=false --coverage

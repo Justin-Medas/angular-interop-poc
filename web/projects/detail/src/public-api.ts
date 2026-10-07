@@ -2,4 +2,4 @@
  * Public API Surface of detail
  */
 
-export {};
+export { DetailPage } from './lib/detail-page';

@@ -37,13 +37,7 @@
       "path": "./projects/ui/tsconfig.lib.json"
     },
     {
-      "path": "./projects/ui/tsconfig.spec.json"
-    },
-    {
       "path": "./projects/interop/tsconfig.lib.json"
-    },
-    {
-      "path": "./projects/interop/tsconfig.spec.json"
     },
     {
       "path": "./projects/blotter/tsconfig.lib.json"
