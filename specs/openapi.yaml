@@ -1,10 +1,18 @@
 openapi: 3.1.0
 info:
   title: Angular Interop POC API
-  version: 0.1.0
+  version: 0.2.0
   description: |
-    DRAFT. Mock market data and an agentic module-selection endpoint.
-    All data is in-memory and fake. No auth (non-goal).
+    Mock market data and an agentic workspace-planning endpoint. All data is in-memory and fake
+    (specs/mock-data.yaml). No auth (non-goal).
+
+    CORS (FR18): every route, including errors, sends `Access-Control-Allow-Origin` with the request's
+    Origin when it is listed in CORS_ALLOWED_ORIGINS (SPEC §6.3), plus `Vary: Origin`. Every route
+    answers `OPTIONS` preflight with 204, `Access-Control-Allow-Methods: GET, PUT, POST, OPTIONS` and
+    `Access-Control-Allow-Headers: Content-Type`. Unlisted origins get no CORS headers. Never `*`.
+
+    Strictness: response schemas set `additionalProperties: false`, so contract tests also catch extra
+    fields. InstrumentContext is the exception: real FDC3 contexts carry extra fields.
 servers:
   - url: http://localhost:8080
 paths:
@@ -16,11 +24,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                type: object
-                required: [status]
-                properties:
-                  status: { type: string, enum: [ok] }
+              schema: { $ref: "#/components/schemas/Health" }
 
   /quotes:
     get:
@@ -29,16 +33,18 @@ paths:
         - name: symbols
           in: query
           required: false
-          description: Comma-separated tickers. Defaults to the current watchlist.
-          schema: { type: string, example: "AAPL,MSFT" }
+          description: Comma-separated tickers. Defaults to the current watchlist, in watchlist order.
+          schema: { type: string, pattern: "^[A-Z.]{1,10}(,[A-Z.]{1,10})*$", example: "AAPL,MSFT" }
       responses:
         "200":
-          description: Quotes
+          description: Quotes, in the order requested
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/Quote" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
 
   /quotes/{symbol}:
     get:
@@ -51,6 +57,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Quote" }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
 
   /quotes/{symbol}/history:
@@ -63,12 +70,13 @@ paths:
           schema: { type: string, enum: ["1D", "5D", "1M"], default: "1D" }
       responses:
         "200":
-          description: Price series
+          description: Price series, oldest first. Point counts per range are in specs/mock-data.yaml.
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/PricePoint" }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
 
   /watchlist:
@@ -82,6 +90,7 @@ paths:
               schema: { $ref: "#/components/schemas/Watchlist" }
     put:
       operationId: putWatchlist
+      description: Replaces the watchlist. Every symbol must be in the mock universe (400 `unknown_symbol` otherwise).
       requestBody:
         required: true
         content:
@@ -98,9 +107,7 @@ paths:
   /appd/v2/apps:
     get:
       operationId: getAppDirectory
-      description: |
-        Serves specs/appd.json (FDC3 AppD v2) so FDC3 Sail can add this POC as an app directory.
-        Must send CORS headers allowing http://localhost:8090.
+      description: Serves specs/appd.json (FDC3 AppD v2) so FDC3 Sail can add this POC as an app directory.
       responses:
         "200":
           description: AppD v2 application list
@@ -108,18 +115,19 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [applications]
+                required: [applications, message]
                 properties:
                   applications:
                     type: array
                     items: { type: object }
+                  message: { type: string, const: OK }
 
   /agent/select-module:
     post:
       operationId: selectModule
       description: |
-        Asks the model which UI module to load. Always returns a valid ModuleSelection.
-        On model failure, timeout or invalid output, returns the deterministic fallback (source=fallback).
+        Asks the model for a workspace plan (SPEC §7). Always returns a valid plan.
+        On any failure listed in FR7, returns the deterministic fallback (source=fallback).
       requestBody:
         required: true
         content:
@@ -127,10 +135,10 @@ paths:
             schema: { $ref: "#/components/schemas/SelectModuleRequest" }
       responses:
         "200":
-          description: Selection
+          description: Plan
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ModuleSelectionResponse" }
+              schema: { $ref: "#/components/schemas/WorkspacePlanResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
 
 components:
@@ -139,11 +147,12 @@ components:
       name: symbol
       in: path
       required: true
+      description: Upper-case ticker. Lower-case or malformed input returns 400 `invalid_symbol`; the server does not normalize.
       schema: { type: string, pattern: "^[A-Z.]{1,10}$" }
 
   responses:
     NotFound:
-      description: Unknown symbol
+      description: Unknown symbol (well-formed, but not in the mock universe)
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -156,26 +165,46 @@ components:
   schemas:
     Error:
       type: object
+      additionalProperties: false
       required: [code, message]
       properties:
-        code: { type: string }
+        code:
+          type: string
+          enum: [invalid_request, invalid_symbol, unknown_symbol]
+          description: |
+            invalid_request: malformed JSON, missing or out-of-range fields.
+            invalid_symbol: a ticker that fails the pattern.
+            unknown_symbol: a well-formed ticker that is not in the mock universe.
         message: { type: string }
+
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status, agent]
+      properties:
+        status: { type: string, enum: [ok] }
+        agent:
+          type: string
+          enum: [model, fallback-only]
+          description: fallback-only when ANTHROPIC_API_KEY is unset. The shell shows it before anyone types.
 
     Quote:
       type: object
-      required: [symbol, name, last, change, changePct, currency, asOf]
+      additionalProperties: false
+      required: [symbol, name, last, change, changePct, volume, currency, asOf]
       properties:
         symbol: { type: string, example: AAPL }
         name: { type: string, example: Apple Inc. }
         last: { type: number, format: double }
-        change: { type: number, format: double }
-        changePct: { type: number, format: double }
+        change: { type: number, format: double, description: last − prevClose, 2 decimals }
+        changePct: { type: number, format: double, description: change ÷ prevClose × 100, 2 decimals }
         volume: { type: integer, format: int64 }
         currency: { type: string, example: USD }
         asOf: { type: string, format: date-time }
 
     PricePoint:
       type: object
+      additionalProperties: false
       required: [t, price]
       properties:
         t: { type: string, format: date-time }
@@ -183,15 +212,17 @@ components:
 
     Watchlist:
       type: object
+      additionalProperties: false
       required: [symbols]
       properties:
         symbols:
           type: array
           maxItems: 25
+          uniqueItems: true
           items: { type: string, pattern: "^[A-Z.]{1,10}$" }
 
     InstrumentContext:
-      description: FDC3 fdc3.instrument context (subset). See specs/fdc3-contract.md.
+      description: FDC3 fdc3.instrument context (subset). See specs/fdc3-contract.md §2. Extra fields are allowed and ignored.
       type: object
       required: [type, id]
       properties:
@@ -201,28 +232,40 @@ components:
           type: object
           required: [ticker]
           properties:
-            ticker: { type: string }
+            ticker: { type: string, pattern: "^[A-Z.]{1,10}$" }
 
     SelectModuleRequest:
       type: object
+      additionalProperties: false
       required: [prompt]
       properties:
         prompt: { type: string, minLength: 1, maxLength: 500 }
         context: { $ref: "#/components/schemas/InstrumentContext" }
 
-    ModuleSelectionResponse:
+    WorkspacePlanResponse:
       description: |
-        ModuleSelection (specs/agent-tool-schema.json) plus metadata.
-        Contract tests must validate `selection` against that JSON schema.
+        A WorkspacePlan (specs/agent-tool-schema.json) plus metadata (SPEC §7.5).
+        `model` is present only for source=model; `fallbackReason` only for source=fallback.
       type: object
-      required: [selection, source, latencyMs]
+      additionalProperties: false
+      required: [plan, source, latencyMs, toolCalls]
       properties:
-        selection:
-          type: object
-          description: Validates against specs/agent-tool-schema.json
+        plan: { $ref: "./agent-tool-schema.json" }
         source: { type: string, enum: [model, fallback] }
         model: { type: string, example: claude-opus-5-5 }
-        latencyMs: { type: integer }
+        latencyMs: { type: integer, minimum: 0 }
+        toolCalls: { type: integer, minimum: 0, maximum: 3 }
         fallbackReason:
           type: string
-          enum: [no_api_key, timeout, model_error, invalid_output, refusal]
+          enum: [no_api_key, timeout, model_error, refusal, tool_limit, invalid_output]
+      allOf:
+        - if:
+            properties: { source: { const: model } }
+          then:
+            required: [model]
+            not: { required: [fallbackReason] }
+        - if:
+            properties: { source: { const: fallback } }
+          then:
+            required: [fallbackReason]
+            not: { required: [model] }
