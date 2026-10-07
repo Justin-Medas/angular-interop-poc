@@ -13,6 +13,8 @@
     }
   },
   "scripts": {
+    "start": "node scripts/dev.mjs",
+    "test": "node scripts/test-all.mjs",
     "check-env": "node scripts/check-env.mjs",
     "setup": "node scripts/check-env.mjs && git config core.hooksPath .githooks && node scripts/setup-sail.mjs",
     "sail": "npm --prefix .sail/fdc3-sail start"
