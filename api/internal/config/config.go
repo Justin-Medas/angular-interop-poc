@@ -12,6 +12,7 @@ import (
 type Config struct {
 	Port               string
 	AnthropicAPIKey    string
+	AgentModel         string
 	AgentTimeout       time.Duration
 	CORSAllowedOrigins []string
 	MockSeed           int64
@@ -28,10 +29,20 @@ func Load(getenv func(string) string) (Config, error) {
 		return def
 	}
 
-	c := Config{Port: get("PORT", "8080"), AnthropicAPIKey: getenv("ANTHROPIC_API_KEY")}
+	c := Config{
+		Port:            get("PORT", "8080"),
+		AnthropicAPIKey: getenv("ANTHROPIC_API_KEY"),
+		AgentModel:      get("AGENT_MODEL", "claude-sonnet-5-5"),
+	}
 
 	if p, err := strconv.Atoi(c.Port); err != nil || p < 1 || p > 65535 {
 		return Config{}, fmt.Errorf("PORT %q is not a valid port", c.Port)
+	}
+
+	switch c.AgentModel {
+	case "claude-sonnet-5-5", "claude-opus-5-5":
+	default:
+		return Config{}, fmt.Errorf("AGENT_MODEL %q must be claude-sonnet-5-5 or claude-opus-5-5", c.AgentModel)
 	}
 
 	ms, err := strconv.Atoi(get("AGENT_TIMEOUT_MS", "10000"))
