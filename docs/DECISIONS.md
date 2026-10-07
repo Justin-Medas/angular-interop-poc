@@ -145,3 +145,13 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision:** the Go API reads `AGENT_MODEL` (SPEC §6.3). The default is `claude-sonnet-5-5`, and it is used for all tests and every development eval run. `claude-opus-5-5` is opt-in. Any other value fails startup. Once the agent and evals are complete, one live run on Opus is compared with the default, and the demo model is recorded here.
 - **Alternatives rejected:** Opus only (about twice the cost per run, with no evidence yet that it is needed); `claude-haiku-4-5` ($1 / $5, but it rejects `effort`, so it would need a second request shape to build, test and explain); an open-ended model string (an unvalidated value fails at the first request instead of at startup).
 - **Consequences:** the eval report and the recordings name their model. The pass-rate threshold (≥ 90%) applies to whichever model is configured, so a model switch is a measured decision, not a guess.
+
+## #21 Web workspace: Vitest runner, source path mapping, `templateUrl` only
+- **Context:** `ng new` (Angular CLI 22.2.2) generated the workspace. `specs/testing.md` §3 asked us to confirm the unit-test runner, and SPEC NFR-ARCH2 names the library imports `@poc/ui` and `@poc/interop`.
+- **Decision:**
+  - The runner is Vitest through `@angular/build:unit-test`, with `@vitest/coverage-istanbul` and 100% thresholds per project. `public-api.ts` and `main.ts` are excluded from coverage (testing.md §4).
+  - Libraries are path-mapped in `web/tsconfig.json` to `projects/<lib>/src/public-api.ts` as `@poc/<lib>`, so feature code and the shell compile against source and no library build is needed for dev or tests.
+  - Components use `templateUrl`, never an inline `template`. Angular's compiled output for an inline template adds a branch (`if` with an untaken else path) that the coverage tool reports as 90% branch coverage, and we do not use ignore comments.
+  - Every dependency is pinned to an exact version. `ui` and `interop` have no test target until they contain code.
+- **Alternatives rejected:** Karma/Jasmine (deprecated in the CLI); building libraries to `dist/` before use (slower loop, nothing gained at this size); Module Federation (DECISIONS #10); line-level ignore comments (forbidden by testing.md §4).
+- **Consequences:** a separate `.html` file per component, which also keeps templates easy to read in the interview. Adding a test target to `ui` and `interop` is part of their first PR.
