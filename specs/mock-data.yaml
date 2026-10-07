@@ -1,0 +1,44 @@
+# Mock market data: the single fixture behind the Go API, the agent, the evals and the visual tests.
+# Status: v0.2. All data is fake.
+#
+# Rules (SPEC §6.3):
+# - The universe below is the ONLY set of tickers the API knows. Any other ticker is "unknown"
+#   (404 on /quotes/{symbol}, `none` from the agent).
+# - With MOCK_TICK=off (the default), GET /quotes returns exactly these baseline values and
+#   `asOf` equals MOCK_NOW. Tests, evals and visual snapshots always run with MOCK_TICK=off.
+# - With MOCK_TICK=on (the demo), every quote takes a seeded random-walk step of at most ±0.2%
+#   every tickIntervalMs. change and changePct are always recomputed from prevClose.
+# - History (GET /quotes/{symbol}/history) is a seeded random walk that ends exactly at `last`.
+#   Same MOCK_SEED + same symbol + same range ⇒ byte-identical series.
+#
+# Data-dependent eval cases rely on the ranking below. Watchlist by changePct:
+#   NVDA +2.31 > AAPL +0.85 > MSFT +0.42 > JPM -0.27 > GS -1.05 > TSLA -3.12
+#   Best in watchlist: NVDA. Worst in watchlist: TSLA.
+#   Best overall: META (+3.05), which is NOT in the default watchlist (tests "in my watchlist" scoping).
+
+defaults:
+  seed: 42                         # MOCK_SEED
+  now: "2026-10-07T15:30:00Z"      # MOCK_NOW (11:30 New York time, market open)
+  tick: off                        # MOCK_TICK
+  tickIntervalMs: 2000
+  currency: USD
+  watchlist: [AAPL, MSFT, NVDA, TSLA, JPM, GS]   # initial in-memory watchlist; same as specs/evals/cases.yaml
+
+history:
+  "1D": { points: 25, interval: 5m }    # 09:30 New York time up to MOCK_NOW inclusive (25 at the default MOCK_NOW)
+  "5D": { points: 65, interval: 30m }   # 5 sessions × 13 bars
+  "1M": { points: 21, interval: 1d }    # 21 sessions, last point = today's `last`
+
+# aliases: lower-case company names the deterministic fallback matches (SPEC §7.4) and the
+# agent prompt lists next to each ticker (SPEC §7.2).
+universe:
+  - { symbol: AAPL,  name: "Apple Inc.",               aliases: ["apple"],                   prevClose: 226.58, last: 228.50, change: 1.92,  changePct: 0.85,  volume: 51234000 }
+  - { symbol: MSFT,  name: "Microsoft Corp.",          aliases: ["microsoft"],               prevClose: 429.40, last: 431.20, change: 1.80,  changePct: 0.42,  volume: 18456000 }
+  - { symbol: NVDA,  name: "NVIDIA Corp.",             aliases: ["nvidia"],                  prevClose: 135.28, last: 138.40, change: 3.12,  changePct: 2.31,  volume: 212870000 }
+  - { symbol: TSLA,  name: "Tesla Inc.",               aliases: ["tesla"],                   prevClose: 259.91, last: 251.80, change: -8.11, changePct: -3.12, volume: 98120000 }
+  - { symbol: JPM,   name: "JPMorgan Chase & Co.",     aliases: ["jpmorgan", "jp morgan"],   prevClose: 213.18, last: 212.60, change: -0.58, changePct: -0.27, volume: 8765000 }
+  - { symbol: GS,    name: "Goldman Sachs Group Inc.", aliases: ["goldman sachs", "goldman"], prevClose: 517.73, last: 512.30, change: -5.43, changePct: -1.05, volume: 2134000 }
+  - { symbol: AMZN,  name: "Amazon.com Inc.",          aliases: ["amazon"],                  prevClose: 184.87, last: 186.90, change: 2.03,  changePct: 1.10,  volume: 41230000 }
+  - { symbol: GOOGL, name: "Alphabet Inc.",            aliases: ["alphabet", "google"],      prevClose: 166.77, last: 165.70, change: -1.07, changePct: -0.64, volume: 23110000 }
+  - { symbol: META,  name: "Meta Platforms Inc.",      aliases: ["meta", "facebook"],        prevClose: 570.68, last: 588.10, change: 17.42, changePct: 3.05,  volume: 15670000 }
+  - { symbol: XOM,   name: "Exxon Mobil Corp.",        aliases: ["exxon", "exxonmobil"],     prevClose: 118.58, last: 118.40, change: -0.18, changePct: -0.15, volume: 14320000 }

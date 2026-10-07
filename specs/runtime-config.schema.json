@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://poc.local/specs/runtime-config.schema.json",
   "title": "RuntimeConfig",
-  "description": "DRAFT v0.1. Per-environment config the Angular apps fetch from /config.json before bootstrap (provideAppInitializer). Lets one build run in any environment (native, docker compose, Codespaces) without a rebuild. Contains no secrets. See SPEC FR10 and DECISIONS #8.",
+  "description": "v0.2. Per-environment config the Angular app fetches from /config.json before bootstrap (provideAppInitializer). Lets one build run in any environment (native, docker compose, Codespaces, CI) without a rebuild. Contains no secrets. See SPEC FR10, FR11 and DECISIONS #8.",
   "type": "object",
   "additionalProperties": false,
   "required": ["environment", "apiBaseUrl", "interop", "auth"],
@@ -15,7 +15,7 @@
     "apiBaseUrl": {
       "type": "string",
       "format": "uri",
-      "description": "Base URL of the Go API, e.g. http://localhost:8080."
+      "description": "Base URL of the Go API, e.g. http://localhost:8080. Its origin is cross-origin to the web app, so the API's CORS_ALLOWED_ORIGINS must list the web app's origin (SPEC §6.3)."
     },
     "interop": {
       "type": "object",
@@ -25,13 +25,38 @@
         "provider": {
           "type": "string",
           "enum": ["fdc3", "in-memory"],
-          "description": "fdc3 = getAgent() against a Desktop Agent (falls back to in-memory on timeout); in-memory = BroadcastChannel only."
+          "description": "fdc3 = getAgent() against a Desktop Agent (falls back to in-memory on timeout); in-memory = BroadcastChannel only. CI and E2E use in-memory."
         },
-        "connectTimeoutMs": { "type": "integer", "minimum": 500, "maximum": 30000 }
+        "connectTimeoutMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 30000,
+          "description": "getAgent() timeout. The shipped configs use 3000."
+        }
+      }
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["dark", "light"],
+      "default": "dark",
+      "description": "Initial theme (FR11). A user's toggle choice, when remembered, wins."
+    },
+    "quotes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pollIntervalMs"],
+      "properties": {
+        "pollIntervalMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60000,
+          "default": 2000,
+          "description": "How often quote views re-fetch GET /quotes (FR1). 0 disables polling; E2E and visual tests use 0."
+        }
       }
     },
     "auth": {
-      "description": "Reserved seam for an OAuth2/OIDC provider. Auth is a non-goal (SPEC §3): `enabled` must be false in this POC and no login is implemented. The shape mirrors common MSAL/OIDC SPA settings so a real provider could be wired in behind an AUTH token without changing callers.",
+      "description": "Reserved seam for an OAuth2/OIDC provider. Auth is a non-goal (SPEC §3): `enabled` must be false in this POC and no login is implemented. The shape mirrors common OIDC SPA settings so a real provider could be wired in behind an AUTH token without changing callers.",
       "type": "object",
       "additionalProperties": false,
       "required": ["enabled", "clientId", "authority", "redirectUri", "cacheLocation", "scopes"],

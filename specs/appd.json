@@ -1,0 +1,61 @@
+{
+  "applications": [
+    {
+      "appId": "poc-blotter",
+      "name": "poc-blotter",
+      "title": "Blotter",
+      "description": "Watchlist grid. Broadcasts fdc3.instrument on row select and raises ViewChart from the row menu.",
+      "version": "0.2.0",
+      "type": "web",
+      "details": { "url": "http://localhost:4200/apps/blotter" },
+      "interop": {
+        "intents": {
+          "raises": { "ViewChart": ["fdc3.instrument"] }
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument"],
+          "listensFor": []
+        }
+      }
+    },
+    {
+      "appId": "poc-detail",
+      "name": "poc-detail",
+      "title": "Instrument Detail",
+      "description": "Quote and chart for one instrument. Follows fdc3.instrument and handles ViewChart.",
+      "version": "0.2.0",
+      "type": "web",
+      "details": { "url": "http://localhost:4200/apps/detail" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewChart": { "displayName": "View chart", "contexts": ["fdc3.instrument"] }
+          }
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": ["fdc3.instrument"]
+        }
+      }
+    },
+    {
+      "appId": "poc-shell",
+      "name": "poc-shell",
+      "title": "Workspace Shell",
+      "description": "Command bar plus agent-planned modules. Sends the current fdc3.instrument to the agent as context.",
+      "version": "0.2.0",
+      "type": "web",
+      "details": { "url": "http://localhost:4200/" },
+      "interop": {
+        "intents": {
+          "raises": { "ViewChart": ["fdc3.instrument"] }
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument"],
+          "listensFor": ["fdc3.instrument"]
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

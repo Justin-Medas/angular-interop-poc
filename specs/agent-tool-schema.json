@@ -1,33 +1,154 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://poc.local/specs/agent-tool-schema.json",
-  "title": "ModuleSelection",
-  "description": "DRAFT v0.1. The only shape the agent may return. Used as the Claude structured-output schema (output_config.format) AND to validate responses server-side. Keep it strict: additionalProperties false everywhere.",
+  "title": "WorkspacePlan",
+  "description": "v0.2. The only shape the agent may return: 1-3 UI modules plus an optional FDC3 side effect. This file is sent to Claude as the structured-output schema (output_config.format) AND used to validate every response server-side. It deliberately uses only keywords structured outputs support (type, enum, const, anyOf, $ref/$defs, additionalProperties:false). Rules structured outputs cannot express (array lengths, numeric ranges, ticker membership) are the semantic checks in SPEC §7.3, run after schema validation.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["module", "payload", "rationale"],
+  "required": ["modules", "fdc3Action", "rationale"],
   "properties": {
-    "module": {
-      "type": "string",
-      "enum": ["blotter", "instrument-detail", "price-chart", "watchlist-movers", "compare", "none"]
+    "modules": {
+      "type": "array",
+      "description": "1-3 modules (SPEC §7.3). The first is the primary module; the shell renders them in order.",
+      "items": { "$ref": "#/$defs/ModuleRequest" }
     },
-    "payload": {
-      "description": "Shape depends on module; see SPEC.md §7. All fields are listed so the schema stays strict; unused fields are null.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["symbol", "symbols", "range", "direction", "limit", "reason"],
-      "properties": {
-        "symbol":    { "type": ["string", "null"], "description": "Single ticker, upper-case. instrument-detail, price-chart." },
-        "symbols":   { "type": ["array", "null"], "items": { "type": "string" }, "description": "blotter (optional filter), compare (2-4)." },
-        "range":     { "type": ["string", "null"], "enum": ["1D", "5D", "1M", null], "description": "price-chart." },
-        "direction": { "type": ["string", "null"], "enum": ["up", "down", "both", null], "description": "watchlist-movers." },
-        "limit":     { "type": ["integer", "null"], "description": "watchlist-movers, 1-10." },
-        "reason":    { "type": ["string", "null"], "description": "none: why the request is out of scope." }
-      }
+    "fdc3Action": {
+      "description": "A side effect the shell performs through InteropService. Non-null ONLY when the user explicitly asks to share, link, sync or send an instrument to other apps; otherwise null (SPEC §7.2 rule R6).",
+      "anyOf": [
+        { "$ref": "#/$defs/BroadcastInstrument" },
+        { "type": "null" }
+      ]
     },
     "rationale": {
       "type": "string",
-      "description": "One sentence shown in the UI explaining the choice. Max ~160 chars."
+      "description": "One sentence shown in the UI explaining the plan. The server truncates it to 160 characters."
+    }
+  },
+  "$defs": {
+    "Ticker": {
+      "type": "string",
+      "description": "Upper-case ticker from the mock universe in specs/mock-data.yaml. Never invent one."
+    },
+    "ModuleRequest": {
+      "anyOf": [
+        { "$ref": "#/$defs/Blotter" },
+        { "$ref": "#/$defs/InstrumentDetail" },
+        { "$ref": "#/$defs/PriceChart" },
+        { "$ref": "#/$defs/WatchlistMovers" },
+        { "$ref": "#/$defs/Compare" },
+        { "$ref": "#/$defs/None" }
+      ]
+    },
+    "Blotter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "payload"],
+      "properties": {
+        "module": { "const": "blotter" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["symbols"],
+          "properties": {
+            "symbols": {
+              "description": "Optional filter. null means the whole watchlist.",
+              "anyOf": [
+                { "type": "array", "items": { "$ref": "#/$defs/Ticker" } },
+                { "type": "null" }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "InstrumentDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "payload"],
+      "properties": {
+        "module": { "const": "instrument-detail" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["symbol"],
+          "properties": { "symbol": { "$ref": "#/$defs/Ticker" } }
+        }
+      }
+    },
+    "PriceChart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "payload"],
+      "properties": {
+        "module": { "const": "price-chart" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["symbol", "range"],
+          "properties": {
+            "symbol": { "$ref": "#/$defs/Ticker" },
+            "range": { "type": "string", "enum": ["1D", "5D", "1M"], "description": "Use 1D when the user names no range." }
+          }
+        }
+      }
+    },
+    "WatchlistMovers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "payload"],
+      "properties": {
+        "module": { "const": "watchlist-movers" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["direction", "limit"],
+          "properties": {
+            "direction": { "type": "string", "enum": ["up", "down", "both"], "description": "Use both when the user names no direction." },
+            "limit": { "type": "integer", "description": "1-10. Use 5 when the user names no number." }
+          }
+        }
+      }
+    },
+    "Compare": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "payload"],
+      "properties": {
+        "module": { "const": "compare" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["symbols"],
+          "properties": {
+            "symbols": { "type": "array", "items": { "$ref": "#/$defs/Ticker" }, "description": "2-4 distinct tickers." }
+          }
+        }
+      }
+    },
+    "None": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "payload"],
+      "properties": {
+        "module": { "const": "none" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reason"],
+          "properties": {
+            "reason": { "type": "string", "description": "Why the request is out of scope, shown to the user." }
+          }
+        }
+      }
+    },
+    "BroadcastInstrument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "ticker"],
+      "properties": {
+        "type": { "const": "broadcastInstrument" },
+        "ticker": { "$ref": "#/$defs/Ticker" }
+      }
     }
   }
 }

@@ -9,12 +9,12 @@
 
 ## Way of Working
 
-- `specs/` holds the contracts and is the source of truth: `SPEC.md`, `openapi.yaml`, `fdc3-contract.md`, `agent-tool-schema.json`, `evals/cases.yaml`. AI-DLC requirements and design artifacts must reference these files instead of restating them. When a stage would change a contract, it edits the file in `specs/` and records the change in `docs/DECISIONS.md`.
+- `specs/` holds the contracts and is the source of truth: `SPEC.md`, `openapi.yaml`, `fdc3-contract.md`, `agent-tool-schema.json`, `mock-data.yaml`, `appd.json`, `runtime-config.schema.json`, `evals/cases.yaml`, `testing.md`, `design-tokens.md`, `accessibility.md`. AI-DLC requirements and design artifacts must reference these files instead of restating them. When a stage would change a contract, it edits the file in `specs/` and records the change in `docs/DECISIONS.md`.
 - This is a two-day interview POC (see `docs/PLAN.md`). The author must explain every file live, so prefer small, readable code over abstraction.
 - The project skills `/implement-spec`, `/spec-check`, `/run-evals` and `/explain` remain available inside Code Generation and Build & Test.
 - **The GitHub repo is part of the deliverable.** The commit history is context for future agents and for reviewers, so it must read as a clear story.
   - All work happens on a short-lived feature branch named `<type>/<short-slug>` (`feat/`, `fix/`, `chore/`, `docs/`, `test/`). A Construction Bolt or Unit uses its slug, for example `feat/go-quotes-api`.
-  - Commit often: at every green test run and at every completed checklist item, not only at stage end. Use Conventional Commits (`feat(api): add GET /quotes contract test`). Each commit leaves the build passing.
+  - Commit often: at every green test run and at every completed checklist item, not only at stage end. Use Conventional Commits (`feat(api): add GET /quotes contract test`). TDD makes the red step visible: a failing `test(...)` commit may precede its implementation, but the pushed head of a branch is always green (specs/testing.md §2).
   - Every branch lands through a pull request (`gh pr create`). The PR body links the FR IDs and spec files it implements, and includes the test output. Merge with squash (`gh pr merge --squash --delete-branch`) only after CI is green **and** the human approves the merge.
 - **"It just works" from a fresh clone on macOS, Linux and Windows** is a deliverable, not polish.
   - Primary quickstart: `git clone … && cd angular-interop-poc && docker compose up` with Docker as the only host dependency.
@@ -29,9 +29,13 @@
 
 ## Testing Posture
 
-- Tests trace to spec IDs. Test names include the FR ID (SPEC §5) or the schema path.
+- `specs/testing.md` is the test strategy; follow it rather than restating it.
+- TDD: a failing test exists before the code that makes it pass.
+- Coverage 100% (TypeScript lines/branches/functions/statements, Go statements) outside the whole-file exclusions in specs/testing.md §4. No line-level ignore comments.
+- Playwright E2E (ubuntu + windows), visual tests in one pinned Linux container, and axe scans run in CI. Accessibility target is WCAG 2.2 AA (`specs/accessibility.md`).
+- Tests trace to spec IDs. Test names include the FR ID (SPEC §5), rule ID (F1–F7, S1–S8) or the schema path.
 - Go handler tests validate real responses against `specs/openapi.yaml` (contract tests).
-- Agent quality is measured by `specs/evals/cases.yaml` (≥ 90% pass, 3 runs per case, deterministic grading, no LLM judge).
+- Agent quality is measured by `specs/evals/cases.yaml` (model cases ≥ 90%, fallback cases 100%, 3 runs per case, deterministic grading, no LLM judge).
 
 ## Guard Policy
 
@@ -48,7 +52,7 @@ relaxed
 
 ## Tech Stack
 
-- Angular 22.x (Node 26 installed), AG Grid Community 36.x behind the `projects/ui` `poc-data-table` wrapper plus our own token-based components (DECISIONS #7), runtime `config.json` (DECISIONS #8), `@finos/fdc3` 2.2.3, FINOS FDC3 Sail v2 (browser) as the Desktop Agent, Go 1.27, anthropic-sdk-go with model `claude-opus-5-5`.
+- Angular 22.x (Node 26 installed), one application plus libraries (DECISIONS #10), AG Grid Community 36.x behind the `projects/ui` `poc-data-table` wrapper plus our own token-based components (DECISIONS #7, #11), Playwright with `@axe-core/playwright`, Stylelint, runtime `config.json` (DECISIONS #8), `@finos/fdc3` 2.2.3, FINOS FDC3 Sail v2 (browser) as the Desktop Agent, Go 1.27, anthropic-sdk-go with model `claude-opus-5-5`.
 
 ## Decided
 
@@ -58,6 +62,12 @@ DECIDED: OpenFin is described as an adapter swap and is never run (pre-AI-DLC pl
 DECIDED: Cut list is auth, real market data, mobile, OpenFin runtime, persistence, mixed UI libraries (pre-AI-DLC planning, 2026-10-06)
 DECIDED: UI is AG Grid Community for the grid plus our own token-based components; PrimeNG dropped (DECISIONS #7, 2026-10-06)
 DECIDED: Environment config comes from a runtime config.json validated against specs/runtime-config.schema.json (DECISIONS #8, 2026-10-06)
+DECIDED: Backend stays Go only; no Python service (DECISIONS #9, 2026-10-07)
+DECIDED: One Angular application with library micro-apps; Sail opens /apps/* routes; no Module Federation (DECISIONS #10, 2026-10-07)
+DECIDED: Row menu on @angular/cdk/menu and an own SVG line chart; no AG Grid Enterprise, no chart library (DECISIONS #11, 2026-10-07)
+DECIDED: Agent returns a WorkspacePlan (1-3 modules, opt-in fdc3Action) and may call one read-only tool (DECISIONS #13, 2026-10-07)
+DECIDED: TDD, 100% coverage with whole-file exclusions, Playwright E2E + visual + axe in CI (DECISIONS #14, 2026-10-07)
+DECIDED: Three-tier design tokens with dark (default) and light themes; WCAG 2.2 AA (DECISIONS #15, #16, 2026-10-07)
 
 ## Scope Overrides
 
