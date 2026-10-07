@@ -5,14 +5,14 @@
 [role='tablist'] {
   display: flex;
   gap: var(--poc-space-1);
-  border-bottom: 1px solid var(--poc-color-border);
+  border-bottom: var(--poc-border-width) solid var(--poc-color-border);
 }
 
 [role='tab'] {
-  min-height: 1.75rem;
+  min-height: var(--poc-size-target);
   padding: var(--poc-space-1) var(--poc-space-4);
   border: 0;
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--poc-border-width-thick) solid transparent;
   background: transparent;
   color: var(--poc-color-text-muted);
   font: inherit;
@@ -23,7 +23,7 @@
 [role='tab'][aria-selected='true'] {
   border-bottom-color: var(--poc-color-accent-text);
   color: var(--poc-color-text);
-  font-weight: 600;
+  font-weight: var(--poc-font-weight-strong);
 }
 
 [role='tab']:hover {

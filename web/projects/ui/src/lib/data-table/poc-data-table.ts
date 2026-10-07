@@ -103,7 +103,7 @@ export class PocDataTable<T> {
     checkboxes: false,
     enableClickSelection: false,
   } as const;
-  protected readonly defaultColDef: ColDef = { flex: 1, minWidth: 90 };
+  protected readonly defaultColDef: ColDef = { flex: 1 };
 
   private readonly api = signal<GridApi<T> | null>(null);
 

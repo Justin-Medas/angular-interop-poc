@@ -184,3 +184,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - Each project's `test` target sets `coverageInclude` to its own folder, so a project that imports `@poc/ui` is not measured on `ui` code it does not test. This also counts untested files in the project (it made `app.config.ts` count, so it got a test).
 - **Alternatives rejected:** an attribute selector `button[poc-button]` (differs from the documented `<poc-button>` in the design-system skill); `AllCommunityModule` (larger bundle); `@types/node` (a global type surface for one call).
 - **Consequences:** a new library test target must set `coverageInclude`. The grid shows some empty space under short tables (`autoHeight`); revisit when the blotter sets its own height.
+
+## #25 No physical values in component styles (NFR-DS5)
+- **Context:** the first `projects/ui` components used raw `1.75rem`, `1px`, `600` and `0.6` for target size, borders, font weight and disabled opacity, which bypassed the token layer (found in review of PR #17).
+- **Decision:** add `size`, `border`, `font-weight`, `line` and `opacity` tokens (design-tokens.md §5) and a blocking Stylelint rule, `declaration-property-value-disallowed-list`, that bans lengths and times in every declaration and bare numbers for `font-weight`, `opacity`, `line-height` and `z-index`. `tokens.css` is exempt. `0`, `auto` and percentages stay allowed. The AG Grid wrapper drops its `minWidth` and takes row sizing from the `spacing` token.
+- **Alternatives rejected:** review-only enforcement (the same mistake returns); banning every number (`0` and `50%` are legitimate).
+- **Consequences:** a new kind of value (for example `z-index`) needs a token first; `lint-rules.test.mjs` proves the rule fires.

@@ -5,12 +5,12 @@
 .badge {
   display: inline-block;
   padding: 0 var(--poc-space-2);
-  border: 1px solid var(--poc-color-border-control);
+  border: var(--poc-border-width) solid var(--poc-color-border-control);
   border-radius: var(--poc-radius-pill);
   background: var(--poc-color-surface);
   color: var(--poc-color-text);
   font-size: var(--poc-text-xs);
-  line-height: 1.25rem;
+  line-height: var(--poc-line-sm);
 }
 
 .ok {
@@ -29,8 +29,8 @@
 
 .sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: var(--poc-size-hairline);
+  height: var(--poc-size-hairline);
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;

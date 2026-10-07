@@ -6,8 +6,14 @@
     "function-disallowed-list": ["rgb", "rgba", "hsl", "hsla"],
     "custom-property-pattern": [
       "^poc-[a-z0-9-]+$",
-      { "message": "Custom properties must be --poc-*" }
-    ]
+      {
+        "message": "Custom properties must be --poc-*"
+      }
+    ],
+    "declaration-property-value-disallowed-list": {
+      "/^(?!--)/": ["/\\d(px|rem|em|ms|s|vh|vw)\\b/"],
+      "/^(font-weight|opacity|line-height|z-index)$/": ["/^[0-9.]+$/"]
+    }
   },
   "overrides": [
     {
@@ -15,7 +21,8 @@
       "rules": {
         "color-no-hex": null,
         "color-named": null,
-        "function-disallowed-list": null
+        "function-disallowed-list": null,
+        "declaration-property-value-disallowed-list": null
       }
     }
   ]

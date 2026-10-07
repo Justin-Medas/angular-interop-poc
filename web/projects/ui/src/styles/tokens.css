@@ -43,6 +43,19 @@
   --poc-space-6: 1.5rem;
   --poc-space-8: 2rem;
 
+  --poc-size-target: 1.75rem;
+  --poc-size-hairline: 1px;
+
+  --poc-border-width: 1px;
+  --poc-border-width-thick: 2px;
+
+  --poc-font-weight-regular: 400;
+  --poc-font-weight-strong: 600;
+
+  --poc-line-sm: 1.25rem;
+
+  --poc-opacity-disabled: 0.6;
+
   --poc-radius-sm: 4px;
   --poc-radius-pill: 999px;
 

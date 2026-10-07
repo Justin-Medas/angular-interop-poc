@@ -6,10 +6,10 @@ button {
   --poc-button-bg: var(--poc-color-accent);
   --poc-button-fg: var(--poc-color-on-accent);
   --poc-button-border: var(--poc-color-accent);
-  min-height: 1.75rem;
-  min-width: 1.75rem;
+  min-height: var(--poc-size-target);
+  min-width: var(--poc-size-target);
   padding: var(--poc-space-1) var(--poc-space-4);
-  border: 1px solid var(--poc-button-border);
+  border: var(--poc-border-width) solid var(--poc-button-border);
   border-radius: var(--poc-radius-pill);
   background: var(--poc-button-bg);
   color: var(--poc-button-fg);
@@ -39,7 +39,7 @@ button:focus-visible {
 }
 
 button:disabled {
-  opacity: 0.6;
+  opacity: var(--poc-opacity-disabled);
   cursor: not-allowed;
 }
 
