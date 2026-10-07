@@ -6,7 +6,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] Install Node (26.10) and Go (1.27.1) (`scripts/check-env.sh` verifies)
 - [x] Clone and run FDC3 Sail v2 at `../FDC3-Sail` (`npm start` → :8090). **Go:** UI renders; custom apps and directories are supported
 - [x] Resolve UI library question → AG Grid Community + own token components (DECISIONS #7)
-- [ ] `ANTHROPIC_API_KEY` available in the shell
+- [x] `ANTHROPIC_API_KEY` created (goes in the gitignored repo-root `.env`, SPEC §6.3)
 - [x] AI tooling: AI-DLC 2.10, Angular skills, Angular CLI MCP, design-system skill (see CLAUDE.md "AI tooling layers")
 - [x] Restart Claude Code, approve AI-DLC hooks and the `angular-cli` MCP server, run `/aidlc --doctor`
 - [ ] GitHub: `gh auth login`, private repo `angular-interop-poc`, bootstrap commit on `main`, then everything else through PRs
@@ -56,6 +56,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] Module components: `price-chart`, `watchlist-movers`, `compare`, `none` (FR13)
 - [ ] E2E-6 to E2E-11 with stubbed plan fixtures + fixture contract test
 - [ ] Eval runner (`live` / `replay` / `fallback`), recordings, `evals` CI job → `docs/eval-report.md`, model ≥ 90%, fallback 100%
+- [ ] At the end only: one live eval run with `AGENT_MODEL=claude-opus-5-5`, compare with the default, and record the demo model in DECISIONS #19
 - [ ] `mutation` CI job (non-blocking)
 - [ ] Screen-reader pass (VoiceOver, NVDA) → `docs/a11y-report.md`
 - [ ] README: architecture diagram, setup, honest limitations
