@@ -1,5 +1,10 @@
-import tokensCss from './tokens.css?raw';
+import { readFileSync } from 'node:fs';
 import { contrast } from './contrast';
+
+const tokensCss = readFileSync('projects/ui/src/styles/tokens.css', 'utf8').replace(
+  /\/\*[\s\S]*?\*\//g,
+  '',
+);
 
 type Tokens = Record<string, string>;
 
@@ -8,7 +13,7 @@ function block(selector: string): Tokens {
   const out: Tokens = {};
   const re = /([^{}]+)\{([^}]*)\}/g;
   for (const [, sel, body] of tokensCss.matchAll(re)) {
-    if (sel.trim() !== selector) continue;
+    if (sel.replace(/\s+/g, ' ').replace(/'/g, '"').trim() !== selector) continue;
     for (const [, name, value] of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
       out[name] = value.trim();
     }

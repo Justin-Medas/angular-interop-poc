@@ -1,0 +1,110 @@
+/* Design tokens (specs/design-tokens.md). The only file that may contain raw colors. */
+
+/* Tier 1: primitives and theme-independent scales. Only this file reads primitives. */
+:root {
+  --poc-brand-green-50: #e8f1e5;
+  --poc-brand-green-400: #5dbb4c;
+  --poc-brand-green-600: #368727;
+  --poc-brand-green-800: #1e6f1d;
+  --poc-brand-green-900: #1f331c;
+  --poc-brand-red-400: #ff6b66;
+  --poc-brand-red-700: #c31212;
+  --poc-brand-blue-300: #6ab3ea;
+  --poc-brand-blue-600: #0e67a9;
+  --poc-brand-navy-800: #1d3986;
+  --poc-neutral-0: #ffffff;
+  --poc-neutral-50: #f9f7f5;
+  --poc-neutral-100: #f2f0ed;
+  --poc-neutral-200: #e6e4e1;
+  --poc-neutral-300: #b8b5b1;
+  --poc-neutral-400: #8a8784;
+  --poc-neutral-500: #767676;
+  --poc-neutral-700: #525150;
+  --poc-neutral-750: #3d3b39;
+  --poc-neutral-800: #2a2928;
+  --poc-neutral-850: #262524;
+  --poc-neutral-900: #1e1d1c;
+  --poc-neutral-950: #141414;
+
+  --poc-font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --poc-font-mono: ui-monospace, 'SF Mono', Consolas, monospace;
+
+  --poc-text-xs: 0.75rem;
+  --poc-text-sm: 0.875rem;
+  --poc-text-md: 1rem;
+  --poc-text-lg: 1.25rem;
+  --poc-text-xl: 1.5rem;
+
+  --poc-space-1: 0.25rem;
+  --poc-space-2: 0.5rem;
+  --poc-space-3: 0.75rem;
+  --poc-space-4: 1rem;
+  --poc-space-6: 1.5rem;
+  --poc-space-8: 2rem;
+
+  --poc-radius-sm: 4px;
+  --poc-radius-pill: 999px;
+
+  --poc-motion-fast: 120ms;
+  --poc-motion-base: 200ms;
+
+  --poc-focus-offset: 2px;
+}
+
+/* Tier 2: semantic colors. Dark is the default theme. */
+:root,
+[data-theme='dark'] {
+  --poc-color-bg: var(--poc-neutral-950);
+  --poc-color-surface: var(--poc-neutral-900);
+  --poc-color-surface-raised: var(--poc-neutral-800);
+  --poc-color-surface-hover: var(--poc-neutral-850);
+  --poc-color-surface-selected: var(--poc-brand-green-900);
+  --poc-color-text: var(--poc-neutral-50);
+  --poc-color-text-muted: var(--poc-neutral-300);
+  --poc-color-border: var(--poc-neutral-750);
+  --poc-color-border-control: var(--poc-neutral-400);
+  --poc-color-link: var(--poc-brand-blue-300);
+  --poc-color-accent: var(--poc-brand-green-600);
+  --poc-color-accent-hover: var(--poc-brand-green-800);
+  --poc-color-on-accent: var(--poc-neutral-0);
+  --poc-color-accent-text: var(--poc-brand-green-400);
+  --poc-color-up: var(--poc-brand-green-400);
+  --poc-color-down: var(--poc-brand-red-400);
+  --poc-color-danger: var(--poc-brand-red-400);
+  --poc-color-focus: var(--poc-brand-blue-300);
+}
+
+[data-theme='light'] {
+  --poc-color-bg: var(--poc-neutral-50);
+  --poc-color-surface: var(--poc-neutral-0);
+  --poc-color-surface-raised: var(--poc-neutral-0);
+  --poc-color-surface-hover: var(--poc-neutral-100);
+  --poc-color-surface-selected: var(--poc-brand-green-50);
+  --poc-color-text: var(--poc-neutral-950);
+  --poc-color-text-muted: var(--poc-neutral-700);
+  --poc-color-border: var(--poc-neutral-200);
+  --poc-color-border-control: var(--poc-neutral-500);
+  --poc-color-link: var(--poc-brand-blue-600);
+  --poc-color-accent: var(--poc-brand-green-600);
+  --poc-color-accent-hover: var(--poc-brand-green-800);
+  --poc-color-on-accent: var(--poc-neutral-0);
+  --poc-color-accent-text: var(--poc-brand-green-800);
+  --poc-color-up: var(--poc-brand-green-800);
+  --poc-color-down: var(--poc-brand-red-700);
+  --poc-color-danger: var(--poc-brand-red-700);
+  --poc-color-focus: var(--poc-brand-navy-800);
+}
+
+/* Theme-independent semantic tokens. */
+:root {
+  --poc-focus-ring: 2px solid var(--poc-color-focus);
+  --poc-shadow-raised: 0 4px 12px rgb(0 0 0 / 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --poc-motion-fast: 0ms;
+    --poc-motion-base: 0ms;
+  }
+}
