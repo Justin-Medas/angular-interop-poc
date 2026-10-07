@@ -55,3 +55,63 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision:** apps fetch `/config.json` in `provideAppInitializer`, validate it against `specs/runtime-config.schema.json` (FR10), and expose it through a `RUNTIME_CONFIG` InjectionToken. Docker compose and Codespaces supply their own file. The file carries no secrets.
 - **Auth seam:** the schema has an `auth` block shaped like typical OAuth2/OIDC SPA settings (clientId, authority, redirectUri, cacheLocation, scopes), with `enabled` fixed to `false`. Auth stays a non-goal: there is no login and no token handling. A real provider (for example an MSAL or other OIDC client library) would bind behind an `AUTH` token without changing callers. In an interview this is a talking point, not a feature.
 - **Alternatives rejected:** build-time `environment.ts` (a rebuild per environment breaks "one artifact"); environment variables injected at container start into a generated JS file (more moving parts for the same result).
+
+## #9 Backend language: Go, not Python or TypeScript
+- **Context:** Python dominates AI work, so it was worth asking whether the agent service should be Python, or whether to run both.
+- **Decision:** keep one Go service. The AI part of this POC is an HTTP API that makes a Claude call, runs a short read-only tool loop, validates JSON against a schema and grades evals by exact match. Anthropic ships an official Go SDK, so none of that needs Python. Python's strengths (training, notebooks, embeddings, agent frameworks) are not used here.
+- **Alternatives rejected:** Python for the agent (a third pinned toolchain on three OSes, which NFR-R forbids beyond Node, Go, git and Docker; a second server and contract); Python and Go together (two backends, CORS and contract tests twice, more code to explain); TypeScript for the whole backend (one language across the stack, but loses the clearly separate, contract-first service; the closest alternative if Go ever became a burden).
+- **Consequences:** the interview answer is "the language best at contracts and services, calling an LLM", and the repo has one backend.
+
+## #10 One Angular application with library micro-apps
+- **Context:** v0.1 listed `blotter` and `detail` as separate projects but gave them routes on the shell's port and said to lazy-load them with `loadComponent`. Separate applications would each need their own port, dev server and config.
+- **Decision:** one application (`shell`). `blotter`, `detail`, `ui` and `interop` are libraries. `/apps/blotter` and `/apps/detail` render a library full-page with no shell chrome; Sail opens those URLs, and each Sail tab is its own instance with its own FDC3 connection. Modules the shell embeds share the shell's connection and act as `poc-shell`, which may broadcast and raise `ViewChart` (fdc3-contract.md §1).
+- **Alternatives rejected:** separate applications per micro-app (more ports, builds and Docker services for no demo value); Module Federation or Native Federation (independent deployability is a real-world benefit, but it adds build complexity to explain and isn't needed to show interop).
+- **Consequences:** one build and one `config.json`. Import boundaries between libraries are enforced by lint (NFR-ARCH2), which keeps the "micro-app" separation honest.
+
+## #11 Our own row menu and line chart, not AG Grid Enterprise or a chart library
+- **Context:** AG Grid's context menu is an Enterprise feature (license key), and DECISIONS #7 allows Community only. Charts were unassigned, and adding a chart library would break the one-UI-library rule.
+- **Decision:** the row menu is our own component on `@angular/cdk/menu` (first-party, accessible keyboard handling), opened from the grid's Community cell context-menu event (confirm the event name against the installed AG Grid version) and from Shift+F10 or the ContextMenu key. Charts are our own small SVG `poc-line-chart`, styled by tokens.
+- **Alternatives rejected:** AG Grid Enterprise (license key; a fresh clone would show a watermark or need a key in the repo); AG Charts, Chart.js or ECharts (a second UI library); a "Chart" action column only (works, but right-click is what traders expect, and the menu is a better accessibility story).
+- **Consequences:** two more components in `projects/ui`, both small and explainable, and both covered by the accessibility rules.
+
+## #12 CORS with an exact-origin allowlist
+- **Context:** the web app (:4200) calls the API (:8080) directly through `apiBaseUrl`, which is cross-origin. v0.1 only mentioned CORS for Sail's directory fetch. Codespaces forwards ports to different origins again.
+- **Decision:** every API route sends CORS headers for origins listed in `CORS_ALLOWED_ORIGINS` (default `http://localhost:4200,http://localhost:8090`) and answers `OPTIONS` preflight. Docker compose and Codespaces set their own list.
+- **Alternatives rejected:** a dev-server proxy plus a reverse proxy in Docker with a relative `apiBaseUrl` (no CORS, but a different proxy setup per environment); `Access-Control-Allow-Origin: *` (works, but a bad habit to demonstrate).
+- **Consequences:** one environment variable per environment, tested by contract tests.
+
+## #13 Agent v0.2: a workspace plan with one read-only tool
+- **Context:** v0.1's agent was a single-call classifier: one prompt in, one module out. That is solid but thin as an example of agentic AI. SPEC §1 talks about AI helping *assemble the workspace*.
+- **Decision:**
+  - The agent returns a **WorkspacePlan**: 1–3 modules plus an optional `fdc3Action` (`broadcastInstrument`). The endpoint path stays `/agent/select-module`.
+  - The agent may call one read-only tool, `get_watchlist_quotes`, at most 3 times, so it can answer requests like "open my worst performer".
+  - **Side effects are opt-in.** `fdc3Action` is allowed only when the user explicitly asks to share or sync, and every eval case expects `null` unless it says otherwise.
+  - The schema uses one `anyOf` variant per module, so each module's payload is exact, using only keywords structured outputs support. Rules it can't express (counts, ranges, ticker membership) are Go-side semantic checks (SPEC §7.3) that fail over to the deterministic fallback.
+  - The agent timeout goes from 8 s to 10 s, because the tool loop can add up to two round trips.
+  - Mock data becomes a spec fixture (`specs/mock-data.yaml`) with a frozen clock and seed, so data-dependent eval cases have a known right answer.
+- **Alternatives rejected:** keep the classifier (weak as an "agentic" example); workspace plan only or tool loop only (each covers half of the story); an agent framework (more to explain than a ~3-iteration loop).
+- **Consequences:** about 10 more eval cases (26 total). Day-2 checks are listed in SPEC §9: structured output plus tools in one request (if not, the final answer becomes a strict `submit_plan` tool) and whether the nested `anyOf` schema compiles. **Cut order:** if Day 2 PM slips, the shell renders only `modules[0]` and ignores `fdc3Action`. The schema and evals stay unchanged.
+
+## #14 Testing: TDD, 100% coverage, Playwright E2E and visual, evals in CI
+- **Context:** AI-DLC's `poc` scope defaults to test-after with no coverage minimum, and v0.1 had no E2E, visual or CI test rules. The author wants TDD, 100% coverage, Playwright in the pipeline, visual tests that don't get in the way, and proof that tests check output.
+- **Decision** (details in `specs/testing.md`):
+  - TDD with a visible red step: a failing `test(...)` commit may come before its implementation; **the pushed head must always be green** (this replaces "each commit leaves the build passing" in `project.md`).
+  - 100% coverage (TypeScript lines/branches/functions/statements, Go statements), with whole-file exclusions listed in testing.md and no line-level ignore comments.
+  - Playwright E2E on ubuntu and windows with the in-memory interop adapter, plus stubbed plan fixtures that are themselves contract-tested.
+  - Visual tests inside one pinned Playwright Linux container, about 10 snapshots, deterministic data.
+  - Evals: `fallback` and `replay` on every PR (deterministic, free); `live` when agent code, schema, mock data or cases change, plus nightly.
+  - Mutation testing, scoped and non-blocking, to show tests assert results.
+- **Alternatives rejected:** test-after (the AI-DLC `poc` default); an 80–90% threshold (a fuzzy number is harder to defend than 100% with a written exclusion list); visual tests on every OS (fonts differ, constant baseline churn); a hosted visual-testing service (external account and cost); live evals on every PR (cost and nondeterministic failures on unrelated changes).
+- **Consequences:** roughly half a day of extra work. If time runs short, cut in this order: mutation testing, Windows E2E, the UI gallery snapshots.
+
+## #15 Design tokens: three tiers, dark and light themes, brand palette
+- **Context:** tokens were promised in #7 but never specified: no names, no tiers, no theming, no enforcement.
+- **Decision** (details in `specs/design-tokens.md`): primitive → semantic → component tiers, with components limited to semantic and component tokens. Dark (default) and light themes redefine only the semantic layer. A green-primary brand palette with warm neutrals; brand green is for fills, and gains use a separate darker or lighter green so "brand" never reads as "price up". System fonts. Enforced by Stylelint, a token contrast test and visual snapshots of a UI gallery.
+- **Alternatives rejected:** colors written per component (no theming, no rebrand story); tokens authored as Design Tokens Community Group JSON with a generator script (a good story, but another build step for two days; can be added later without changing token names); proprietary or web fonts (licensing and loading for no demo value).
+- **Consequences:** a theme toggle in the demo, and rebranding by editing one file. The contrast test already caught one failing pair while the palette was drafted (loss red on the dark selected row), which was fixed by darkening the selected-row color.
+
+## #16 Accessibility: WCAG 2.2 AA, automated and manual
+- **Context:** accessibility was one sentence in a skill. A data-dense trading UI is exactly where keyboard and screen-reader support usually breaks, and desktop container apps commonly run on Windows, where High Contrast mode is common.
+- **Decision** (details in `specs/accessibility.md`): WCAG 2.2 AA. axe scans every E2E state (zero serious or critical), axe runs in component tests, angular-eslint accessibility rules, keyboard-only E2E for every demo flow, forced-colors and reduced-motion checks, a token contrast test, and a recorded VoiceOver and NVDA pass of the demo flow.
+- **Alternatives rejected:** automated scans only (they miss most keyboard and screen-reader problems); AAA (not realistic for a dense numeric grid).
+- **Consequences:** the row menu, tabs and chart have explicit keyboard and ARIA requirements. The README states that automated checks cover only part of WCAG.
