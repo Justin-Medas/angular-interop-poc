@@ -5,11 +5,12 @@ description: Design-system rules for this POC's Angular UI. Use whenever creatin
 
 # POC design system
 
-The design system is the swappable seam. Feature apps (`shell`, `blotter`, `detail`) never know what's underneath. See `docs/DECISIONS.md` #7.
+The design system is the swappable seam. Feature apps (`shell`, `blotter`, `detail`) never know what's underneath. The contracts are `specs/design-tokens.md` (tokens, themes, grid mapping) and `specs/accessibility.md` (WCAG 2.2 AA); this skill is the how-to. See `docs/DECISIONS.md` #7, #11, #15 and #16.
 
 ## What's in `web/projects/ui`
-- **Design tokens.** CSS custom properties in `src/styles/tokens.css`. They are the single source for color, spacing, type, radius and motion.
-- **Our own components**, built only from tokens: `PocButton`, `PocCard`, `PocBadge`, `PocTabs`, `PocCommandBar`. `@angular/cdk` may be used for accessibility primitives (focus, keyboard navigation, overlay).
+- **Design tokens.** CSS custom properties in `src/styles/tokens.css`, in three tiers (primitive → semantic → component). Components use **semantic or component tokens only**. Dark is the default theme; light is `[data-theme="light"]`.
+- **Our own components**, built only from tokens: `PocButton`, `PocCard`, `PocBadge`, `PocTabs`, `PocCommandBar`, `PocLineChart` (SVG), and the row context menu on `@angular/cdk/menu`. `@angular/cdk` may be used for accessibility primitives (focus, keyboard navigation, overlay, menu).
+- **`/dev/ui-gallery`** renders every component; visual tests snapshot it in dark, light and forced-colors mode.
 - **One third-party wrapper:** `PocDataTable` wraps AG Grid Community (`ag-grid-angular` 36.x). There is no other UI library, ever.
 
 ## The wrapper rule
@@ -46,12 +47,21 @@ Internally the wrapper:
 ## Tokens drive the grid too
 - The AG Grid theme (Theming API, for example `themeQuartz.withParams({...})`) takes its colors, font and spacing from the same tokens (`var(--poc-…)`). The grid and our components can't drift apart, and a token change re-skins both.
 - Price direction always uses `--poc-color-up` and `--poc-color-down`, and is never color-only: also show a sign (+/−) for accessibility.
-- No hard-coded hex values anywhere outside `tokens.css`.
+- Brand green (`--poc-color-accent`) is for fills and chrome only, never for price direction and never as text on the page background.
+- No hex, `rgb()`, `hsl()` or named colors anywhere outside `tokens.css` (Stylelint blocks it).
 
 ## Trading-UI conventions
 - Numbers are right-aligned in tabular-nums. Prices have 2 decimals, percents have 2 decimals with a sign.
 - Selection state comes from the `selected` input, not from the grid's internal state.
-- Show an interop status badge (`fdc3` / `in-memory` / `disconnected`), an agent source badge (`model` / `fallback`) and the `environment` from runtime config, all with `PocBadge`.
+- Show an interop status badge (`connecting` / `fdc3` / `in-memory`), an agent source badge (`model` / `fallback` plus the reason as text), the tool-call count and the `environment` from runtime config, all with `PocBadge`.
+
+## Accessibility checklist (specs/accessibility.md)
+- Every interactive element is reachable and operable by keyboard, with a visible `:focus-visible` ring from `--poc-focus-ring`.
+- Pointer targets are at least 24×24 CSS px; sizes in `rem`.
+- The row menu opens on right-click, Shift+F10 and the ContextMenu key; Escape returns focus to the row.
+- Charts are `role="img"` with a summary `aria-label` and a hidden data table; lines use `currentColor` for forced-colors mode.
+- Agent results go to a polite live region; price ticks are never announced.
+- Motion uses `--poc-motion-*` tokens so `prefers-reduced-motion` turns it off.
 
 ## Swap test
 Before calling the UI done:
