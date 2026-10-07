@@ -50,7 +50,7 @@ Scaffolding with no behavior (a generated workspace, config files) has no red st
 - **Agent without a key.** Real calls exercise the fallback. Tests that need a model-shaped plan stub `POST /agent/select-module` with `page.route`, using fixtures in `web/e2e/fixtures/plans/*.json`. The fixture-contract unit test keeps them valid.
 - **Selectors are accessible:** `getByRole` and `getByLabel` only. If a test can't find an element by role and name, that is an accessibility bug.
 - **Every E2E state runs an axe scan** (accessibility.md §3).
-- **Runs on** `ubuntu-latest` and `windows-latest`.
+- **Runs on** `ubuntu-latest` and `windows-latest`. macOS is deliberately not in the E2E matrix: Playwright drives the same Chromium build on every OS, so a macOS leg would mostly repeat the Linux result, and macOS minutes bill at 10× Linux on private repos (Windows 2×). macOS is still proven for setup by `fresh-clone` (SPEC NFR-R1–R5), and visual baselines are rendered once in a Linux container (§6). Add `macos-latest` here only if a macOS-specific E2E failure appears (DECISIONS #23).
 - **Flakes.** 0 retries locally; 1 retry in CI with a trace recorded on the retry. A test that passed only on retry is listed in the job summary and fixed or quarantined with an issue before merge.
 
 **Required E2E specs** (one or more tests each):
@@ -102,7 +102,7 @@ The runner (`api/evals`, Go) calls `internal/agent` in-process with an injected 
 | `mutation` | ubuntu | no (`continue-on-error`) | §9; on relevant path changes and weekly |
 
 - Each job lands in the PR that creates the code it tests. Superseded runs are cancelled.
-- Windows runners bill at 2× on private repos, so only `e2e` and `fresh-clone` use them.
+- Runner minutes on private repos bill at 1× Linux, 2× Windows and 10× macOS. Windows runs only `e2e` and `fresh-clone`; macOS runs only `fresh-clone` (DECISIONS #23).
 
 ## 9. Mutation testing
 - **Purpose:** prove the tests check results, not just execute lines.
