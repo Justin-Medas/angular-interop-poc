@@ -52,12 +52,13 @@ relaxed
 
 ## Tech Stack
 
-- Angular 22.x (Node 26 installed), one application plus libraries (DECISIONS #10), AG Grid Community 36.x behind the `projects/ui` `poc-data-table` wrapper plus our own token-based components (DECISIONS #7, #11), Playwright with `@axe-core/playwright`, Stylelint, runtime `config.json` (DECISIONS #8), `@finos/fdc3` 2.2.3, FINOS FDC3 Sail v2 (browser) as the Desktop Agent, Go 1.27, anthropic-sdk-go with model `claude-opus-5-5`.
+- Angular 22.x (Node 26 installed), one application plus libraries (DECISIONS #10), AG Grid Community 36.x behind the `projects/ui` `poc-data-table` wrapper plus our own token-based components (DECISIONS #7, #11), Playwright with `@axe-core/playwright`, Stylelint, runtime `config.json` (DECISIONS #8), `@finos/fdc3` 2.2.3, FINOS FDC3 Sail v2 (browser) as the Desktop Agent, Go 1.27, anthropic-sdk-go with the model from `AGENT_MODEL` (default `claude-sonnet-5-5`, opt-in `claude-opus-5-5`; DECISIONS #20).
 
 ## Decided
 
 DECIDED: Desktop Agent is FINOS FDC3 Sail v2 in the browser; InMemoryInteropService (BroadcastChannel) is the fallback (pre-AI-DLC planning, 2026-10-06)
 DECIDED: Agent returns JSON validated against specs/agent-tool-schema.json via structured outputs; forced tool_choice is not used because Opus 5.5 rejects it (pre-AI-DLC planning, 2026-10-06)
+DECIDED: Agent model is configurable through AGENT_MODEL; claude-sonnet-5-5 is the default for all tests and development eval runs, claude-opus-5-5 is opt-in (DECISIONS #20, 2026-10-07)
 DECIDED: OpenFin is described as an adapter swap and is never run (pre-AI-DLC planning, 2026-10-06)
 DECIDED: Cut list is auth, real market data, mobile, OpenFin runtime, persistence, mixed UI libraries (pre-AI-DLC planning, 2026-10-06)
 DECIDED: UI is AG Grid Community for the grid plus our own token-based components; PrimeNG dropped (DECISIONS #7, 2026-10-06)

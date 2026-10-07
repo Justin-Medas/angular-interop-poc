@@ -74,13 +74,16 @@ The Go API reads only these environment variables:
 |---|---|---|
 | `PORT` | `8080` | Listen port |
 | `ANTHROPIC_API_KEY` | unset | Unset means agent mode `fallback-only` |
+| `AGENT_MODEL` | `claude-sonnet-5-5` | Model for the agent call (§7.2). Allowed values: `claude-sonnet-5-5`, `claude-opus-5-5`. Any other value fails startup with a clear error (DECISIONS #20) |
 | `AGENT_TIMEOUT_MS` | `10000` | Total budget for one agent request, tool calls included |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:4200,http://localhost:8090` | Comma-separated exact origins. Never `*` |
 | `MOCK_SEED` | `42` | Seed for history and ticking |
 | `MOCK_NOW` | `2026-10-07T15:30:00Z` | Frozen clock for `asOf` and history |
 | `MOCK_TICK` | `off` | `on` makes prices random-walk (demo only) |
 
-Tests, evals and visual snapshots always run with the defaults, so every response is reproducible.
+Tests, evals and visual snapshots always run with the defaults, so every response is reproducible. The default model is the cost-effective one; `claude-opus-5-5` is opt-in.
+
+Locally, both agent variables come from the developer's environment or a gitignored repo-root `.env` (template: `.env.example`). The root scripts and `docker compose` load that file; the Go server itself only reads the environment.
 
 ### 6.4 Security (NFR-S)
 - NFR-S1: no secrets in the repo. `ANTHROPIC_API_KEY` comes from the environment (a repo secret in CI, used only by the live-eval job).
@@ -136,7 +139,7 @@ Tests, evals and visual snapshots always run with the defaults, so every respons
 The exact shape is `specs/agent-tool-schema.json`.
 
 ### 7.2 How the agent is called
-**Request.** `claude-opus-5-5`, `output_config.effort: "low"`, `output_config.format` set to `agent-tool-schema.json`, one strict tool, `tool_choice: auto`. The `thinking` parameter is omitted (adaptive thinking is this model's default and can't be disabled). Forced `tool_choice` is never used, because this model rejects it with a 400.
+**Request.** The model from `AGENT_MODEL` (§6.3; default `claude-sonnet-5-5`, opt-in `claude-opus-5-5`), `output_config.effort: "low"`, `output_config.format` set to `agent-tool-schema.json`, one strict tool, `tool_choice: auto`. The request shape is identical for both models. The `thinking` parameter is omitted (adaptive thinking is the default on both, and neither accepts `{type: "disabled"}`). Forced `tool_choice` is never used, because both models reject it with a 400.
 
 **System prompt** (stable, so it can be prompt-cached): the role, the §7.1 catalog with defaults, rules R1–R8, and the mock universe (symbol and name for each entry in `specs/mock-data.yaml`).
 
@@ -211,7 +214,7 @@ A fallback plan always has exactly one module and `fdc3Action: null`. Its `ratio
 ## 9. Open questions and Day-2 checks
 - ~~PrimeNG license for v22 (DECISIONS #1).~~ **Resolved:** AG Grid Community plus our own components (DECISIONS #7).
 - ~~Does Sail v2 support custom app entries with local URLs?~~ **Yes (verified 2026-10-06):** add `http://localhost:8080/appd/v2/apps` under Sail settings → Directories, or register apps under "Custom Apps".
-- **Check:** can `output_config.format` and a strict tool be used in the same request on `claude-opus-5-5`? If not, use the `submit_plan` variant in §7.2.
+- **Check:** can `output_config.format` and a strict tool be used in the same request on both allowed models (`claude-sonnet-5-5`, `claude-opus-5-5`)? If not, use the `submit_plan` variant in §7.2.
 - **Check:** does structured outputs compile the nested `anyOf` + `$ref` schema? If not, flatten `ModuleRequest` and move the per-module rules to §7.3, then update this spec first.
 - **Check:** does Sail accept every field in `specs/appd.json`?
 - **Check:** which Go OpenAPI 3.1 validator supports `if`/`then` and the external `$ref` to `agent-tool-schema.json`? Pick it at the first contract test and record it in DECISIONS.
