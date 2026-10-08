@@ -222,3 +222,12 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - `BlotterPage` exposes `viewChart = output<string>()`. It becomes the `ViewChart` intent when `InteropService` exists.
 - **Alternatives rejected:** moving `RUNTIME_CONFIG` into a shared library now (more churn for one consumer, and it would need Ajv in a library); reading `[row-id]` from the DOM in the blotter (leaks AG Grid internals into feature code); relying on the browser's native `contextmenu` for keyboard (macOS Chrome does not translate Shift+F10).
 - **Consequences:** a header right-click opens the menu with no row, and "View chart" then does nothing (tested). Hiding the item in that case is a follow-up. Focus returns to the cell that was focused, which sits inside the row; the E2E block checks it in a real browser. One E2E run (`E2E-12`) failed once with "execution context destroyed" and then passed 6 of 6 runs, on this branch and on `main`; it is a pre-existing flake worth watching.
+
+## #29 Interop: options token instead of reading `RUNTIME_CONFIG`; in-memory adapter first
+- **Context:** `specs/fdc3-contract.md` §5 says `provideInterop()` reads `RUNTIME_CONFIG.interop`, but `RUNTIME_CONFIG` lives in the shell and libraries must not import the shell (same problem as DECISIONS #28).
+- **Decision:**
+  - `@poc/interop` exports `INTEROP_OPTIONS` (`{ provider, connectTimeoutMs }`). The shell's `app.config.ts` provides it from `RUNTIME_CONFIG.interop`; `provideInterop()` reads the token.
+  - `InMemoryInteropService` ships first. `provideInterop()` always provides it for now, so `provider: "fdc3"` also yields status `in-memory`, which the badge will show honestly. The `connecting → fdc3` path and timeout fallback arrive with `Fdc3InteropService` (next PLAN item).
+  - `viewChart$` registers the handler on subscribe: an instance acknowledges a `ViewChart` message only while it has a live subscriber, so `NoAppsFound` is reachable.
+- **Alternatives rejected:** moving `RUNTIME_CONFIG` to a shared library (churn, drags Ajv into a library); acknowledging in every instance (an idle Blotter would swallow the intent).
+- **Consequences:** a small spec deviation (§5 wording). Update `fdc3-contract.md` §5 when the FDC3 adapter lands.
