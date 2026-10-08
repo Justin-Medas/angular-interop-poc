@@ -42,7 +42,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] `visual` CI job (pinned Playwright container) with the first snapshots
 
 ## Day 2 AM: Detail + FDC3
-- [ ] `InteropService` (`status` signal, `viewChart$`) + `InMemoryInteropService` + `provideInterop()` + unit tests
+- [x] `InteropService` (`status` signal, `viewChart$`) + `InMemoryInteropService` + `provideInterop()` + unit tests (DECISIONS #29; `provideInterop` serves in-memory only until the FDC3 adapter)
 - [ ] `Fdc3InteropService` via `getAgent()` with timeout and fallback badge
 - [ ] Blotter broadcasts `fdc3.instrument`; Detail listens (FR2, FR3)
 - [ ] Detail Quote and Chart tabs with `poc-line-chart` and range switch (FR12); `ViewChart` handled (FR4)

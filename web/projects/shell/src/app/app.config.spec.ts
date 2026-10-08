@@ -1,6 +1,7 @@
 import { ApplicationInitStatus } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { INTEROP, INTEROP_OPTIONS } from '@poc/interop';
 import { appConfig } from './app.config';
 
 const VALID_CONFIG = {
@@ -43,5 +44,17 @@ describe('FR10 appConfig', () => {
     TestBed.configureTestingModule({ providers: appConfig.providers });
     await TestBed.inject(ApplicationInitStatus).donePromise;
     expect(fetchMock).toHaveBeenCalledWith('/config.json', { cache: 'no-store' });
+  });
+});
+
+describe('FR2 appConfig interop', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('FR2 provides INTEROP from the runtime config', async () => {
+    vi.stubGlobal('fetch', async () => new Response(JSON.stringify(VALID_CONFIG)));
+    TestBed.configureTestingModule({ providers: appConfig.providers });
+    await TestBed.inject(ApplicationInitStatus).donePromise;
+    expect(TestBed.inject(INTEROP_OPTIONS)).toEqual(VALID_CONFIG.interop);
+    expect(TestBed.inject(INTEROP).status()).toBe('in-memory');
   });
 });
