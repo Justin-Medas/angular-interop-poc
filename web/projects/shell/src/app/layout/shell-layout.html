@@ -1,0 +1,10 @@
+<header>
+  <h1>Interop Workspace</h1>
+  @if (environment(); as env) {
+    <poc-badge [text]="env" />
+  }
+  <poc-theme-toggle />
+</header>
+<main>
+  <router-outlet />
+</main>

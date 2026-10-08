@@ -28,6 +28,14 @@ describe('FR14 shell layout at /', () => {
     expect(el.querySelector('header poc-badge')?.textContent?.trim()).toBe('docker');
   });
 
+  it('FR14 shows no environment badge when no config is loaded', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+    TestBed.inject(RuntimeConfigStore).config.set(null);
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/');
+    expect(harness.fixture.nativeElement.querySelector('header poc-badge')).toBeNull();
+  });
+
   it('FR11 puts the theme toggle in the header', async () => {
     const el = await visit('/');
     expect(el.querySelector('header poc-theme-toggle button')?.textContent).toContain(

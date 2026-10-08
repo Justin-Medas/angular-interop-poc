@@ -37,7 +37,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] `projects/ui`: `tokens.css` per `specs/design-tokens.md`, contrast test, `poc-data-table` (AG Grid theme from tokens), `poc-button`, `poc-card`, `poc-badge`, `poc-tabs`, `/dev/ui-gallery` (DECISIONS #24; row menu and `poc-line-chart` land with blotter and detail)
 - [x] Runtime config: `/config.json` + schema validation in `provideAppInitializer`, `RUNTIME_CONFIG` token, config error screen (FR10); `theme` + toggle (FR11); local, docker and CI variants (DECISIONS #27)
 - [ ] Codespaces config variant (needs generated `apiBaseUrl` + CORS origin, DECISIONS #27)
-- [ ] Shell layout + routing (lazy `loadComponent`)
+- [x] Shell layout + routing (lazy `loadComponent`): header (title, environment badge, theme toggle), `main` workspace placeholder; command bar, interop and source badges land with their FRs
 - [ ] Blotter: table bound to `/quotes` with polling (FR1), keyboard row selection, row context menu on `@angular/cdk/menu` (FR15)
 - [ ] `visual` CI job (pinned Playwright container) with the first snapshots
 
