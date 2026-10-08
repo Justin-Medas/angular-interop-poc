@@ -144,6 +144,43 @@ describe('FR1 PocDataTable', () => {
     expect(emitted).toEqual([]);
   });
 
+  it('FR15 right-click on a cell emits rowContextMenu with that row and source "pointer"', async () => {
+    const { fixture, cell } = await render();
+    const emitted: unknown[] = [];
+    fixture.componentInstance.rowContextMenu.subscribe((e) => emitted.push(e));
+    cell('MSFT', 'last')!.dispatchEvent(
+      new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 7, clientY: 9 }),
+    );
+    await tick();
+    expect(emitted).toEqual([{ row: ROWS[1], x: 7, y: 9, source: 'pointer' }]);
+  });
+
+  it.each([
+    ['ContextMenu', { key: 'ContextMenu' }],
+    ['Shift+F10', { key: 'F10', shiftKey: true }],
+  ])('FR15 %s on a focused cell emits rowContextMenu with source "keyboard"', async (_n, init) => {
+    const { fixture, cell } = await render();
+    const emitted: { row: Row; source: string }[] = [];
+    fixture.componentInstance.rowContextMenu.subscribe((e) => emitted.push(e));
+    const el = cell('AAPL', 'symbol')!;
+    el.focus();
+    const ev = new KeyboardEvent('keydown', { ...init, bubbles: true, cancelable: true });
+    el.dispatchEvent(ev);
+    await tick();
+    expect(emitted.map((e) => [e.row, e.source])).toEqual([[ROWS[0], 'keyboard']]);
+    expect(ev.defaultPrevented).toBe(true);
+  });
+
+  it('FR15 F10 without Shift does not emit rowContextMenu', async () => {
+    const { fixture, cell } = await render();
+    const emitted: unknown[] = [];
+    fixture.componentInstance.rowContextMenu.subscribe((e) => emitted.push(e));
+    cell('AAPL', 'symbol')!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'F10', bubbles: true }),
+    );
+    expect(emitted).toEqual([]);
+  });
+
   it('NFR-A2 keeps AG Grid ARIA grid roles and has no serious axe violations', async () => {
     const { host } = await render();
     expect(host.querySelector('[role="treegrid"], [role="grid"]')).not.toBeNull();

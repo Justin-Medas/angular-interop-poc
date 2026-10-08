@@ -1,11 +1,53 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { routes } from './app.routes';
+import { blotterSettings, routes } from './app.routes';
+import { RUNTIME_CONFIG, RuntimeConfig } from './config/runtime-config';
+
+const CONFIG = {
+  apiBaseUrl: 'http://api.test',
+  quotes: { pollIntervalMs: 0 },
+} as RuntimeConfig;
+
+describe('FR1 blotterSettings maps runtime config to the blotter library settings', () => {
+  it('FR1 uses apiBaseUrl and quotes.pollIntervalMs', () => {
+    expect(blotterSettings(CONFIG)).toEqual({ apiBaseUrl: 'http://api.test', pollIntervalMs: 0 });
+  });
+
+  it('FR1 defaults pollIntervalMs to 2000 when config.quotes is omitted (schema default)', () => {
+    expect(blotterSettings({ apiBaseUrl: 'http://api.test' } as RuntimeConfig)).toEqual({
+      apiBaseUrl: 'http://api.test',
+      pollIntervalMs: 2000,
+    });
+  });
+
+  it('FR1 /apps/blotter gets its settings from RUNTIME_CONFIG and fetches /quotes', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: RUNTIME_CONFIG, useValue: CONFIG },
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/apps/blotter');
+    TestBed.inject(HttpTestingController).expectOne('http://api.test/quotes').flush([]);
+  });
+});
 
 describe('NFR-ARCH1 /apps/* routes render a library full-page without shell chrome', () => {
   async function visit(url: string): Promise<HTMLElement> {
-    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: RUNTIME_CONFIG, useValue: CONFIG },
+      ],
+    });
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl(url);
     return harness.routeNativeElement as HTMLElement;
