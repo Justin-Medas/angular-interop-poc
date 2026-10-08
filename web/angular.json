@@ -33,7 +33,11 @@
                 "input": "projects/shell/config/local"
               }
             ],
-            "styles": ["projects/ui/src/styles/tokens.css", "projects/shell/src/styles.scss"],
+            "styles": [
+              "node_modules/@angular/cdk/overlay-prebuilt.css",
+              "projects/ui/src/styles/tokens.css",
+              "projects/shell/src/styles.scss"
+            ],
             "allowedCommonJsDependencies": [
               "ajv",
               "ajv-formats",
@@ -207,7 +211,8 @@
               "lines": 100
             },
             "coverageExclude": ["**/public-api.ts", "**/main.ts"],
-            "coverageInclude": ["projects/blotter/**/*.ts"]
+            "coverageInclude": ["projects/blotter/**/*.ts"],
+            "setupFiles": ["projects/ui/src/testing/match-media.ts"]
           }
         }
       }

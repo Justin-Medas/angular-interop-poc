@@ -1,1 +1,24 @@
-<main><h1>Blotter</h1></main>
+<main>
+  <h1>Blotter</h1>
+  @if (failed()) {
+    <p role="alert">Could not load quotes. Retrying…</p>
+  }
+  <div
+    #trigger="cdkContextMenuTriggerFor"
+    [cdkContextMenuTriggerFor]="rowMenu"
+    (cdkContextMenuClosed)="menuRow.set(null)"
+  >
+    <poc-data-table
+      [rows]="quotes()"
+      [columns]="columns"
+      rowId="symbol"
+      (rowContextMenu)="onRowContextMenu($event, trigger)"
+    />
+  </div>
+</main>
+
+<ng-template #rowMenu>
+  <div cdkMenu class="row-menu" aria-label="Row actions">
+    <button cdkMenuItem type="button" (cdkMenuItemTriggered)="onViewChart()">View chart</button>
+  </div>
+</ng-template>
