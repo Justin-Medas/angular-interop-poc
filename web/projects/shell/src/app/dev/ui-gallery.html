@@ -1,0 +1,35 @@
+<main>
+  <h1>UI Gallery</h1>
+  @for (theme of themes; track theme) {
+    <section class="theme" [attr.data-theme]="theme" [attr.aria-label]="theme + ' theme'">
+      <h2>{{ theme }} theme</h2>
+      <div class="row">
+        <poc-button>Primary</poc-button>
+        <poc-button variant="secondary">Secondary</poc-button>
+        <poc-button [disabled]="true">Disabled</poc-button>
+        <poc-button [busy]="true">Busy</poc-button>
+      </div>
+      <div class="row">
+        <poc-badge text="in-memory" />
+        <poc-badge text="model" tone="ok" />
+        <poc-badge text="fb" label="Fallback plan" tone="warn" />
+        <poc-badge text="error" tone="danger" />
+      </div>
+      <poc-card heading="Card">Cards group related content.</poc-card>
+      <poc-tabs [tabs]="tabs" [(selected)]="tab" label="Demo tabs">
+        @if (tab() === 'quote') {
+          Quote panel
+        } @else {
+          Chart panel
+        }
+      </poc-tabs>
+      <poc-data-table
+        [rows]="rows"
+        [columns]="columns"
+        rowId="symbol"
+        [selected]="selected()"
+        (rowSelect)="selected.set($event)"
+      />
+    </section>
+  }
+</main>

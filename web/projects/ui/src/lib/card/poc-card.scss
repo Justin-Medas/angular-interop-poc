@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+section {
+  padding: var(--poc-space-4);
+  border: var(--poc-border-width) solid var(--poc-color-border);
+  border-radius: var(--poc-radius-sm);
+  background: var(--poc-color-surface);
+  color: var(--poc-color-text);
+}
+
+h2 {
+  margin: 0 0 var(--poc-space-3);
+  font-size: var(--poc-text-lg);
+}

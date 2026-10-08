@@ -34,7 +34,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] Mock data from `specs/mock-data.yaml` (`MOCK_SEED`, `MOCK_NOW`, `MOCK_TICK`), deterministic history
 - [x] `/quotes`, `/quotes/{symbol}`, `/quotes/{symbol}/history`, `/watchlist` GET/PUT, `/appd/v2/apps`, error codes
 - [x] Contract tests validating responses against `openapi.yaml` (pick the OpenAPI 3.1 validator; record it in DECISIONS)
-- [ ] `projects/ui`: `tokens.css` per `specs/design-tokens.md`, contrast test, `poc-data-table` (AG Grid theme from tokens), `poc-button`, `poc-card`, `poc-badge`, `poc-tabs`, `/dev/ui-gallery`
+- [x] `projects/ui`: `tokens.css` per `specs/design-tokens.md`, contrast test, `poc-data-table` (AG Grid theme from tokens), `poc-button`, `poc-card`, `poc-badge`, `poc-tabs`, `/dev/ui-gallery` (DECISIONS #24; row menu and `poc-line-chart` land with blotter and detail)
 - [ ] Runtime config: `/config.json` + schema validation in `provideAppInitializer`, `RUNTIME_CONFIG` token, config error screen (FR10); `theme` + toggle (FR11); compose, Codespaces and CI variants
 - [ ] Shell layout + routing (lazy `loadComponent`)
 - [ ] Blotter: table bound to `/quotes` with polling (FR1), keyboard row selection, row context menu on `@angular/cdk/menu` (FR15)

@@ -172,3 +172,32 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision:** keep macOS out of `e2e`. The reasons are cost and value. GitHub bills private-repo minutes at 1× for Linux, 2× for Windows and 10× for macOS. E2E drives the same Chromium on every OS, so a macOS leg would add little signal. macOS is still verified where it matters, the native setup path, by `fresh-clone`. Visual baselines are rendered in one Linux container, so they match on every OS.
 - **Alternatives rejected:** adding `macos-latest` to the `e2e` matrix (about 10× the cost of the Linux leg for the same browser, plus a slower pipeline); dropping Windows too (Windows has real path and process differences that the `webServer` commands touch, so it earns its 2×).
 - **Consequences:** a macOS-only browser or tooling bug in E2E would not be caught by CI. If one appears, add `macos-latest` to the matrix and record it here. The README should say which OSes run which jobs.
+
+## #24 `projects/ui`: wrapper shapes, per-project coverage, unit-level axe
+- **Context:** the first `projects/ui` block needed choices the specs left open.
+- **Decision:**
+  - `poc-button` is an element that renders a native `<button>` inside, so keyboard and form behavior stay native, while feature code still writes `<poc-button>`. `poc-badge` takes `text` plus an optional `label` (long form for assistive tech), because a bare `aria-label` on a `span` is not valid ARIA.
+  - `poc-tabs` is the tablist and one panel; the consumer renders the panel content for `selected()` with `@if`/`@switch`. It uses automatic activation.
+  - `poc-data-table` ships `rows`, `columns`, `rowId`, `selected` and `rowSelect` only. `rowContextAction` (FR15) lands with the row menu in the blotter block. `format` means: `number` is 2 decimals, `signed` adds an explicit sign (`+`/`−`), `percent` is signed with `%`. Selection comes from the `selected` input, so AG Grid click-selection and checkboxes are off, and the wrapper syncs the node on `modelUpdated`. It registers only the Community modules it needs (`ClientSideRowModel`, `ClientSideRowModelApi`, `RowApi`, `RowSelection`, `CellStyle`).
+  - The contrast test reads `tokens.css` with `node:fs` (a one-function type declaration, no `@types/node`), because Vite's `?raw` does not work for `.css` in the Angular unit-test builder.
+  - Component specs run `axe-core` through `src/testing/axe.ts` (pinned devDependency). jsdom has no layout, so color contrast is checked by the token test and by the Playwright axe scan of `/dev/ui-gallery`.
+  - Each project's `test` target sets `coverageInclude` to its own folder, so a project that imports `@poc/ui` is not measured on `ui` code it does not test. This also counts untested files in the project (it made `app.config.ts` count, so it got a test).
+- **Alternatives rejected:** an attribute selector `button[poc-button]` (differs from the documented `<poc-button>` in the design-system skill); `AllCommunityModule` (larger bundle); `@types/node` (a global type surface for one call).
+- **Consequences:** a new library test target must set `coverageInclude`. The grid shows some empty space under short tables (`autoHeight`); revisit when the blotter sets its own height.
+
+## #25 No physical values in component styles (NFR-DS5)
+- **Context:** the first `projects/ui` components used raw `1.75rem`, `1px`, `600` and `0.6` for target size, borders, font weight and disabled opacity, which bypassed the token layer (found in review of PR #17).
+- **Decision:** add `size`, `border`, `font-weight`, `line` and `opacity` tokens (design-tokens.md §5) and a blocking Stylelint rule, `declaration-property-value-disallowed-list`, that bans lengths and times in every declaration and bare numbers for `font-weight`, `opacity`, `line-height` and `z-index`. `tokens.css` is exempt. `0`, `auto` and percentages stay allowed. The AG Grid wrapper drops its `minWidth` and takes row sizing from the `spacing` token.
+- **Alternatives rejected:** review-only enforcement (the same mistake returns); banning every number (`0` and `50%` are legitimate).
+- **Consequences:** a new kind of value (for example `z-index`) needs a token first; `lint-rules.test.mjs` proves the rule fires.
+
+## #26 Motion tokens: one switch for every animation (NFR-DS6, NFR-A5)
+- **Context:** only `--poc-motion-fast` and `-base` existed, and `poc-button` was the only component with a transition. Tabs had none, nothing animated focus, and nothing proved that reduced motion turns animation off.
+- **Decision:**
+  - Add `--poc-motion-ease`, composed `--poc-transition-color` (hover and selected states) and `--poc-transition-focus` (`outline-offset`), and `--poc-focus-ring-idle` (a transparent outline that the focus ring animates from, and that keeps focus visible in forced-colors mode). The transition tokens use only motion tokens, so the existing `prefers-reduced-motion` block zeroes them.
+  - Stylelint allows `transition` only as `var(--poc-transition-*)` lists or `none` and bans `animation*`, so a component cannot add motion that bypasses the switch.
+  - JS-driven motion reads the same media query: `poc-data-table` sets `animateRows` from it.
+  - Tests: unit (transition tokens contain no literal times; grid rows get `ag-row-no-animation` under reduce), lint (allow-list cases), E2E on `/dev/ui-gallery` (computed `transition-duration` is non-zero with no preference and `0s` under `reducedMotion: reduce`, for button, tab and grid rows).
+  - Unit tests get a `matchMedia` stub from `projects/ui/src/testing/match-media.ts` (`setupFiles`), because jsdom has none.
+- **Alternatives rejected:** a global `* { transition: none !important }` reduced-motion reset (hides what each component does and fights AG Grid's own CSS); per-component media queries (easy to forget).
+- **Consequences:** a new animated property needs a `--poc-transition-<purpose>` token first. The grid's "cell flash off" (FR1) is applied when the blotter adds it, with a test in that block. The unit suite cannot see rows animating (jsdom has no layout); E2E covers that side.

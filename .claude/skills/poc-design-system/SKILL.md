@@ -61,7 +61,7 @@ Internally the wrapper:
 - The row menu opens on right-click, Shift+F10 and the ContextMenu key; Escape returns focus to the row.
 - Charts are `role="img"` with a summary `aria-label` and a hidden data table; lines use `currentColor` for forced-colors mode.
 - Agent results go to a polite live region; price ticks are never announced.
-- Motion uses `--poc-motion-*` tokens so `prefers-reduced-motion` turns it off.
+- Motion: components animate only with `transition: var(--poc-transition-color)` / `var(--poc-transition-focus)` (list them with commas). Every interactive component has a hover and a `:focus-visible` state built from those tokens; the idle outline is `--poc-focus-ring-idle`. Never write `animation` or raw `transition` values (Stylelint blocks them). For motion driven by JS, read `prefers-reduced-motion` too. Add a new `--poc-transition-<purpose>` token before animating a new property.
 
 ## Swap test
 Before calling the UI done:
