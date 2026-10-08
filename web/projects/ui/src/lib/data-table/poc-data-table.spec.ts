@@ -151,6 +151,7 @@ describe('FR1 PocDataTable', () => {
     cell('MSFT', 'last')!.dispatchEvent(
       new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 7, clientY: 9 }),
     );
+    await tick();
     expect(emitted).toEqual([{ row: ROWS[1], x: 7, y: 9, source: 'pointer' }]);
   });
 
@@ -165,6 +166,7 @@ describe('FR1 PocDataTable', () => {
     el.focus();
     const ev = new KeyboardEvent('keydown', { ...init, bubbles: true, cancelable: true });
     el.dispatchEvent(ev);
+    await tick();
     expect(emitted.map((e) => [e.row, e.source])).toEqual([[ROWS[0], 'keyboard']]);
     expect(ev.defaultPrevented).toBe(true);
   });

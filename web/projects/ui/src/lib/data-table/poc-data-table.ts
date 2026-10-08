@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
+  CellContextMenuEvent,
   CellKeyDownEvent,
   FullWidthCellKeyDownEvent,
   CellStyleModule,
@@ -32,6 +33,14 @@ ModuleRegistry.registerModules([
   RowSelectionModule,
   CellStyleModule,
 ]);
+
+export interface PocRowContextMenu<T> {
+  row: T;
+  /** Viewport coordinates where a menu should appear. */
+  x: number;
+  y: number;
+  source: 'pointer' | 'keyboard';
+}
 
 export interface PocColumn<T> {
   key: keyof T & string;
@@ -85,6 +94,7 @@ const POC_THEME = themeQuartz.withParams({
       (gridReady)="onGridReady($event)"
       (rowClicked)="onRowClicked($event)"
       (cellKeyDown)="onCellKeyDown($event)"
+      (cellContextMenu)="onCellContextMenu($event)"
     />
   `,
   styleUrl: './poc-data-table.scss',
@@ -97,6 +107,8 @@ export class PocDataTable<T> {
   /** Driven by the feature's signals so click and FDC3 selection render the same way. */
   selected = input<T | null>(null);
   rowSelect = output<T>();
+  /** Right-click, Shift+F10 or the ContextMenu key on a row (FR15). The feature owns the menu itself. */
+  rowContextMenu = output<PocRowContextMenu<T>>();
 
   protected readonly theme = POC_THEME;
   /** Motion driven by JS must honor prefers-reduced-motion like the CSS tokens do (NFR-A5). */
@@ -158,7 +170,23 @@ export class PocDataTable<T> {
   }
 
   protected onCellKeyDown(e: CellKeyDownEvent<T> | FullWidthCellKeyDownEvent<T>): void {
-    const key = (e.event as KeyboardEvent).key;
-    if (key === 'Enter' || key === ' ') this.rowSelect.emit(e.data as T);
+    const event = e.event as KeyboardEvent;
+    if (event.key === 'Enter' || event.key === ' ') this.rowSelect.emit(e.data as T);
+    if (event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey)) {
+      // Stops the browser's own menu and the contextmenu event some platforms would also fire.
+      event.preventDefault();
+      const cell = (event.target as HTMLElement).getBoundingClientRect();
+      this.rowContextMenu.emit({
+        row: e.data as T,
+        x: cell.left,
+        y: cell.bottom,
+        source: 'keyboard',
+      });
+    }
+  }
+
+  protected onCellContextMenu(e: CellContextMenuEvent<T>): void {
+    const { clientX, clientY } = e.event as MouseEvent;
+    this.rowContextMenu.emit({ row: e.data as T, x: clientX, y: clientY, source: 'pointer' });
   }
 }
