@@ -58,7 +58,7 @@ export interface InteropService {
 }
 export const INTEROP = new InjectionToken<InteropService>('INTEROP');
 ```
-- `provideInterop()` supplies `INTEROP` from `RUNTIME_CONFIG.interop`. With `provider: "fdc3"`, status starts at `connecting` and calls `getAgent()` with `connectTimeoutMs` as the timeout. On success status becomes `fdc3`. On timeout or error it switches to the in-memory implementation, status becomes `in-memory`, and the badge makes that visible. With `provider: "in-memory"`, status is `in-memory` from the start.
+- `provideInterop()` supplies `INTEROP` from the `INTEROP_OPTIONS` token, which the app fills from `RUNTIME_CONFIG.interop` (DECISIONS #29, #30). With `provider: "fdc3"`, status starts at `connecting` and calls `getAgent()` with `connectTimeoutMs` as the timeout (the call is also raced against a timer, so a hanging `getAgent` still falls back). Calls made while connecting wait for the outcome. On success status becomes `fdc3`. On timeout or error it switches to the in-memory implementation, status becomes `in-memory`, and the badge makes that visible. With `provider: "in-memory"`, status is `in-memory` from the start.
 - `Fdc3InteropService` is the only code that imports `@finos/fdc3` (lint-enforced, SPEC NFR-ARCH2).
 - `InMemoryInteropService` uses `BroadcastChannel('poc-interop')`, so it works across same-origin tabs without Sail.
 - An OpenFin or io.Connect adapter would implement this same interface. Neither is **built or run**.

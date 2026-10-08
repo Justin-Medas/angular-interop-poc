@@ -62,7 +62,10 @@ describe('provideInterop with provider fdc3', () => {
     const done = interop.broadcastInstrument({ ticker: 'AAPL' });
     await vi.advanceTimersByTimeAsync(0);
     await done;
-    expect(agent['broadcast']).toHaveBeenCalledWith({ type: 'fdc3.instrument', id: { ticker: 'AAPL' } });
+    expect(agent['broadcast']).toHaveBeenCalledWith({
+      type: 'fdc3.instrument',
+      id: { ticker: 'AAPL' },
+    });
   });
 
   it('FR4 raiseViewChart and the incoming streams follow the connected agent', async () => {

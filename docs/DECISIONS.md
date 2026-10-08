@@ -231,3 +231,12 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - `viewChart$` registers the handler on subscribe: an instance acknowledges a `ViewChart` message only while it has a live subscriber, so `NoAppsFound` is reachable.
 - **Alternatives rejected:** moving `RUNTIME_CONFIG` to a shared library (churn, drags Ajv into a library); acknowledging in every instance (an idle Blotter would swallow the intent).
 - **Consequences:** a small spec deviation (§5 wording). Update `fdc3-contract.md` §5 when the FDC3 adapter lands.
+
+## #30 FDC3 adapter: a failover facade, lazy `@finos/fdc3`, no `status` race in components
+- **Context:** `provider: "fdc3"` must try a Desktop Agent, fall back to in-memory on timeout or error, and show which one is live (fdc3-contract.md §5), without components noticing the switch.
+- **Decision:**
+  - `Fdc3InteropService` wraps a `DesktopAgent` (constructed with it, not injectable). It maps `fdc3.instrument` contexts to `InstrumentRef` (ticker upper-cased, contexts without `id.ticker` ignored) and turns listener registration into Observables whose unsubscribe also works while registration is still pending.
+  - `FailoverInteropService` is what `INTEROP` resolves to for `provider: "fdc3"`. It runs `getAgent({ timeoutMs })` raced against its own timer (a hung `getAgent` must not hang the app), sets `status` to `fdc3` or `in-memory`, and every method/stream awaits that single `ready` promise, so calls made while `connecting` are not lost. A late agent after the timeout is ignored.
+  - `GET_AGENT` is a token whose default does `import('@finos/fdc3')` on first use. A static import added about 150 kB to the initial bundle (400 to 550 kB, over the 500 kB warning); lazy keeps it at 415 kB and in-memory environments never download it.
+- **Alternatives rejected:** swapping `INTEROP` after startup (consumers would hold the old instance); subscribing components to `status` to decide behavior (leaks the adapter choice into feature code).
+- **Consequences:** `ViewChart` through FDC3 relies on the agent launching Detail; the in-memory fallback cannot (fdc3-contract.md §4). Verified only against a fake agent so far; the real-Sail check is the manual PLAN item.
