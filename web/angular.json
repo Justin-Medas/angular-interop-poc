@@ -207,7 +207,8 @@
               "lines": 100
             },
             "coverageExclude": ["**/public-api.ts", "**/main.ts"],
-            "coverageInclude": ["projects/blotter/**/*.ts"]
+            "coverageInclude": ["projects/blotter/**/*.ts"],
+            "setupFiles": ["projects/ui/src/testing/match-media.ts"]
           }
         }
       }

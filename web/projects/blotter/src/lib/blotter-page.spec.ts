@@ -6,8 +6,26 @@ import { BlotterPage } from './blotter-page';
 import { BLOTTER_SETTINGS, BlotterSettings } from './blotter-settings';
 
 const QUOTES = [
-  { symbol: 'AAPL', name: 'Apple Inc.', last: 228.5, change: 1.93, changePct: 0.85, volume: 1, currency: 'USD', asOf: '2026-01-01T00:00:00Z' },
-  { symbol: 'MSFT', name: 'Microsoft', last: 415.1, change: -5, changePct: -1.2, volume: 1, currency: 'USD', asOf: '2026-01-01T00:00:00Z' },
+  {
+    symbol: 'AAPL',
+    name: 'Apple Inc.',
+    last: 228.5,
+    change: 1.93,
+    changePct: 0.85,
+    volume: 1,
+    currency: 'USD',
+    asOf: '2026-01-01T00:00:00Z',
+  },
+  {
+    symbol: 'MSFT',
+    name: 'Microsoft',
+    last: 415.1,
+    change: -5,
+    changePct: -1.2,
+    volume: 1,
+    currency: 'USD',
+    asOf: '2026-01-01T00:00:00Z',
+  },
 ];
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
@@ -17,7 +35,10 @@ async function render(settings: Partial<BlotterSettings> = {}) {
     providers: [
       provideHttpClient(),
       provideHttpClientTesting(),
-      { provide: BLOTTER_SETTINGS, useValue: { apiBaseUrl: 'http://api.test', pollIntervalMs: 0, ...settings } },
+      {
+        provide: BLOTTER_SETTINGS,
+        useValue: { apiBaseUrl: 'http://api.test', pollIntervalMs: 0, ...settings },
+      },
     ],
   });
   const http = TestBed.inject(HttpTestingController);
@@ -25,6 +46,9 @@ async function render(settings: Partial<BlotterSettings> = {}) {
   fixture.autoDetectChanges();
   return { fixture, http, host: fixture.nativeElement as HTMLElement };
 }
+
+/** Polling may leave a superseded request open (switchMap cancels it); answer the newest. */
+const latest = (http: HttpTestingController) => http.match('http://api.test/quotes').at(-1)!;
 
 const text = (host: HTMLElement, symbol: string, col: string) =>
   host.querySelector(`[row-id="${symbol}"] [col-id="${col}"]`)?.textContent?.trim();
@@ -56,9 +80,10 @@ describe('FR1 BlotterPage quotes', () => {
 
   it('FR1 re-fetches every pollIntervalMs and updates rows in place', async () => {
     const { http, host, fixture } = await render({ pollIntervalMs: 30 });
+    await settle(5);
     http.expectOne('http://api.test/quotes').flush(QUOTES);
     await settle(60);
-    http.expectOne('http://api.test/quotes').flush([{ ...QUOTES[0], last: 230 }, QUOTES[1]]);
+    latest(http).flush([{ ...QUOTES[0], last: 230 }, QUOTES[1]]);
     await fixture.whenStable();
     await settle();
     expect(text(host, 'AAPL', 'last')).toBe('230.00');
@@ -67,11 +92,14 @@ describe('FR1 BlotterPage quotes', () => {
 
   it('FR1 shows an alert when GET /quotes fails and keeps polling', async () => {
     const { http, host, fixture } = await render({ pollIntervalMs: 30 });
-    http.expectOne('http://api.test/quotes').flush('boom', { status: 500, statusText: 'Server Error' });
+    await settle(5);
+    http
+      .expectOne('http://api.test/quotes')
+      .flush('boom', { status: 500, statusText: 'Server Error' });
     await fixture.whenStable();
     expect(host.querySelector('[role="alert"]')?.textContent).toContain('Could not load quotes');
     await settle(60);
-    http.expectOne('http://api.test/quotes').flush(QUOTES);
+    latest(http).flush(QUOTES);
     await fixture.whenStable();
     expect(host.querySelector('[role="alert"]')).toBeNull();
   });

@@ -1,1 +1,7 @@
-<main><h1>Blotter</h1></main>
+<main>
+  <h1>Blotter</h1>
+  @if (failed()) {
+    <p role="alert">Could not load quotes. Retrying…</p>
+  }
+  <poc-data-table [rows]="quotes()" [columns]="columns" rowId="symbol" />
+</main>
