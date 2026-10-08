@@ -1,0 +1,17 @@
+main {
+  margin: var(--poc-space-6);
+  padding: var(--poc-space-4);
+}
+
+[role='alert'] {
+  padding: var(--poc-space-4);
+  border: var(--poc-border-width) solid var(--poc-color-danger);
+  border-radius: var(--poc-radius-sm);
+  background: var(--poc-color-surface);
+  color: var(--poc-color-text);
+}
+
+h1 {
+  margin: 0 0 var(--poc-space-3);
+  font-size: var(--poc-text-lg);
+}
