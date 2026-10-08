@@ -33,7 +33,13 @@
                 "input": "projects/shell/config/local"
               }
             ],
-            "styles": ["projects/ui/src/styles/tokens.css", "projects/shell/src/styles.scss"]
+            "styles": ["projects/ui/src/styles/tokens.css", "projects/shell/src/styles.scss"],
+            "allowedCommonJsDependencies": [
+              "ajv",
+              "ajv-formats",
+              "ajv/dist/2020",
+              "ajv/dist/2020.js"
+            ]
           },
           "configurations": {
             "production": {

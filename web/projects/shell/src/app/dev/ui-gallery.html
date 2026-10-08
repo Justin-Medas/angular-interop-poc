@@ -1,5 +1,6 @@
 <main>
   <h1>UI Gallery</h1>
+  <poc-theme-toggle />
   @for (theme of themes; track theme) {
     <section class="theme" [attr.data-theme]="theme" [attr.aria-label]="theme + ' theme'">
       <h2>{{ theme }} theme</h2>

@@ -9,7 +9,9 @@ test.describe('E2E-10 FR10 invalid config.json', () => {
       route.fulfill({ json: { environment: 'prod', auth: { enabled: true } } }),
     );
     await page.goto('/apps/blotter');
-    await expect(page.getByRole('heading', { level: 1, name: 'Configuration error' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Configuration error' }),
+    ).toBeVisible();
     await expect(page.getByRole('alert')).toContainText('/environment');
     await expect(page.getByRole('heading', { level: 1, name: 'Blotter' })).toHaveCount(0);
     await expectNoA11yViolations(page);

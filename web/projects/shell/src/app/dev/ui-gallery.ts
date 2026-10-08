@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { PocBadge, PocButton, PocCard, PocColumn, PocDataTable, PocTab, PocTabs } from '@poc/ui';
+import { ThemeToggle } from '../config/theme-toggle';
 
 interface DemoRow {
   symbol: string;
@@ -11,7 +12,7 @@ interface DemoRow {
 /** Dev-only page that renders every projects/ui component in each theme (visual tests snapshot it). */
 @Component({
   selector: 'poc-ui-gallery',
-  imports: [PocBadge, PocButton, PocCard, PocDataTable, PocTabs],
+  imports: [PocBadge, PocButton, PocCard, PocDataTable, PocTabs, ThemeToggle],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ui-gallery.html',
   styleUrl: './ui-gallery.scss',
