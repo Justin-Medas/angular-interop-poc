@@ -38,7 +38,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] Runtime config: `/config.json` + schema validation in `provideAppInitializer`, `RUNTIME_CONFIG` token, config error screen (FR10); `theme` + toggle (FR11); local, docker and CI variants (DECISIONS #27)
 - [ ] Codespaces config variant (needs generated `apiBaseUrl` + CORS origin, DECISIONS #27)
 - [x] Shell layout + routing (lazy `loadComponent`): header (title, environment badge, theme toggle), `main` workspace placeholder; command bar, interop and source badges land with their FRs
-- [ ] Blotter: table bound to `/quotes` with polling (FR1), keyboard row selection, row context menu on `@angular/cdk/menu` (FR15)
+- [x] Blotter: table bound to `/quotes` with polling (FR1), keyboard row selection, row context menu on `@angular/cdk/menu` (FR15). Component level; the `fdc3.instrument` broadcast and `ViewChart` intent wire to `InteropService` in Day 2 AM, and the FR15 E2E lands with E2E-1 to E2E-5 (DECISIONS #28)
 - [ ] `visual` CI job (pinned Playwright container) with the first snapshots
 
 ## Day 2 AM: Detail + FDC3
