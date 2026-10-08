@@ -1,0 +1,8 @@
+{
+  "environment": "docker",
+  "apiBaseUrl": "http://localhost:8080",
+  "interop": { "provider": "fdc3", "connectTimeoutMs": 3000 },
+  "theme": "dark",
+  "quotes": { "pollIntervalMs": 2000 },
+  "auth": { "enabled": false, "clientId": "", "authority": "", "redirectUri": "", "cacheLocation": "sessionStorage", "scopes": [] }
+}

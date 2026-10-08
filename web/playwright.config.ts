@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // specs/testing.md §5: Chromium only; servers started here; 0 retries locally, 1 in CI with a trace.
-// The API runs with the SPEC §6.3 defaults and no ANTHROPIC_API_KEY. The web app will switch to
-// config.ci.json (in-memory interop, no polling) once runtime config lands (FR10).
+// The API runs with the SPEC §6.3 defaults and no ANTHROPIC_API_KEY. The web app runs with
+// the ci build configuration (config/ci/config.json: in-memory interop, no polling).
 const ci = !!process.env['CI'];
 
 export default defineConfig({
@@ -23,7 +23,7 @@ export default defineConfig({
       env: { ANTHROPIC_API_KEY: '' },
     },
     {
-      command: 'npx ng serve shell --port 4200',
+      command: 'npx ng serve shell --configuration ci --port 4200',
       url: 'http://localhost:4200',
       reuseExistingServer: !ci,
       timeout: 120_000,

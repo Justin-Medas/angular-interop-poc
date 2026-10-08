@@ -1,1 +1,5 @@
-<router-outlet />
+@if (config.errors().length) {
+  <poc-config-error [issues]="config.errors()" />
+} @else {
+  <router-outlet />
+}
