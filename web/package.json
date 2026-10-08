@@ -22,6 +22,8 @@
     "@angular/router": "22.2.1",
     "ag-grid-angular": "36.2.0",
     "ag-grid-community": "36.2.0",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "rxjs": "7.8.2",
     "tslib": "2.8.1"
   },

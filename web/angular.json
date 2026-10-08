@@ -27,9 +27,19 @@
               {
                 "glob": "**/*",
                 "input": "projects/shell/public"
+              },
+              {
+                "glob": "config.json",
+                "input": "projects/shell/config/local"
               }
             ],
-            "styles": ["projects/ui/src/styles/tokens.css", "projects/shell/src/styles.scss"]
+            "styles": ["projects/ui/src/styles/tokens.css", "projects/shell/src/styles.scss"],
+            "allowedCommonJsDependencies": [
+              "ajv",
+              "ajv-formats",
+              "ajv/dist/2020",
+              "ajv/dist/2020.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -51,6 +61,30 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "ci": {
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "projects/shell/public"
+                },
+                {
+                  "glob": "config.json",
+                  "input": "projects/shell/config/ci"
+                }
+              ]
+            },
+            "docker": {
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "projects/shell/public"
+                },
+                {
+                  "glob": "config.json",
+                  "input": "projects/shell/config/docker"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -63,6 +97,12 @@
             },
             "development": {
               "buildTarget": "shell:build:development"
+            },
+            "ci": {
+              "buildTarget": "shell:build:development,ci"
+            },
+            "docker": {
+              "buildTarget": "shell:build:development,docker"
             }
           },
           "defaultConfiguration": "development"

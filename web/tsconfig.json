@@ -13,7 +13,9 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
+    "resolveJsonModule": true,
     "paths": {
+      "@specs/*": ["../specs/*"],
       "@poc/blotter": ["./projects/blotter/src/public-api.ts"],
       "@poc/detail": ["./projects/detail/src/public-api.ts"],
       "@poc/interop": ["./projects/interop/src/public-api.ts"],

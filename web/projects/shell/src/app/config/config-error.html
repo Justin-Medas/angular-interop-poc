@@ -1,0 +1,12 @@
+<main>
+  <div role="alert">
+    <h1>Configuration error</h1>
+    <p>The app did not start because <code>/config.json</code> could not be used:</p>
+    <ul>
+      @for (issue of issues(); track issue) {
+        <li>{{ issue }}</li>
+      }
+    </ul>
+    <p>Fix the file so it matches <code>specs/runtime-config.schema.json</code>, then reload.</p>
+  </div>
+</main>

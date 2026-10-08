@@ -1,0 +1,15 @@
+{
+  "environment": "ci",
+  "apiBaseUrl": "http://localhost:8080",
+  "interop": { "provider": "in-memory", "connectTimeoutMs": 3000 },
+  "theme": "dark",
+  "quotes": { "pollIntervalMs": 0 },
+  "auth": {
+    "enabled": false,
+    "clientId": "",
+    "authority": "",
+    "redirectUri": "",
+    "cacheLocation": "sessionStorage",
+    "scopes": []
+  }
+}

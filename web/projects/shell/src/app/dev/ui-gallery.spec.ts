@@ -18,6 +18,13 @@ describe('NFR-DS /dev/ui-gallery', () => {
     expect(el.querySelector('h1')?.textContent).toBe('UI Gallery');
   });
 
+  it('FR11 offers the theme toggle', async () => {
+    const el = await visit();
+    expect(el.querySelector('poc-theme-toggle button')?.textContent?.trim()).toBe(
+      'Switch to light theme',
+    );
+  });
+
   it('NFR-DS renders every component in both the dark and the light theme', async () => {
     const el = await visit();
     for (const theme of ['dark', 'light']) {
