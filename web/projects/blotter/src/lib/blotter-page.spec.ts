@@ -112,3 +112,84 @@ describe('FR1 BlotterPage quotes', () => {
     expect(await a11yViolations(host)).toEqual([]);
   });
 });
+
+describe('FR15 BlotterPage row context menu', () => {
+  async function renderWithRows() {
+    const r = await render();
+    r.http.expectOne('http://api.test/quotes').flush(QUOTES);
+    await r.fixture.whenStable();
+    await settle();
+    return r;
+  }
+  const row = (host: HTMLElement, symbol: string) =>
+    host.querySelector(`[row-id="${symbol}"] [col-id="symbol"]`) as HTMLElement;
+  const menuItems = () =>
+    Array.from(document.querySelectorAll('[role="menuitem"]')).map((i) => i.textContent?.trim());
+  const rightClick = (el: HTMLElement) =>
+    el.dispatchEvent(
+      new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 5, clientY: 5 }),
+    );
+
+  afterEach(() =>
+    document.querySelectorAll('.cdk-overlay-container').forEach((c) => c.replaceChildren()),
+  );
+
+  it('FR15 right-click on a row opens a menu with "View chart"', async () => {
+    const { host } = await renderWithRows();
+    rightClick(row(host, 'AAPL'));
+    await settle();
+    expect(document.querySelector('[role="menu"]')).not.toBeNull();
+    expect(menuItems()).toEqual(['View chart']);
+  });
+
+  it('FR15 View chart emits viewChart with the row symbol', async () => {
+    const { host, fixture } = await renderWithRows();
+    const emitted: string[] = [];
+    fixture.componentInstance.viewChart.subscribe((s) => emitted.push(s));
+    rightClick(row(host, 'MSFT'));
+    await settle();
+    (document.querySelector('[role="menuitem"]') as HTMLElement).click();
+    await settle();
+    expect(emitted).toEqual(['MSFT']);
+    expect(document.querySelector('[role="menu"]')).toBeNull();
+  });
+
+  it('FR15 Shift+F10 on the focused row opens the menu', async () => {
+    const { host } = await renderWithRows();
+    const el = row(host, 'AAPL');
+    el.focus();
+    el.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'F10', shiftKey: true, bubbles: true, cancelable: true }),
+    );
+    await settle();
+    expect(menuItems()).toEqual(['View chart']);
+  });
+
+  it('FR15 Escape closes the menu and returns focus to the row', async () => {
+    const { host } = await renderWithRows();
+    const el = row(host, 'AAPL');
+    el.focus();
+    el.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ContextMenu', bubbles: true, cancelable: true }),
+    );
+    await settle();
+    document
+      .querySelector('[role="menu"]')!
+      .dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+      );
+    await settle();
+    expect(document.querySelector('[role="menu"]')).toBeNull();
+    expect(host.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement?.closest('[row-id]')?.getAttribute('row-id')).toBe('AAPL');
+  });
+
+  it('NFR-A2 the open menu has no serious axe violations', async () => {
+    const { host } = await renderWithRows();
+    rightClick(row(host, 'AAPL'));
+    await settle();
+    expect(await a11yViolations(document.querySelector('[role="menu"]') as HTMLElement)).toEqual(
+      [],
+    );
+  });
+});
