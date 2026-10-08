@@ -1,3 +1,4 @@
+import { ApplicationInitStatus } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   ConfigError,
@@ -38,7 +39,7 @@ describe('FR10 parseRuntimeConfig', () => {
   });
 
   it('FR10 accepts a config without the optional theme and quotes', () => {
-    const { theme: _t, quotes: _q, ...minimal } = valid;
+    const minimal = { ...valid, theme: undefined, quotes: undefined };
     expect(parseRuntimeConfig(minimal).interop.provider).toBe('in-memory');
   });
 
@@ -113,9 +114,12 @@ describe('FR10 RUNTIME_CONFIG token', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('FR10 provideRuntimeConfig loads before bootstrap and the token returns the config', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(valid))));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify(valid))),
+    );
     TestBed.configureTestingModule({ providers: [provideRuntimeConfig()] });
-    await TestBed.inject(RuntimeConfigStore).load();
+    await TestBed.inject(ApplicationInitStatus).donePromise;
     expect(TestBed.inject(RUNTIME_CONFIG).environment).toBe('local');
   });
 
