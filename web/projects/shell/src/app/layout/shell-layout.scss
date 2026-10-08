@@ -1,0 +1,17 @@
+header {
+  display: flex;
+  align-items: center;
+  gap: var(--poc-space-3);
+  padding: var(--poc-space-3) var(--poc-space-4);
+  border-block-end: var(--poc-border-width) solid var(--poc-color-border);
+}
+
+h1 {
+  margin: 0;
+  margin-inline-end: auto;
+  font-size: var(--poc-text-lg);
+}
+
+main {
+  padding: var(--poc-space-4);
+}
