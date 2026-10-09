@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       [class]="variant()"
       [type]="type()"
       [disabled]="disabled() || busy()"
+      [attr.aria-pressed]="pressed()"
       [attr.aria-busy]="busy() ? 'true' : null"
     >
       <ng-content />
@@ -20,4 +21,6 @@ export class PocButton {
   type = input<'button' | 'submit'>('button');
   disabled = input(false);
   busy = input(false);
+  /** Makes it a toggle button; leave null for a plain button. */
+  pressed = input<boolean | null>(null);
 }
