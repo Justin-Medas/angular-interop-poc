@@ -2,7 +2,7 @@ module github.com/Justin-Medas/angular-interop-poc/api
 
 go 1.27
 
-toolchain go1.27.1
+toolchain go1.27.2
 
 require (
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
