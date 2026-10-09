@@ -44,7 +44,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 ## Day 2 AM: Detail + FDC3
 - [x] `InteropService` (`status` signal, `viewChart$`) + `InMemoryInteropService` + `provideInterop()` + unit tests (DECISIONS #29; `provideInterop` serves in-memory only until the FDC3 adapter)
 - [x] `Fdc3InteropService` via `getAgent()` with timeout and failover to in-memory (DECISIONS #30); the badge UI lands with the shell chrome (FR14)
-- [ ] Blotter broadcasts `fdc3.instrument`; Detail listens (FR2, FR3)
+- [x] Blotter broadcasts `fdc3.instrument`; Detail listens (FR2, FR3). Detail shows the quote only; tabs and chart land with FR12
 - [ ] Detail Quote and Chart tabs with `poc-line-chart` and range switch (FR12); `ViewChart` handled (FR4)
 - [ ] E2E-1 to E2E-5 with axe scans, keyboard paths, forced-colors and reduced-motion checks
 - [ ] Register apps in Sail from `specs/appd.json`; verify across two tabs; record a GIF

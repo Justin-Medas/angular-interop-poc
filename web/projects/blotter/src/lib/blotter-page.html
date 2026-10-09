@@ -12,6 +12,8 @@
       [rows]="quotes()"
       [columns]="columns"
       rowId="symbol"
+      [selected]="selected()"
+      (rowSelect)="onRowSelect($event)"
       (rowContextMenu)="onRowContextMenu($event, trigger)"
     />
   </div>

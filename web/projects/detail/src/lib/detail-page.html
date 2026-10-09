@@ -1,1 +1,24 @@
-<main><h1>Instrument Detail</h1></main>
+<main>
+  <h1>Instrument Detail</h1>
+  @switch (state().kind) {
+    @case ('empty') {
+      <p>Select an instrument in the blotter.</p>
+    }
+    @case ('loading') {
+      <p>Loading…</p>
+    }
+    @case ('unknown') {
+      <p role="alert">Unknown instrument {{ $any(state()).ticker }}</p>
+    }
+    @case ('error') {
+      <p role="alert">Could not load {{ $any(state()).ticker }}. Select it again to retry.</p>
+    }
+    @case ('ok') {
+      @let q = $any(state()).quote;
+      <h2>
+        {{ q.symbol }} <span>{{ q.name }}</span>
+      </h2>
+      <p>{{ q.last.toFixed(2) }} {{ q.currency }}</p>
+    }
+  }
+</main>

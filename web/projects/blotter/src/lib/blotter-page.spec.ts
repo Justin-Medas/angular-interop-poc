@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { INTEROP } from '@poc/interop';
 import { a11yViolations } from '../../../ui/src/testing/axe';
 import { BlotterPage } from './blotter-page';
 import { BLOTTER_SETTINGS, BlotterSettings } from './blotter-settings';
@@ -28,13 +29,20 @@ const QUOTES = [
   },
 ];
 
+const broadcasts: { ticker: string; name?: string }[] = [];
+const fakeInterop = {
+  broadcastInstrument: async (ref: { ticker: string; name?: string }) => void broadcasts.push(ref),
+};
+
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
 async function render(settings: Partial<BlotterSettings> = {}) {
+  broadcasts.length = 0;
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(),
       provideHttpClientTesting(),
+      { provide: INTEROP, useValue: fakeInterop },
       {
         provide: BLOTTER_SETTINGS,
         useValue: { apiBaseUrl: 'http://api.test', pollIntervalMs: 0, ...settings },
@@ -213,5 +221,42 @@ describe('FR15 BlotterPage row context menu', () => {
     expect(await a11yViolations(document.querySelector('[role="menu"]') as HTMLElement)).toEqual(
       [],
     );
+  });
+});
+
+describe('FR2 BlotterPage broadcast', () => {
+  async function renderWithRows() {
+    const r = await render();
+    r.http.expectOne('http://api.test/quotes').flush(QUOTES);
+    await r.fixture.whenStable();
+    await settle();
+    return r;
+  }
+  const cell = (host: HTMLElement, symbol: string) =>
+    host.querySelector(`[row-id="${symbol}"] [col-id="symbol"]`) as HTMLElement;
+
+  it('FR2 clicking a row broadcasts fdc3.instrument with ticker and name', async () => {
+    const { host } = await renderWithRows();
+    cell(host, 'AAPL').click();
+    await settle();
+    expect(broadcasts).toEqual([{ ticker: 'AAPL', name: 'Apple Inc.' }]);
+  });
+
+  it('FR2 Enter on the focused row broadcasts fdc3.instrument', async () => {
+    const { host } = await renderWithRows();
+    const el = cell(host, 'MSFT');
+    el.focus();
+    el.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }),
+    );
+    await settle();
+    expect(broadcasts).toEqual([{ ticker: 'MSFT', name: 'Microsoft' }]);
+  });
+
+  it('FR2 marks the selected row', async () => {
+    const { host } = await renderWithRows();
+    cell(host, 'AAPL').click();
+    await settle();
+    expect(host.querySelector('[row-id="AAPL"]')?.getAttribute('aria-selected')).toBe('true');
   });
 });
