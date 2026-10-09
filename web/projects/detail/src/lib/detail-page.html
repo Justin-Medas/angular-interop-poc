@@ -18,7 +18,34 @@
       <h2>
         {{ q.symbol }} <span>{{ q.name }}</span>
       </h2>
-      <p>{{ q.last.toFixed(2) }} {{ q.currency }}</p>
+      <poc-tabs [tabs]="tabs" [(selected)]="tab" label="Instrument views">
+        @if (tab() === 'quote') {
+          <p>{{ q.last.toFixed(2) }} {{ q.currency }}</p>
+        } @else {
+          <div role="group" aria-label="Range">
+            @for (r of ranges; track r.id) {
+              <poc-button
+                variant="secondary"
+                [pressed]="range() === r.id"
+                (click)="range.set(r.id)"
+                >{{ r.id }}</poc-button
+              >
+            }
+          </div>
+          @let h = history();
+          @switch (h.kind) {
+            @case ('error') {
+              <p role="alert">Could not load chart for {{ q.symbol }}.</p>
+            }
+            @case ('ok') {
+              <poc-line-chart [points]="h.points" [title]="q.symbol + ', ' + rangeName()" />
+            }
+            @default {
+              <p>Loading chart…</p>
+            }
+          }
+        }
+      </poc-tabs>
     }
   }
 </main>
