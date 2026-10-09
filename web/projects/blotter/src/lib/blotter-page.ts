@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
 import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import { INTEROP } from '@poc/interop';
 import { PocColumn, PocDataTable, PocRowContextMenu } from '@poc/ui';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY, of, switchMap, tap, timer } from 'rxjs';
@@ -27,6 +28,7 @@ export interface Quote {
 export class BlotterPage {
   private readonly http = inject(HttpClient);
   private readonly settings = inject(BLOTTER_SETTINGS);
+  private readonly interop = inject(INTEROP);
 
   protected readonly columns: PocColumn<Quote>[] = [
     { key: 'symbol', header: 'Symbol', pinned: 'left' },
@@ -36,6 +38,7 @@ export class BlotterPage {
   ];
   protected readonly quotes = signal<Quote[]>([]);
   protected readonly failed = signal(false);
+  protected readonly selected = signal<Quote | null>(null);
   protected readonly menuRow = signal<Quote | null>(null);
 
   /** Raised by the menu's "View chart" item. The interop block turns it into the ViewChart intent. */
@@ -58,6 +61,12 @@ export class BlotterPage {
         takeUntilDestroyed(),
       )
       .subscribe((q) => this.quotes.set(q));
+  }
+
+  /** FR2: pointer or keyboard selection broadcasts the instrument to linked apps. */
+  protected onRowSelect(row: Quote): void {
+    this.selected.set(row);
+    void this.interop.broadcastInstrument({ ticker: row.symbol, name: row.name });
   }
 
   protected onRowContextMenu(e: PocRowContextMenu<Quote>, menu: CdkContextMenuTrigger): void {

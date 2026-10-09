@@ -39,7 +39,21 @@ export const routes: Routes = [
   },
   {
     path: 'apps/detail',
-    loadComponent: () => import('@poc/detail').then((m) => m.DetailPage),
+    loadChildren: async () => {
+      const { DETAIL_SETTINGS, DetailPage } = await import('@poc/detail');
+      return [
+        {
+          path: '',
+          component: DetailPage,
+          providers: [
+            {
+              provide: DETAIL_SETTINGS,
+              useFactory: () => ({ apiBaseUrl: inject(RUNTIME_CONFIG).apiBaseUrl }),
+            },
+          ],
+        },
+      ];
+    },
   },
   {
     path: 'dev/ui-gallery',

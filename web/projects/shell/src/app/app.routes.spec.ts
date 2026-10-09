@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { INTEROP_OPTIONS, provideInterop } from '@poc/interop';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { blotterSettings, routes } from './app.routes';
 import { RUNTIME_CONFIG, RuntimeConfig } from './config/runtime-config';
@@ -29,6 +30,8 @@ describe('FR1 blotterSettings maps runtime config to the blotter library setting
         provideRouter(routes),
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideInterop(),
+        { provide: INTEROP_OPTIONS, useValue: { provider: 'in-memory', connectTimeoutMs: 100 } },
         { provide: RUNTIME_CONFIG, useValue: CONFIG },
       ],
     });
@@ -45,6 +48,8 @@ describe('NFR-ARCH1 /apps/* routes render a library full-page without shell chro
         provideRouter(routes),
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideInterop(),
+        { provide: INTEROP_OPTIONS, useValue: { provider: 'in-memory', connectTimeoutMs: 100 } },
         { provide: RUNTIME_CONFIG, useValue: CONFIG },
       ],
     });

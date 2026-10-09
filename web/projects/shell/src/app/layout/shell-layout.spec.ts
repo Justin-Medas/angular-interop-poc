@@ -1,12 +1,23 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
+import { INTEROP_OPTIONS, provideInterop } from '@poc/interop';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { a11yViolations } from '../../../../ui/src/testing/axe';
 import { routes } from '../app.routes';
 import { RuntimeConfig, RuntimeConfigStore } from '../config/runtime-config';
 
 async function visit(url: string, config: Partial<RuntimeConfig> = { environment: 'local' }) {
-  TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+  TestBed.configureTestingModule({
+    providers: [
+      provideRouter(routes),
+      provideHttpClient(),
+      provideHttpClientTesting(),
+      provideInterop(),
+      { provide: INTEROP_OPTIONS, useValue: { provider: 'in-memory', connectTimeoutMs: 100 } },
+    ],
+  });
   TestBed.inject(RuntimeConfigStore).config.set({ theme: 'dark', ...config } as RuntimeConfig);
   const harness = await RouterTestingHarness.create();
   await harness.navigateByUrl(url);
@@ -29,7 +40,15 @@ describe('FR14 shell layout at /', () => {
   });
 
   it('FR14 shows no environment badge when no config is loaded', async () => {
-    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideInterop(),
+        { provide: INTEROP_OPTIONS, useValue: { provider: 'in-memory', connectTimeoutMs: 100 } },
+      ],
+    });
     TestBed.inject(RuntimeConfigStore).config.set(null);
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/');
