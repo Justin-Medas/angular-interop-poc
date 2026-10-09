@@ -58,7 +58,7 @@ One persona: a trader or the interviewer. Demo flow (about 4 minutes):
 ### 6.1 Fresh-clone reproducibility (NFR-R)
 On macOS, Linux and Windows:
 - NFR-R1: `docker compose up` starts the API (:8080), web (:4200) and Sail (:8090). Docker is the only host dependency.
-- NFR-R2: the native path `npm run setup && npm start` works with only Node (per `.nvmrc`) and Go installed. `go.mod`'s `toolchain go1.27.1` directive fetches the pinned Go itself (any Go ≥ 1.21 can bootstrap it).
+- NFR-R2: the native path `npm run setup && npm start` works with only Node (per `.nvmrc`) and Go installed. `go.mod`'s `toolchain go1.27.2` directive fetches the pinned Go itself (any Go ≥ 1.21 can bootstrap it).
 - NFR-R3: the repo opens in a Dev Container or Codespace with no other setup.
 - NFR-R4: every toolchain and third-party checkout is pinned (Node range, Go toolchain, `package-lock.json`, Sail commit SHA, Playwright container image).
 - NFR-R5: GitHub Actions runs the native quickstart on all three OSes, and the test jobs in `specs/testing.md` §8, on every PR.

@@ -240,3 +240,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
   - `GET_AGENT` is a token whose default does `import('@finos/fdc3')` on first use. A static import added about 150 kB to the initial bundle (400 to 550 kB, over the 500 kB warning); lazy keeps it at 415 kB and in-memory environments never download it.
 - **Alternatives rejected:** swapping `INTEROP` after startup (consumers would hold the old instance); subscribing components to `status` to decide behavior (leaks the adapter choice into feature code).
 - **Consequences:** `ViewChart` through FDC3 relies on the agent launching Detail; the in-memory fallback cannot (fdc3-contract.md §4). Verified only against a fake agent so far; the real-Sail check is the manual PLAN item.
+
+## #31 Go pinned to 1.27.2 (govulncheck)
+- **Context:** the `lint` job's `govulncheck` started failing on Go 1.27.1 with five `net/http` and HTTP/2 stdlib advisories (GO-2026-6603, 6611, 6612, 6613, 6617), all reachable from `http.ListenAndServe`. Every fix is in 1.27.2.
+- **Decision:** bump the pin everywhere it lives: `api/go.mod` toolchain, `docker/api.Dockerfile`, the devcontainer feature, and the docs that name it. CI reads `go-version-file`, so it follows `go.mod`.
+- **Alternatives rejected:** excluding the advisories from the scan (hides real server exposure); leaving the job red.
+- **Consequences:** the `fresh-clone` workflow must stay green on all three OSes because setup files changed.
