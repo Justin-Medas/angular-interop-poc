@@ -46,7 +46,7 @@ docs/                  plan, decisions, architecture diagram, demo notes
 | AG Grid Community | 36.2.x (`ag-grid-angular`, `ag-grid-community`) | MIT, peer `@angular/core >= 20`. Community features only (DECISIONS #7) |
 | @finos/fdc3 | 2.2.3 | API + `getAgent()` only, no Desktop Agent included |
 | FDC3 Sail | v2 (browser), pinned SHA in `scripts/setup-sail.mjs`, installed to `.sail/` | Runs on :8090, Electron removed, "not production ready". Itself uses `@finos/fdc3@2.2.3` |
-| Go | 1.27.1 (Homebrew) | anthropic-sdk-go needs ≥ 1.24 |
+| Go | 1.27.2 (Homebrew) | anthropic-sdk-go needs ≥ 1.24 |
 | anthropic-sdk-go | v1.78.x | Model from `AGENT_MODEL`: `claude-sonnet-5-5` (default) or `claude-opus-5-5` (DECISIONS #20) |
 
 ## Architecture rules

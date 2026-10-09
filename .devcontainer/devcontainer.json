@@ -5,7 +5,7 @@
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
   "features": {
     "ghcr.io/devcontainers/features/node:1": { "version": "26" },
-    "ghcr.io/devcontainers/features/go:1": { "version": "1.27.1" },
+    "ghcr.io/devcontainers/features/go:1": { "version": "1.27.2" },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   // .sail/ holds OS-specific native binaries; keep the container's copy separate from the host's.
