@@ -11,8 +11,10 @@ import (
 	"github.com/Justin-Medas/angular-interop-poc/api/internal/mock"
 )
 
+// symbolRE is the ticker pattern from openapi.yaml; it is checked before any lookup so a bad ticker is a 400, not a 404.
 var symbolRE = regexp.MustCompile(`^[A-Z.]{1,10}$`)
 
+// maxWatchlist caps PUT /watchlist (FR5).
 const maxWatchlist = 25
 
 // Register adds the /quotes and /watchlist routes, all served from s.
@@ -24,6 +26,7 @@ func Register(mux *http.ServeMux, s *mock.Store) {
 	mux.HandleFunc("PUT /watchlist", putWatchlist(s))
 }
 
+// watchlist is the request and response body of /watchlist.
 type watchlist struct {
 	Symbols []string `json:"symbols"`
 }
@@ -41,6 +44,8 @@ func quote(w http.ResponseWriter, s *mock.Store, symbol string) (mock.Quote, boo
 	return q, ok
 }
 
+// listQuotes serves GET /quotes: the watchlist by default, or the comma-separated ?symbols= (FR1).
+// One bad symbol fails the whole request rather than returning a partial list.
 func listQuotes(s *mock.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		symbols := s.Watchlist()
@@ -59,6 +64,7 @@ func listQuotes(s *mock.Store) http.HandlerFunc {
 	}
 }
 
+// getQuote serves GET /quotes/{symbol} (FR3); 404 is what the Detail app shows as "unknown instrument".
 func getQuote(s *mock.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if q, ok := quote(w, s, r.PathValue("symbol")); ok {
@@ -67,6 +73,8 @@ func getQuote(s *mock.Store) http.HandlerFunc {
 	}
 }
 
+// getHistory serves GET /quotes/{symbol}/history (FR12). The symbol is validated first so an unknown
+// ticker is a 404 even when the range is also wrong; range defaults to 1D.
 func getHistory(s *mock.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, ok := quote(w, s, r.PathValue("symbol")); !ok {
@@ -85,12 +93,15 @@ func getHistory(s *mock.Store) http.HandlerFunc {
 	}
 }
 
+// getWatchlist serves GET /watchlist (FR5).
 func getWatchlist(s *mock.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, watchlist{s.Watchlist()})
 	}
 }
 
+// putWatchlist serves PUT /watchlist (FR5). It validates everything before changing state, so a
+// rejected request never leaves the watchlist half-updated. Unknown JSON fields are rejected.
 func putWatchlist(s *mock.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var in watchlist
