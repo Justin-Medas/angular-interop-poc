@@ -99,3 +99,4 @@ aidlc/diagnostics/
 
 # Pinned FDC3 Sail checkout (scripts/setup-sail.mjs)
 .sail/
+/site/

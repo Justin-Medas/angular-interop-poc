@@ -262,3 +262,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Alternatives rejected:** a doc-coverage percentage tool (measures presence only, same as these rules, adds a dependency); relying on review alone (it did not happen).
 - **Consequences:** lint proves comments exist, not that they are good; usefulness is a `spec-reviewer` and PR-review check. Angular's pinned `angular-*` skills are not edited because `skills-lock.json` pins them.
 
+## #34 GitHub Pages for test reports
+- **Context:** DECISIONS #33 left Pages open. Artifacts expire and need a download; a stable URL is easier to show in an interview.
+- **Decision:** `pages.yml` runs on every push to `main`, re-runs the Go and Angular coverage and the Playwright suite, and `scripts/build-pages.mjs` assembles `site/` (reports plus an escaped, accessible landing page). Deployed with the official Pages actions; Pages source is set to "GitHub Actions".
+- **Alternatives rejected:** committing reports to a `gh-pages` branch (generated files in git history); a PR-time preview (needs per-PR paths and cleanup, beyond a POC).
+- **Consequences:** the site reflects `main` only. Its E2E step is `continue-on-error` because `ci.yml` is the gate; a flaky E2E must not block the report. Re-running the tests costs about two extra minutes per merge.
+
