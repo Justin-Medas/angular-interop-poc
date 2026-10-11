@@ -67,3 +67,6 @@ Internally the wrapper:
 Before calling the UI done:
 - Running `grep -rE "ag-grid-(angular|community)" web/projects --include=*.ts | grep -v projects/ui` must return nothing.
 - `web/package.json` must list no UI library other than AG Grid.
+
+## Documenting components and styles
+Per `specs/code-documentation.md`: each component class has a doc comment (what it renders, inputs/outputs, keyboard and ARIA behavior it guarantees), and each `.scss` starts with a header naming the component and any non-obvious rule (for example why a forced-colors override exists). Do not explain token names; explain why a choice was made.

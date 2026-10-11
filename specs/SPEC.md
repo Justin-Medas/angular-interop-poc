@@ -126,6 +126,13 @@ Locally, both agent variables come from the developer's environment or a gitigno
 - NFR-A7: angular-eslint template accessibility rules pass (blocking).
 - NFR-A8: a manual VoiceOver and NVDA pass of the demo flow is recorded in `docs/a11y-report.md`.
 
+### 6.9 Code documentation (NFR-C) — details in `specs/code-documentation.md`
+- NFR-C1: every source file starts with a header comment: what it is, why, and the spec IDs it serves.
+- NFR-C2: every exported symbol has a doc comment saying what it is for and what a caller must know.
+- NFR-C3: inline comments explain why, cite spec or decision IDs for forced choices, and never narrate code or hold commented-out code.
+- NFR-C4: the standard covers `.ts`, `.mjs`, `.go`, `.scss`/`.css`, workflows, compose, Dockerfiles and git hooks; tests are exempt from headers.
+- NFR-C5: the rules are enforced in the blocking `lint` job (eslint-plugin-jsdoc, revive, `scripts/check-comments.mjs`).
+
 ## 7. Agent
 
 ### 7.1 Module catalog (what the agent can plan)

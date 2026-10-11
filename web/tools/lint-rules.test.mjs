@@ -234,3 +234,46 @@ test('NFR-DS2 semantic tokens via var(--poc-*) pass', async () => {
     [],
   );
 });
+
+// NFR-C2: exported symbols need a doc comment with a description (specs/code-documentation.md §2).
+const DOC = 'jsdoc/require-jsdoc';
+const DESC = 'jsdoc/require-description';
+
+test('NFR-C2 an undocumented exported class is reported', async () => {
+  const rules = await esRules(`export class Thing {}\n`, 'projects/ui/src/lib/x.ts');
+  assert.ok(rules.includes(DOC), rules.join());
+});
+
+test('NFR-C2 an undocumented exported const, function, interface and type are reported', async () => {
+  const code = `export const a = 1;\nexport function f() {}\nexport interface I { x: number }\nexport type T = string;\n`;
+  const rules = await esRules(code, 'projects/ui/src/lib/x.ts');
+  assert.equal(rules.filter((r) => r === DOC).length, 4, rules.join());
+});
+
+test('NFR-C2 a decorated exported class needs its doc comment above the decorator', async () => {
+  const bad = await esRules(
+    `import { Component } from '@angular/core';\n@Component({ selector: 'poc-x', template: '' })\nexport class X {}\n`,
+    'projects/ui/src/lib/x.ts',
+  );
+  assert.ok(bad.includes(DOC), bad.join());
+  const good = await esRules(
+    `import { Component } from '@angular/core';\n/** Renders x. */\n@Component({ selector: 'poc-x', template: '' })\nexport class X {}\n`,
+    'projects/ui/src/lib/x.ts',
+  );
+  assert.ok(!good.includes(DOC), good.join());
+});
+
+test('NFR-C2 a documented export passes and an empty doc comment is reported', async () => {
+  const ok = await esRules(
+    `/** The answer. */\nexport const a = 42;\n`,
+    'projects/ui/src/lib/x.ts',
+  );
+  assert.ok(!ok.includes(DOC) && !ok.includes(DESC), ok.join());
+  const empty = await esRules(`/** */\nexport const a = 42;\n`, 'projects/ui/src/lib/x.ts');
+  assert.ok(empty.includes(DESC), empty.join());
+});
+
+test('NFR-C4 tests are exempt from the doc-comment rules', async () => {
+  const rules = await esRules(`export const a = 1;\n`, 'projects/ui/src/lib/x.spec.ts');
+  assert.ok(!rules.includes(DOC), rules.join());
+});

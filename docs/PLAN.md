@@ -25,6 +25,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] `api/` Go module skeleton, `/healthz` (with `agent` mode), CORS middleware, env config (SPEC §6.3)
 - [x] `web/` Angular 22 workspace: `shell` application + `blotter`, `detail`, `ui`, `interop` libraries; `/apps/*` routes (DECISIONS #21)
 - [x] Lint and quality gates: ESLint import boundaries + angular-eslint accessibility rules, Stylelint token rules, coverage thresholds (DECISIONS #22). `scripts/check-coverage.mjs` is the Go gate and already exists
+- [x] Code documentation standard (NFR-C, DECISIONS #32): `specs/code-documentation.md`, headers + doc comments across the repo, enforced by eslint-plugin-jsdoc, revive and `scripts/check-comments.mjs` in `lint`
 - [x] `ci.yml` with `lint`, `unit-go`, `unit-web`; Playwright scaffold with a first E2E (/apps/* load, axe clean) and the `e2e` job (ubuntu + windows)
 - [x] Root README stub
 - [x] Root `npm start` / `npm test` that run api + web (+ Sail) cross-platform; `api/go.mod` declares `toolchain go1.27.1`

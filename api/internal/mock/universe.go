@@ -11,6 +11,7 @@ type Instrument struct {
 	Volume    int64
 }
 
+// universe is the fixed set of tradable symbols. Prices are the fixture baseline; Store copies them.
 var universe = []Instrument{
 	{"AAPL", "Apple Inc.", []string{"apple"}, 226.58, 228.50, 51234000},
 	{"MSFT", "Microsoft Corp.", []string{"microsoft"}, 429.40, 431.20, 18456000},
@@ -27,4 +28,5 @@ var universe = []Instrument{
 // Universe returns the instruments in fixture order.
 func Universe() []Instrument { return append([]Instrument(nil), universe...) }
 
+// defaultWatchlist is what GET /watchlist returns until a PUT replaces it (specs/mock-data.yaml).
 var defaultWatchlist = []string{"AAPL", "MSFT", "NVDA", "TSLA", "JPM", "GS"}

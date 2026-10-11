@@ -29,6 +29,7 @@ func Load(getenv func(string) string) (Config, error) {
 		return def
 	}
 
+	// Every setting fails fast: a bad value stops the server with a clear message instead of misbehaving later.
 	c := Config{
 		Port:            get("PORT", "8080"),
 		AnthropicAPIKey: getenv("ANTHROPIC_API_KEY"),
@@ -39,6 +40,7 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, fmt.Errorf("PORT %q is not a valid port", c.Port)
 	}
 
+	// Only the two supported models are accepted so a typo fails at startup, not on the first agent call (DECISIONS #20).
 	switch c.AgentModel {
 	case "claude-sonnet-5-5", "claude-opus-5-5":
 	default:
@@ -53,6 +55,7 @@ func Load(getenv func(string) string) (Config, error) {
 
 	for _, o := range strings.Split(get("CORS_ALLOWED_ORIGINS", "http://localhost:4200,http://localhost:8090"), ",") {
 		o = strings.TrimSpace(o)
+		// A wildcard would let any site call the API with the user's browser (NFR-S2).
 		if o == "*" {
 			return Config{}, fmt.Errorf("CORS_ALLOWED_ORIGINS must list exact origins, never *")
 		}

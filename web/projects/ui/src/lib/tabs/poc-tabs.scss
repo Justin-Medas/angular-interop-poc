@@ -1,3 +1,5 @@
+/* Styles for poc-tabs. Selected state is shown by weight and a thick underline as well as color; forced-colors
+   maps the underline to Highlight. Focus ring is inset so it is not clipped by the tab list. */
 :host {
   display: block;
 }

@@ -95,6 +95,8 @@ NEVER import one feature library from another or reach into a library's internal
 
 NEVER use primitive tokens or raw color values in component styles (affirmed 2026-10-07)
 
+NEVER disable or weaken a code-comment lint rule, or leave a source file without a header or an exported symbol without a doc comment (affirmed 2026-10-11)
+
 NEVER render agent output or other untrusted text with `[innerHTML]` or `bypassSecurityTrust*` (affirmed 2026-10-07)
 
 ## Mandated
@@ -104,6 +106,8 @@ ALWAYS change specs/ before changing behavior that contradicts them (affirmed 20
 ALWAYS commit with a Conventional Commit message at every green test run, and push the feature branch (affirmed 2026-10-06)
 ALWAYS open a pull request per Bolt or Unit that links its FR IDs and spec files and includes test output (affirmed 2026-10-06)
 ALWAYS keep the fresh-clone quickstarts in README working; a PR that changes setup must show the GitHub Actions OS matrix passing (affirmed 2026-10-06)
+
+ALWAYS write code for the next engineer per specs/code-documentation.md: file header, doc comments on exports, why-comments citing spec IDs, comments updated in the same commit as the behavior (affirmed 2026-10-11)
 
 ALWAYS keep the pushed head of every branch green; a failing `test(...)` commit is allowed only below a green head (affirmed 2026-10-07)
 

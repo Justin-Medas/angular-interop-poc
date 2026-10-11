@@ -1,6 +1,9 @@
+// Token for reaching a Desktop Agent (fdc3-contract.md §5; DECISIONS #30). Kept as a token so unit tests inject
+// a fake agent, and so `@finos/fdc3` is a lazy import that in-memory environments never download.
 import { InjectionToken } from '@angular/core';
 import type { GetAgentParams } from '@finos/fdc3';
 
+/** Same signature as `getAgent` from `@finos/fdc3`. */
 type GetAgent = (params?: GetAgentParams) => Promise<import('@finos/fdc3').DesktopAgent>;
 
 /**

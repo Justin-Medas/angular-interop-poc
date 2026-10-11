@@ -1,12 +1,18 @@
+// Own SVG line chart (FR12, FR13; DECISIONS #11: no chart library). It draws one polyline scaled to the data
+// and carries the accessible alternatives required by accessibility.md §5: a text summary on the image and a
+// visually hidden table with every point.
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
+/** One sample: an ISO timestamp and a price. Matches `PricePoint` in openapi.yaml. */
 export interface PocChartPoint {
   t: string;
   price: number;
 }
 
+/** Fixed drawing space; the SVG scales to its container through the viewBox, so no resize handling is needed. */
 const W = 600;
 const H = 200;
+/** Margin inside the viewBox so the stroke is not clipped at the extremes. */
 const PAD = 8;
 
 /** SVG line chart with a text summary and a visually hidden data table (accessibility.md §5). */
@@ -52,6 +58,7 @@ const PAD = 8;
   styleUrl: './poc-line-chart.scss',
 })
 export class PocLineChart {
+  /** Samples, oldest first. An empty list renders a "no data" message instead of a chart. */
   points = input.required<PocChartPoint[]>();
   /** What the chart shows, e.g. "AAPL, 1 day". */
   title = input.required<string>();
@@ -59,6 +66,7 @@ export class PocLineChart {
   protected readonly w = W;
   protected readonly h = H;
 
+  /** SVG `points` attribute. Prices are scaled to the min–max span (`|| 1` stops a flat series dividing by zero; it draws a flat line along the bottom); y is flipped because SVG grows downward. */
   protected readonly path = computed(() => {
     const pts = this.points();
     const prices = pts.map((p) => p.price);
@@ -70,6 +78,7 @@ export class PocLineChart {
       .join(' ');
   });
 
+  /** The image's accessible name: first and last price and the move, so the trend is available without seeing the line. */
   protected readonly summary = computed(() => {
     const pts = this.points();
     const first = pts[0].price;

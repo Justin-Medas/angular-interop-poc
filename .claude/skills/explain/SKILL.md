@@ -15,3 +15,5 @@ The user will be asked to walk through this code in an interview where 30–40% 
 4. Then quiz the user: ask one question at a time and wait for their answer. Give feedback before the next question. Stop after 3 questions or when the user says stop.
 
 Do not change code in this skill.
+
+If the target is missing a header, export doc comments or why-comments required by `specs/code-documentation.md`, say so at the end and offer to add them.

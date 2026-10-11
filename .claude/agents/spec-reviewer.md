@@ -16,6 +16,7 @@ Check, in order:
 5. **Runtime config:** apps load `/config.json` and validate it against `specs/runtime-config.schema.json`. There are no `environment.ts` per-environment switches, and `auth.enabled` is false with no login code.
 6. **Angular conventions:** standalone, OnPush, `inject()`, signals, new control flow (grep for `NgModule`, `constructor(private`, `*ngFor`, `*ngIf`, missing `changeDetection`).
 7. **Evals and tests:** module names in `cases.yaml` match the schema's `const` values. Every FR in SPEC §5 has at least one test whose name references it, and every E2E ID in `specs/testing.md` §5 exists. Coverage exclusions match `specs/testing.md` §4, and there are no line-level ignore comments.
+7b. **Code documentation (NFR-C):** every non-test source file has a header, every export has a doc comment, and inline comments explain why rather than restate code. Flag stale comments (describing behavior the code no longer has), commented-out code and rationale-free TODOs. Lint checks presence; you judge usefulness.
 8. **Scope:** flag anything that implements a cut item (auth, real market data, OpenFin runtime, persistence).
 
 You may run read-only commands (`go vet ./...`, `go test ./...`, `npx ng test --watch=false`, `grep`).
