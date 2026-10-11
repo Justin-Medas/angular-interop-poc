@@ -1,3 +1,5 @@
+/* Styles for poc-line-chart. The line uses currentColor from an accent token; the data table is visually hidden, not
+   display:none, so assistive tech still reads it (accessibility.md §5). */
 :host {
   display: block;
   color: var(--poc-color-accent-text);

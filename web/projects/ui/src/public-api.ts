@@ -1,6 +1,5 @@
-/*
- * Public API Surface of ui
- */
+// Public API of @poc/ui: the design system's contract with feature code (NFR-ARCH2).
+// Only our components are exported; AG Grid types never leak through here.
 
 export { PocBadge } from './lib/badge/poc-badge';
 export { PocButton } from './lib/button/poc-button';

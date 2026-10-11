@@ -1,3 +1,4 @@
+// Unit-test helper for accessibility.md §3: runs axe on rendered markup and returns serious/critical violations.
 import axe from 'axe-core';
 
 /** specs/accessibility.md §3 for unit tests: serious or critical axe violations in rendered markup. jsdom has no layout, so color-contrast is covered by the token test instead. */
