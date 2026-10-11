@@ -1,5 +1,10 @@
 # Angular Interop POC
 
+[![ci](https://github.com/Justin-Medas/angular-interop-poc/actions/workflows/ci.yml/badge.svg)](https://github.com/Justin-Medas/angular-interop-poc/actions/workflows/ci.yml)
+[![fresh-clone](https://github.com/Justin-Medas/angular-interop-poc/actions/workflows/fresh-clone.yml/badge.svg)](https://github.com/Justin-Medas/angular-interop-poc/actions/workflows/fresh-clone.yml)
+
+Each CI run's summary page shows Go and Angular coverage tables, and the run attaches the HTML coverage reports (`go-coverage`, `web-coverage`) and the Playwright report as artifacts.
+
 Angular 22 shell + two FDC3 micro-apps (Blotter → Detail), a contract-first Go API, and a Claude-backed endpoint that picks which UI module to load, with a deterministic fallback and a pass-rate eval.
 
 > Status: in progress (API and workspace scaffolding landed; UI and agent next). See `docs/PLAN.md`.

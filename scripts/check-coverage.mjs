@@ -2,7 +2,7 @@
 // Go coverage gate (specs/testing.md §4): runs go tests with coverage, fails below 100% statements,
 // and fails if any line-level coverage-ignore comment exists in source. Cross-platform.
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync, mkdtempSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, mkdtempSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -26,6 +26,14 @@ if (test.status !== 0) { process.stderr.write(test.stderr); process.exit(1); }
 const total = run(['tool', 'cover', `-func=${profile}`]).stdout.trim().split('\n').pop();
 const pct = parseFloat(total.split(/\s+/).pop());
 let ok = pct === 100;
+
+// Reviewable output for CI: an HTML report (uploaded as an artifact) and a line on the job summary page.
+const outDir = join(api, 'coverage');
+mkdirSync(outDir, { recursive: true });
+run(['tool', 'cover', `-html=${profile}`, '-o', join(outDir, 'index.html')]);
+if (process.env.GITHUB_STEP_SUMMARY) {
+  appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Go statement coverage\n\n**${pct}%** (gate: 100%)\n`);
+}
 if (!ok) console.error(`✗ Go statement coverage ${pct}% < 100%`);
 
 // Only our source trees are scanned; .claude/ and aidlc/ hold framework code we don't own.
