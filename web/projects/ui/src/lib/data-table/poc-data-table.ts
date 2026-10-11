@@ -1,3 +1,6 @@
+// The design system's one third-party wrapper (DECISIONS #7, #11; NFR-ARCH2): AG Grid Community behind a small,
+// library-neutral API. Feature code passes rows and columns and gets selection and context-menu events back, so the
+// grid could be replaced without touching blotter or detail code. Themed only from tokens (design-tokens.md §6).
 import {
   ChangeDetectionStrategy,
   Component,
@@ -34,24 +37,33 @@ ModuleRegistry.registerModules([
   CellStyleModule,
 ]);
 
+/** Event emitted when a row's menu is requested (FR15), by pointer or keyboard. */
 export interface PocRowContextMenu<T> {
+  /** The row the menu is for. */
   row: T;
   /** Viewport coordinates where a menu should appear. */
   x: number;
   y: number;
+  /** Lets the feature move focus into the menu only for keyboard use. */
   source: 'pointer' | 'keyboard';
 }
 
+/** Describes one column without exposing AG Grid's ColDef. */
 export interface PocColumn<T> {
+  /** Row property to display. */
   key: keyof T & string;
+  /** Column header text. */
   header: string;
   /** number: 2 decimals. signed: explicit sign. percent: explicit sign, 2 decimals and %. */
   format?: 'number' | 'percent' | 'signed';
+  /** Keeps the column visible while the rest scrolls. */
   pinned?: 'left';
 }
 
+/** A real minus sign (U+2212), not a hyphen: it is as wide as `+` and read correctly by screen readers. */
 const MINUS = '−';
 
+/** Formats a number for display; sign is explicit for change columns so direction is not shown by color alone. */
 function fmt(value: number, format: 'number' | 'percent' | 'signed'): string {
   const abs = Math.abs(value).toFixed(2);
   if (format === 'number') return value.toFixed(2);
@@ -100,12 +112,15 @@ const POC_THEME = themeQuartz.withParams({
   styleUrl: './poc-data-table.scss',
 })
 export class PocDataTable<T> {
+  /** The data. Replace the array to update; rows are matched by `rowId` so cells change in place. */
   rows = input.required<T[]>();
+  /** Column definitions, in display order. */
   columns = input.required<PocColumn<T>[]>();
   /** Property that uniquely identifies a row, so updates change cells in place. */
   rowId = input.required<keyof T & string>();
   /** Driven by the feature's signals so click and FDC3 selection render the same way. */
   selected = input<T | null>(null);
+  /** Emitted when a row is activated by click, Enter or Space. */
   rowSelect = output<T>();
   /** Right-click, Shift+F10 or the ContextMenu key on a row (FR15). The feature owns the menu itself. */
   rowContextMenu = output<PocRowContextMenu<T>>();
@@ -122,6 +137,7 @@ export class PocDataTable<T> {
 
   private readonly api = signal<GridApi<T> | null>(null);
 
+  /** Translates our column description to AG Grid's. Numeric columns are right-aligned in tabular figures; up/down classes add color on top of the explicit sign. */
   protected readonly columnDefs = computed(() =>
     this.columns().map((c): ColDef => {
       const numeric = c.format !== undefined;
@@ -143,6 +159,7 @@ export class PocDataTable<T> {
     }),
   );
 
+  /** AG Grid needs stable ids to update in place instead of re-creating rows (so selection and focus survive polling). */
   protected readonly getRowId = () => (p: { data: T }) => String(p.data[this.rowId()]);
 
   constructor() {
@@ -161,14 +178,17 @@ export class PocDataTable<T> {
     if (selected) api.getRowNode(String(selected[this.rowId()]))?.setSelected(true);
   }
 
+  /** Keeps the grid API in a signal so selection can be synced as soon as the grid exists. */
   protected onGridReady(e: GridReadyEvent<T>): void {
     this.api.set(e.api);
   }
 
+  /** Pointer selection. Clicking does not select inside AG Grid (enableClickSelection is off): the `selected` input is the single source of truth. */
   protected onRowClicked(e: RowClickedEvent<T>): void {
     this.rowSelect.emit(e.data as T);
   }
 
+  /** Keyboard activation (Enter/Space) and the keyboard route to the row menu (Shift+F10 or the ContextMenu key). */
   protected onCellKeyDown(e: CellKeyDownEvent<T> | FullWidthCellKeyDownEvent<T>): void {
     const event = e.event as KeyboardEvent;
     if (event.key === 'Enter' || event.key === ' ') this.rowSelect.emit(e.data as T);
@@ -185,6 +205,7 @@ export class PocDataTable<T> {
     }
   }
 
+  /** Pointer route to the row menu: reports where the user clicked so the feature can anchor its own menu there. */
   protected onCellContextMenu(e: CellContextMenuEvent<T>): void {
     const { clientX, clientY } = e.event as MouseEvent;
     this.rowContextMenu.emit({ row: e.data as T, x: clientX, y: clientY, source: 'pointer' });

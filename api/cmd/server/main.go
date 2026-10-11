@@ -10,6 +10,8 @@ import (
 	"github.com/Justin-Medas/angular-interop-poc/api/internal/server"
 )
 
+// main loads configuration, fails fast on an invalid environment (SPEC §6.3), and serves the API.
+// Everything testable lives in internal/; this stays wiring-only so the coverage exclusion is honest.
 func main() {
 	cfg, err := config.Load(os.Getenv)
 	if err != nil {

@@ -1,3 +1,6 @@
+// Detail micro-app (FR3, FR4, FR12). Listens for fdc3.instrument and the ViewChart intent through INTEROP and shows
+// the quote and, on the Chart tab, the price history. Every load is modelled as an explicit state union so
+// loading, not-found and error are visible to the user and never swallowed (team.md Code Style).
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -6,6 +9,7 @@ import { PocButton, PocChartPoint, PocLineChart, PocTabs } from '@poc/ui';
 import { catchError, map, merge, of, startWith, switchMap, tap } from 'rxjs';
 import { DETAIL_SETTINGS } from './detail-settings';
 
+/** The fields of GET /quotes/{symbol} that this view shows. */
 interface Quote {
   symbol: string;
   name: string;
@@ -15,6 +19,7 @@ interface Quote {
   currency: string;
 }
 
+/** What the Quote tab shows. `unknown` is the 404 "unknown instrument" state (FR3). */
 type QuoteState =
   | { kind: 'empty' }
   | { kind: 'loading'; ticker: string }
@@ -22,20 +27,24 @@ type QuoteState =
   | { kind: 'unknown'; ticker: string }
   | { kind: 'error'; ticker: string };
 
+/** What the Chart tab shows. `idle` means no ticker yet or the tab is hidden, so nothing is fetched. */
 type HistoryState =
   | { kind: 'idle' }
   | { kind: 'loading' }
   | { kind: 'ok'; points: PocChartPoint[] }
   | { kind: 'error' };
 
+/** History ranges the API accepts (openapi.yaml). */
 type Range = '1D' | '5D' | '1M';
 
+/** Range switch options with the long name used in the chart's accessible title. */
 const RANGES: { id: Range; name: string }[] = [
   { id: '1D', name: '1 day' },
   { id: '5D', name: '5 days' },
   { id: '1M', name: '1 month' },
 ];
 
+/** Full-page instrument detail with Quote and Chart tabs. */
 @Component({
   selector: 'poc-detail-page',
   imports: [PocTabs, PocButton, PocLineChart],
@@ -55,6 +64,7 @@ export class DetailPage {
   protected readonly tab = signal('quote');
   protected readonly range = signal<Range>('1D');
   protected readonly rangeName = computed(() => RANGES.find((r) => r.id === this.range())!.name);
+  /** Latest ticker from either source; the chart history depends on it. */
   private readonly ticker = signal<string | null>(null);
 
   /**

@@ -1,3 +1,5 @@
+/* Styles for poc-button. Component-scoped custom properties let variants and hover change one value; the target size and
+   focus ring come from tokens (WCAG 2.5.8, 2.4.7). Forced-colors mode gets a system border, since backgrounds are dropped there. */
 :host {
   display: inline-block;
 }

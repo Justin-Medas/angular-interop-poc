@@ -3,7 +3,7 @@ package httpx
 
 import "net/http"
 
-// CORS (FR18, NFR-S2) echoes the request Origin only when it is listed, never "*".
+// CORS (FR18, NFR-S2) returns middleware that echoes the request Origin only when it is listed, never "*".
 // Preflight (OPTIONS) is answered with 204 for every path; other requests continue to next,
 // with the headers already set so error responses carry them too.
 func CORS(allowed []string) func(http.Handler) http.Handler {

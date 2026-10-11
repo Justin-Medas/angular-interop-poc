@@ -1,3 +1,4 @@
+// Shell chrome (FR11, FR14): header with title, environment badge and theme toggle, plus the routed workspace.
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { PocBadge } from '@poc/ui';
@@ -14,5 +15,6 @@ import { ThemeToggle } from '../config/theme-toggle';
 })
 export class ShellLayout {
   private readonly store = inject(RuntimeConfigStore);
+  /** Text for the environment badge (local, docker, ci, …); empty when no config loaded. */
   protected readonly environment = computed(() => this.store.config()?.environment ?? '');
 }

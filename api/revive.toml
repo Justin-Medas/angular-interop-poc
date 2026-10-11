@@ -1,0 +1,13 @@
+# Go documentation rules (specs/code-documentation.md, NFR-C2/C5). Run in CI via
+# `go run github.com/mgechev/revive@v1.17.1 -config revive.toml ./...` (pinned, no global install).
+# Only documentation rules are enabled; formatting and vet checks already run in the lint job.
+ignoreGeneratedHeader = true
+severity = "error"
+confidence = 0.8
+
+# Every exported identifier has a comment that starts with its name.
+[rule.exported]
+  arguments = ["checkPrivateReceivers", "sayRepetitiveInsteadOfStutters"]
+
+# Every package has a package comment.
+[rule.package-comments]

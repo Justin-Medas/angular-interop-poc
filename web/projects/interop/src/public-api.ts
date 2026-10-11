@@ -1,6 +1,5 @@
-/*
- * Public API Surface of interop
- */
+// Public API of @poc/interop: the only import path feature code may use (NFR-ARCH2).
+// The failover and get-agent internals are deliberately not exported.
 
 export {
   INTEROP,

@@ -1,3 +1,5 @@
+// Tabs per the WAI-ARIA tabs pattern with automatic activation (accessibility.md §5; FR12). One tab stop for the
+// whole list (roving tabindex); arrow keys, Home and End move focus and selection together.
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,11 +9,13 @@ import {
   model,
 } from '@angular/core';
 
+/** One tab: a stable `id` (used for ids and selection) and its visible `label`. */
 export interface PocTab {
   id: string;
   label: string;
 }
 
+/** Counter so ids stay unique when several tab lists are on the page. */
 let nextId = 0;
 
 /** WAI-ARIA tabs with automatic activation. The consumer renders the panel content for `selected()`. */
@@ -42,8 +46,11 @@ let nextId = 0;
   styleUrl: './poc-tabs.scss',
 })
 export class PocTabs {
+  /** The tabs, in order. */
   tabs = input.required<PocTab[]>();
+  /** Id of the active tab. Two-way: the consumer can also set it, e.g. when ViewChart activates the chart tab (FR4). */
   selected = model.required<string>();
+  /** Accessible name of the tab list. */
   label = input<string>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -54,6 +61,7 @@ export class PocTabs {
     return `${this.uid}-tab-${id}`;
   }
 
+  /** Arrow keys wrap around; Home and End jump to the ends. Moves focus explicitly because roving tabindex means only the selected tab is focusable by Tab. */
   protected onKeydown(event: KeyboardEvent, index: number): void {
     const last = this.tabs().length - 1;
     const target = {

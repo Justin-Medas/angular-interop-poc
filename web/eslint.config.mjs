@@ -1,6 +1,10 @@
+// ESLint flat config. Enforces the architecture rules as code: import boundaries (NFR-ARCH2), Angular conventions
+// (NFR-ARCH3), template accessibility (NFR-A7), banned untrusted-HTML sinks (NFR-S5) and doc comments on exports (NFR-C2).
+// tools/lint-rules.test.mjs proves each rule fires, so a rule cannot be silently weakened.
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
+import jsdoc from 'eslint-plugin-jsdoc';
 
 // Import boundaries (SPEC NFR-ARCH2). Flat config lets a later block replace an earlier
 // `no-restricted-imports`, so each library gets one complete list built from these parts.
@@ -57,6 +61,25 @@ export default tseslint.config(
           message: 'bypassSecurityTrust* is banned; render untrusted text with interpolation.',
         },
       ],
+    },
+  },
+  // Code documentation (NFR-C2, specs/code-documentation.md): every exported symbol carries a doc
+  // comment with a real description. File headers are checked by scripts/check-comments.mjs.
+  // Tests are exempt; their names carry the spec ID (testing.md §10).
+  {
+    files: ['**/*.ts', '**/*.mjs'],
+    ignores: ['**/*.spec.ts', '**/*.e2e.ts', '**/*.d.ts', '**/*.test.mjs', 'e2e/a11y.ts'],
+    plugins: { jsdoc },
+    rules: {
+      'jsdoc/require-jsdoc': [
+        'error',
+        {
+          // Only the export context below fires, so a function is not reported twice.
+          require: { FunctionDeclaration: false },
+          contexts: ['ExportNamedDeclaration[declaration]'],
+        },
+      ],
+      'jsdoc/require-description': ['error', { contexts: ['ExportNamedDeclaration[declaration]'] }],
     },
   },
   { files: ['projects/ui/**/*.ts'], rules: restrict(DEEP, FDC3, NO_FEATURES) },

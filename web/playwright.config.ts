@@ -1,3 +1,4 @@
+// Playwright configuration for the E2E suite (testing.md §5).
 import { defineConfig, devices } from '@playwright/test';
 
 // specs/testing.md §5: Chromium only; servers started here; 0 retries locally, 1 in CI with a trace.

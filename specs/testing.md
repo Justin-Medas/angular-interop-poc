@@ -93,7 +93,7 @@ The runner (`api/evals`, Go) calls `internal/agent` in-process with an injected 
 
 | Job | Runner | Blocking | Runs |
 |---|---|---|---|
-| `lint` | ubuntu | yes | ESLint (import boundaries, angular-eslint template accessibility), Stylelint, `gofmt -l`, `go vet`, `govulncheck`, a gitleaks scan of the full history (both pinned and run with `go run`, no global install) |
+| `lint` | ubuntu | yes | ESLint (import boundaries, angular-eslint template accessibility), Stylelint, `gofmt -l`, `go vet`, `govulncheck`, a gitleaks scan of the full history (both pinned and run with `go run`, no global install), code-comment rules (`eslint-plugin-jsdoc`, `revive`, `scripts/check-comments.mjs`; NFR-C) |
 | `unit-go` | ubuntu | yes | `go test` with coverage, then `check-coverage.mjs` |
 | `unit-web` | ubuntu | yes | `ng test` with coverage thresholds (includes the contrast and fixture tests) |
 | `e2e` | ubuntu, windows | yes | Playwright functional + axe |

@@ -1,3 +1,6 @@
+// JSON response helpers (FR5, FR18): one place that sets Content-Type and the openapi.yaml Error body,
+// so no handler formats its own error shape.
+
 package httpx
 
 import (

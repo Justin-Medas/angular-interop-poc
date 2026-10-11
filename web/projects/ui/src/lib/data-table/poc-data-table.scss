@@ -1,3 +1,4 @@
+/* Styles for poc-data-table. AG Grid renders inside its own subtree, so ::ng-deep is needed here and only here. */
 :host {
   display: block;
 }
@@ -6,7 +7,7 @@ ag-grid-angular {
   width: 100%;
 }
 
-/* Numbers are right-aligned via the ag-right-aligned-* classes) in tabular figures. */
+/* Numbers use tabular figures so digits line up as values change; right alignment comes from AG Grid's ag-right-aligned-* classes. */
 :host ::ng-deep .poc-num {
   font-variant-numeric: tabular-nums;
 }

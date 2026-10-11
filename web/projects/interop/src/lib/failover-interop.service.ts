@@ -1,3 +1,6 @@
+// Failover facade behind INTEROP when `provider: "fdc3"` (fdc3-contract.md §5; DECISIONS #30).
+// Why a facade: consumers inject one object for the app's lifetime, so the adapter choice has to be made
+// inside it, not by swapping the provider after startup.
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, defer, from, switchMap } from 'rxjs';
 import { Fdc3InteropService } from './fdc3-interop.service';
@@ -25,14 +28,20 @@ export class FailoverInteropService implements InteropService {
     switchMap((d) => d.viewChart$),
   );
 
+  /** Waits for the connection attempt, so calls made while `connecting` are delayed, not lost. */
   async broadcastInstrument(ref: InstrumentRef): Promise<void> {
     return (await this.ready).broadcastInstrument(ref);
   }
 
+  /** Waits for the connection attempt, then delegates to whichever adapter won. */
   async raiseViewChart(ticker: string): Promise<void> {
     return (await this.ready).raiseViewChart(ticker);
   }
 
+  /**
+   * Races `getAgent()` against our own timer, because a hung getAgent must not hang the app.
+   * A late agent after the timeout is ignored: the status has already told the user we are in-memory.
+   */
   private async connect(): Promise<InteropService> {
     const { connectTimeoutMs } = inject(INTEROP_OPTIONS);
     const getAgent = inject(GET_AGENT);

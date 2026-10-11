@@ -1,15 +1,22 @@
+// In-memory InteropService (fdc3-contract.md §5; FR2, FR4). Same contract as the FDC3 adapter, carried by a
+// same-origin BroadcastChannel, so tests and the no-Sail fallback work across browser tabs.
+// Messages are a small tagged union; `ViewChart` is acknowledged so the sender can tell "handled" from "nobody listening".
 import { Injectable, OnDestroy, signal } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { InstrumentRef, InteropService, InteropStatus } from './interop.service';
 
+/** Wire format on the channel. `ack` answers a `viewChart` by id so raiseViewChart can resolve. */
 type Message =
   | { type: 'instrument'; ref: InstrumentRef }
   | { type: 'viewChart'; id: string; ticker: string }
   | { type: 'ack'; id: string };
 
+/** Channel name shared by every tab of this origin. */
 const CHANNEL = 'poc-interop';
+/** How long raiseViewChart waits for a handler before rejecting with NoAppsFound. */
 const ACK_TIMEOUT_MS = 1000;
 
+/** Guards incoming data: any tab on the origin can post to the channel, so shape is checked before use. */
 const isRef = (r: unknown): r is InstrumentRef =>
   typeof r === 'object' && r !== null && typeof (r as InstrumentRef).ticker === 'string';
 
@@ -36,12 +43,15 @@ export class InMemoryInteropService implements InteropService, OnDestroy {
     this.channel.onmessage = (e: MessageEvent<unknown>) => this.receive(e.data as Message);
   }
 
+  /** Posts to the channel. BroadcastChannel never delivers to the sender, matching FDC3 broadcast semantics. */
   broadcastInstrument(ref: InstrumentRef): Promise<void> {
     this.channel.postMessage({ type: 'instrument', ref } satisfies Message);
     return Promise.resolve();
   }
 
+  /** Resolves when a handler acknowledges; rejects with `NoAppsFound` after ACK_TIMEOUT_MS, like a real Desktop Agent. */
   raiseViewChart(ticker: string): Promise<void> {
+    // The id pairs this request with its ack; several raises can be in flight at once.
     const id = `${Date.now()}-${this.nextId++}`;
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -58,6 +68,7 @@ export class InMemoryInteropService implements InteropService, OnDestroy {
     });
   }
 
+  /** Closes the channel so a destroyed injector does not leak a listener. */
   ngOnDestroy(): void {
     this.channel.close();
   }
