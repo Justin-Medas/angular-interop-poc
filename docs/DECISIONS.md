@@ -247,6 +247,12 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Alternatives rejected:** excluding the advisories from the scan (hides real server exposure); leaving the job red.
 - **Consequences:** the `fresh-clone` workflow must stay green on all three OSes because setup files changed.
 
+## #33 Coverage visibility without a third-party service
+- **Context:** the repo enforces 100% coverage, E2E, visual and a11y gates, but a reviewer had to read logs to see any of it.
+- **Decision:** use only GitHub features. A job summary table per run (Go from `check-coverage.mjs`, Angular from `scripts/coverage-summary.mjs`), HTML coverage and the Playwright report uploaded as artifacts (also on success), and `ci` and `fresh-clone` status badges in the README.
+- **Alternatives rejected:** Codecov or Coveralls (a new account, token and app for a gate that already fails below 100%); GitHub Pages hosting of the reports (a repo setting outside the code; can be added later from the same artifacts).
+- **Consequences:** no PR comment with coverage diffs and no trend history. Artifacts expire per the repository retention setting.
+
 ## #32 Code documentation standard, enforced in `lint`
 - **Context:** the code had almost no comments (most files 0–3), but other engineers will extend it and the author must explain it live.
 - **Decision:**

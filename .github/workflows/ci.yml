@@ -60,6 +60,12 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version-file: .nvmrc }
       - run: node scripts/check-coverage.mjs
+      # The HTML report shows covered/uncovered lines per file; it is also what a reviewer opens from the run page.
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: go-coverage
+          path: api/coverage
   unit-web:
     runs-on: ubuntu-latest
     defaults:
@@ -79,6 +85,15 @@ jobs:
         run: npx ng build shell
       - name: unit tests with 100% coverage thresholds
         run: npx ng test --watch=false --coverage
+      - name: coverage summary (job summary page)
+        if: ${{ !cancelled() }}
+        working-directory: .
+        run: node scripts/coverage-summary.mjs
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: web-coverage
+          path: web/coverage
   e2e:
     strategy:
       fail-fast: false
@@ -102,8 +117,9 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Playwright functional + axe
         run: npm run test:e2e
+      # Uploaded on success too: the HTML report is the E2E record, not only a failure aid.
       - uses: actions/upload-artifact@v7
-        if: failure()
+        if: ${{ !cancelled() }}
         with:
           name: playwright-report-${{ matrix.os }}
           path: web/playwright-report
