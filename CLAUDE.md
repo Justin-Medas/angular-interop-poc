@@ -16,6 +16,7 @@ A two-day interview POC. It shows an Angular shell with two FDC3-connected micro
 - `specs/testing.md` is the test strategy: TDD, coverage, E2E, visual, evals and the CI pipeline.
 - `specs/design-tokens.md` defines token tiers, the palette, themes and the AG Grid mapping.
 - `specs/accessibility.md` defines the WCAG 2.2 AA rules and checks.
+- `specs/code-documentation.md` defines the comment standard: file headers, doc comments on exports, why-comments, and how lint enforces them.
 - `docs/PLAN.md` is the two-day plan and current status. Update its checkboxes as work lands.
 - `docs/DECISIONS.md` has the decision log. Add an entry when you make a non-obvious call.
 
@@ -56,6 +57,14 @@ docs/                  plan, decisions, architecture diagram, demo notes
 - **The agent returns data, not UI.** The Go endpoint returns a WorkspacePlan that validates against `specs/agent-tool-schema.json` and passes the semantic checks in SPEC §7.3. The shell maps each `module` to a lazy-loaded component. The agent's only side effect is an opt-in `fdc3Action` broadcast. On any failure in FR7, the deterministic fallback (SPEC §7.4) runs and the response sets `"source": "fallback"`.
 - **Styling comes only from tokens.** Components use semantic tokens (`var(--poc-color-…)`), never primitives or raw colors (`specs/design-tokens.md`). Stylelint and a contrast test enforce it.
 - **Accessible by default.** WCAG 2.2 AA (`specs/accessibility.md`): keyboard-complete flows, visible focus, color never the only signal, axe-clean E2E states.
+
+## Code documentation (mandatory, `specs/code-documentation.md`)
+Write every file as if another engineer will maintain it without you.
+- Every source file gets a header: what it is, why it exists, the spec IDs it serves.
+- Every exported symbol gets a doc comment (what it is for, what a caller must know). Go comments start with the identifier name.
+- Inline comments explain **why** and cite FR/NFR/rule IDs or `DECISIONS #n` for forced choices. Never narrate code; never leave commented-out code; a `TODO` needs a rationale.
+- Update a symbol's comment in the same commit that changes its behavior.
+- Lint enforces this (`eslint-plugin-jsdoc`, `revive`, `scripts/check-comments.mjs`); do not disable those rules to pass.
 
 ## Angular conventions (expect to explain these in the interview)
 - Standalone components only. No NgModules.

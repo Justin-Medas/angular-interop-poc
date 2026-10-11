@@ -246,3 +246,13 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision:** bump the pin everywhere it lives: `api/go.mod` toolchain, `docker/api.Dockerfile`, the devcontainer feature, and the docs that name it. CI reads `go-version-file`, so it follows `go.mod`.
 - **Alternatives rejected:** excluding the advisories from the scan (hides real server exposure); leaving the job red.
 - **Consequences:** the `fresh-clone` workflow must stay green on all three OSes because setup files changed.
+
+## #32 Code documentation standard, enforced in `lint`
+- **Context:** the code had almost no comments (most files 0–3), but other engineers will extend it and the author must explain it live.
+- **Decision:**
+  - `specs/code-documentation.md` (NFR-C1 to C5) requires a header on every source file, a doc comment on every export, and inline why-comments citing spec IDs. It is mirrored in `CLAUDE.md`, `project.md` (Forbidden/Mandated), the `implement-spec`, `explain` and `poc-design-system` skills and the `spec-reviewer` agent.
+  - Enforced in the blocking `lint` job: `eslint-plugin-jsdoc` (TS, `.mjs`), `revive` pinned and run with `go run` (Go), and `scripts/check-comments.mjs` for headers on `.scss`/`.css`, workflows, compose, Dockerfiles and git hooks.
+  - Exempt: tests, `.json` (no comments), `.html` templates (documented by the component).
+- **Alternatives rejected:** a doc-coverage percentage tool (measures presence only, same as these rules, adds a dependency); relying on review alone (it did not happen).
+- **Consequences:** lint proves comments exist, not that they are good; usefulness is a `spec-reviewer` and PR-review check. Angular's pinned `angular-*` skills are not edited because `skills-lock.json` pins them.
+
