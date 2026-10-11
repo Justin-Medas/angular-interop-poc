@@ -1,3 +1,6 @@
+// ESLint flat config. Enforces the architecture rules as code: import boundaries (NFR-ARCH2), Angular conventions
+// (NFR-ARCH3), template accessibility (NFR-A7), banned untrusted-HTML sinks (NFR-S5) and doc comments on exports (NFR-C2).
+// tools/lint-rules.test.mjs proves each rule fires, so a rule cannot be silently weakened.
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';

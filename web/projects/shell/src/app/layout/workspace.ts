@@ -1,3 +1,4 @@
+// Workspace placeholder (FR8). Replaced by the plan renderer when the agent endpoint and command bar land.
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /** Where the agent's plan renders (FR8). Empty until the command bar lands. */

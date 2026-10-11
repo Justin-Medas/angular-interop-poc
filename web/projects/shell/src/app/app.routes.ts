@@ -1,14 +1,19 @@
+// Routes (NFR-ARCH1, FR8). `/` is the workspace with shell chrome. `/apps/blotter` and `/apps/detail` render a
+// micro-app full page with no chrome: those are the URLs FDC3 Sail opens. All of them are lazy, so AG Grid and
+// the feature code are not in the initial bundle.
 import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import type { BlotterSettings } from '@poc/blotter';
 import { RUNTIME_CONFIG, RuntimeConfig } from './config/runtime-config';
 
 /** The blotter library never imports the shell, so the shell hands it the config it needs. */
+/** Maps runtime config to the blotter's settings; a missing `quotes` block falls back to the 2 s default poll. */
 export const blotterSettings = (config: RuntimeConfig): BlotterSettings => ({
   apiBaseUrl: config.apiBaseUrl,
   pollIntervalMs: config.quotes?.pollIntervalMs ?? 2000,
 });
 
+/** The shell's route table. `/dev/ui-gallery` is the page visual tests snapshot. */
 export const routes: Routes = [
   {
     path: '',

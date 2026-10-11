@@ -1,7 +1,10 @@
+// UI gallery (dev only; testing.md §6). Renders every design-system component in both themes so visual tests and
+// reviewers see them without wiring up real data. Not linked from the app.
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { PocBadge, PocButton, PocCard, PocColumn, PocDataTable, PocTab, PocTabs } from '@poc/ui';
 import { ThemeToggle } from '../config/theme-toggle';
 
+/** Fixed demo data (one gainer, one loser) so snapshots are stable. */
 interface DemoRow {
   symbol: string;
   last: number;
