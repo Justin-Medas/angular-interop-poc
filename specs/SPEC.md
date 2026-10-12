@@ -223,8 +223,8 @@ A fallback plan always has exactly one module and `fdc3Action: null`. Its `ratio
 ## 9. Open questions and Day-2 checks
 - ~~PrimeNG license for v22 (DECISIONS #1).~~ **Resolved:** AG Grid Community plus our own components (DECISIONS #7).
 - ~~Does Sail v2 support custom app entries with local URLs?~~ **Yes (verified 2026-10-06):** add `http://localhost:8080/appd/v2/apps` under Sail settings → Directories, or register apps under "Custom Apps".
-- **Check:** can `output_config.format` and a strict tool be used in the same request on both allowed models (`claude-sonnet-5-5`, `claude-opus-5-5`)? If not, use the `submit_plan` variant in §7.2.
-- **Check:** does structured outputs compile the nested `anyOf` + `$ref` schema? If not, flatten `ModuleRequest` and move the per-module rules to §7.3, then update this spec first.
+- ~~Can `output_config.format` and a strict tool be used in the same request on both allowed models?~~ **Yes (verified 2026-10-12, DECISIONS #38):** `claude-sonnet-5-5` and `claude-opus-5-5` both accepted one request with `output_config.format` = `agent-tool-schema.json` plus the strict `get_watchlist_quotes` tool, called the tool, then returned schema-shaped JSON. The `submit_plan` variant in §7.2 is not needed.
+- ~~Does structured outputs compile the nested `anyOf` + `$ref` schema?~~ **Yes (verified 2026-10-12, DECISIONS #38):** `agent-tool-schema.json` compiled unchanged on both models. No flattening is needed.
 - **Check:** does Sail accept every field in `specs/appd.json`?
 - **Check:** which Go OpenAPI 3.1 validator supports `if`/`then` and the external `$ref` to `agent-tool-schema.json`? Pick it at the first contract test and record it in DECISIONS.
 - **Check:** is agent p95 within 10 s at `effort: low` with the tool loop? If not, tune effort or the prompt before raising the budget.
