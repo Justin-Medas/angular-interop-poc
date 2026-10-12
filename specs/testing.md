@@ -71,7 +71,7 @@ Scaffolding with no behavior (a generated workspace, config files) has no red st
 ## 6. Visual tests
 - **One environment.** Run only inside the pinned `mcr.microsoft.com/playwright` Linux image, the same version as the npm package. The CI job uses it as its `container`; `npm run test:visual` and `npm run test:visual:update` run the same image through Docker, so baselines match on macOS, Windows and Linux. Baselines are committed under `web/e2e/visual/__screenshots__/`.
 - **Determinism.** API defaults (`MOCK_TICK=off`, fixed `MOCK_NOW`), `pollIntervalMs: 0`, `animations: "disabled"`, `reducedMotion: "reduce"`, grid cell flash off, hidden caret, 1280×800 viewport, the container's fonts.
-- **Small fixed set (10 snapshots):** blotter; Detail quote tab; Detail chart tab (1D); shell with a movers plan; shell with a two-module plan; fallback badge state; config error screen; `/dev/ui-gallery` in dark, light and forced-colors. App screens use the dark theme; the gallery covers both themes.
+- **Small fixed set (10 snapshots; the first 7 exist, the three plan screens land with FR8/FR14):** blotter; Detail quote tab; Detail chart tab (1D); shell with a movers plan; shell with a two-module plan; fallback badge state; config error screen; `/dev/ui-gallery` in dark, light and forced-colors. App screens use the dark theme; the gallery covers both themes.
 - **Tolerance:** Playwright's default per-pixel threshold and `maxDiffPixelRatio: 0.002`.
 - **Not intrusive.** A failure uploads the diff images and the HTML report as an artifact, and the failure message prints the update command. Baseline updates go in their own commit, `test(visual): update baselines — <reason>`, so reviewers can see them.
 

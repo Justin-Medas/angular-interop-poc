@@ -40,7 +40,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] Codespaces config variant (needs generated `apiBaseUrl` + CORS origin, DECISIONS #27)
 - [x] Shell layout + routing (lazy `loadComponent`): header (title, environment badge, theme toggle), `main` workspace placeholder; command bar, interop and source badges land with their FRs
 - [x] Blotter: table bound to `/quotes` with polling (FR1), keyboard row selection, row context menu on `@angular/cdk/menu` (FR15). Component level; the `fdc3.instrument` broadcast and `ViewChart` intent wire to `InteropService` in Day 2 AM, and the FR15 E2E lands with E2E-1 to E2E-5 (DECISIONS #28)
-- [ ] `visual` CI job (pinned Playwright container) with the first snapshots
+- [x] `visual` CI job (pinned Playwright container) with the first 7 snapshots (`web/e2e/visual/`, `npm run test:visual[:update]`, DECISIONS #36). The 3 plan-screen snapshots land with FR8/FR14; the forced-colors snapshot is the forced-colors check
 
 ## Day 2 AM: Detail + FDC3
 - [x] `InteropService` (`status` signal, `viewChart$`) + `InMemoryInteropService` + `provideInterop()` + unit tests (DECISIONS #29; `provideInterop` serves in-memory only until the FDC3 adapter)
