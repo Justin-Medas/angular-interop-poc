@@ -40,7 +40,7 @@ func (f *fakeClient) Next(ctx context.Context, system string, msgs []Message) (R
 
 const chartPlan = `{"modules":[{"module":"price-chart","payload":{"symbol":"TSLA","range":"1D"}}],"fdc3Action":null,"rationale":"Charting your worst performer."}`
 
-func tool(id string) Reply { return Reply{ToolUseID: id} }
+func tool(id string) Reply  { return Reply{ToolUseID: id} }
 func say(text string) Reply { return Reply{Text: text} }
 
 func newAgent(c ModelClient) *Agent {
@@ -215,5 +215,35 @@ func TestSelectModule_FR7_TimeoutDuringToolLoop(t *testing.T) {
 	got := a.SelectModule(context.Background(), Request{Prompt: "chart tesla"})
 	if got.FallbackReason != "timeout" {
 		t.Errorf("reason %q", got.FallbackReason)
+	}
+}
+
+func TestSelectModule_FR6_ReportsLatencyFromItsClock(t *testing.T) {
+	t0 := time.Unix(0, 0)
+	ticks := []time.Time{t0, t0.Add(250 * time.Millisecond)}
+	a := newAgent(&fakeClient{replies: []Reply{say(chartPlan)}})
+	a.Now = func() time.Time { t := ticks[0]; ticks = append(ticks[1:], ticks[1]); return t }
+	if got := a.SelectModule(context.Background(), Request{Prompt: "chart tesla"}); got.LatencyMs != 250 {
+		t.Errorf("latencyMs %d", got.LatencyMs)
+	}
+}
+
+func TestCompileSchema_FR6_RejectsBrokenSchemas(t *testing.T) {
+	for name, data := range map[string]string{"not JSON": `{`, "bad type": `{"type": 5}`} {
+		if _, err := compileSchema("agent-tool-schema.json", []byte(data)); err == nil {
+			t.Errorf("%s: want an error", name)
+		}
+	}
+	defer func() {
+		if recover() == nil {
+			t.Error("mustCompile must stop the process on a broken schema")
+		}
+	}()
+	mustCompile([]byte(`{`))
+}
+
+func TestCompileSchema_FR6_RejectsBadResourceName(t *testing.T) {
+	if _, err := compileSchema("://bad", []byte(`{}`)); err == nil {
+		t.Error("want an error for an unusable resource URL")
 	}
 }
