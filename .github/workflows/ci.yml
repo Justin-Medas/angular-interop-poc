@@ -1,5 +1,5 @@
 # Test pipeline for every PR and push to main (specs/testing.md §8). Jobs: lint (format, static analysis, security,
-# code-documentation rules), unit-go, unit-web, e2e (ubuntu + windows). Native-quickstart smoke tests live in fresh-clone.yml.
+# code-documentation rules), unit-go, unit-web, e2e (ubuntu + windows), visual (pinned Playwright container). Native-quickstart smoke tests live in fresh-clone.yml.
 name: ci
 on:
   pull_request:
@@ -123,3 +123,37 @@ jobs:
         with:
           name: playwright-report-${{ matrix.os }}
           path: web/playwright-report
+  # Visual snapshots (specs/testing.md §6, NFR-T1). The job runs inside the pinned Playwright image, the same one
+  # `npm run test:visual` uses locally, so baselines match on every OS. scripts/visual.test.mjs fails if the tag
+  # here drifts from the @playwright/test version in web/package.json.
+  visual:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    env:
+      HOME: /root # Playwright documents this for container jobs
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+      # The image has Node but no Go toolchain, and the suite starts the real API (mock data, SPEC §6.3 defaults).
+      - uses: actions/setup-go@v7
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.sum }
+      - name: image tag matches the pinned Playwright version
+        working-directory: .
+        run: node --test scripts/visual.test.mjs
+      - run: npm ci
+      - name: visual snapshots
+        run: npm run test:visual:ci
+      - name: how to update baselines
+        if: ${{ failure() }}
+        run: 'echo "::error::Visual diff. If the change is intended, run npm run test:visual:update and commit the PNGs as: test(visual): update baselines - <reason>"'
+      # Diff images and the HTML report; uploaded on success too so a reviewer can open the report.
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: visual-report
+          path: |
+            web/playwright-report
+            web/test-results

@@ -274,3 +274,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Alternatives rejected:** keeping the output and wiring it in the shell route (routes cannot bind component outputs); disabling transitions in E2E (hides the real behaviour; reduced motion has its own test).
 - **Consequences:** E2E locally reuses any server already on :4200 (`reuseExistingServer`), so a leftover `ng serve` with the local config silently runs FDC3 instead of in-memory. Stop it before running E2E.
 
+
+## #36 Visual job: amd64 container, API cross-compiled on the host
+- **Context:** testing.md §6 requires snapshots rendered only in the pinned Playwright image. That image has Node but no Go, and a macOS `node_modules` cannot be mounted into a Linux container. Apple-silicon Docker defaults to arm64, whose anti-aliasing differs from the x86-64 CI runners.
+- **Decision:** `scripts/visual.mjs` builds the API for `linux/amd64` on the host, then runs the suite with `docker run --platform linux/amd64`, a named volume for Linux `node_modules`, and the image tag derived from the exact `@playwright/test` version. The CI job uses the same image as a `container` and `setup-go`; a script test fails if the two tags drift. `web/.gitignore` no longer ignores `__screenshots__/` so baselines are committed.
+- **Alternatives rejected:** mocking the API in the tests (snapshots would not show real mock data); installing Go inside the container on every local run (slow, network-dependent); native arm64 baselines (CI would fail on pixel noise).
+- **Consequences:** a local run on Apple silicon is slow the first time (emulation plus `npm ci`, about 30 minutes here), about 40 s afterwards. Baselines generated locally have not yet been compared with a real CI run, so the first CI run is the proof.
