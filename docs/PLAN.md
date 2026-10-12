@@ -51,7 +51,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] Register apps in Sail from `specs/appd.json`; verify across two tabs; record a GIF
 
 ## Day 2 PM: Agent + evals + docs
-- [ ] Deterministic fallback F1–F7 (FR19) and semantic checks S1–S8 (FR20), table-driven tests
+- [x] Deterministic fallback F1–F7 (FR19) and semantic checks S1–S8 (FR20), table-driven tests
 - [ ] Day-2 API checks (SPEC §9): structured output + tools together; nested `anyOf` schema compiles
 - [ ] `/agent/select-module`: structured output, `get_watchlist_quotes` tool loop (FR16), timeout, schema + semantic validation (FR6, FR7)
 - [ ] Shell command bar, plan renderer (1–3 modules, live region, focus), `fdc3Action`, badges (FR8, FR14, FR17)
