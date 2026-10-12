@@ -47,7 +47,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] `Fdc3InteropService` via `getAgent()` with timeout and failover to in-memory (DECISIONS #30); the badge UI lands with the shell chrome (FR14)
 - [x] Blotter broadcasts `fdc3.instrument`; Detail listens (FR2, FR3). Detail shows the quote only; tabs and chart land with FR12
 - [x] Detail Quote and Chart tabs with `poc-line-chart` and range switch (FR12); `ViewChart` handled (FR4). Component level; E2E lands with E2E-1 to E2E-5
-- [ ] E2E-1 to E2E-5 with axe scans, keyboard paths, forced-colors and reduced-motion checks
+- [x] E2E-1 to E2E-5 with axe scans and keyboard paths (`web/e2e/blotter-detail.e2e.ts`); Blotter now raises `ViewChart` through `InteropService` (DECISIONS #35). Forced-colors and reduced-motion E2E checks remain with the visual job
 - [ ] Register apps in Sail from `specs/appd.json`; verify across two tabs; record a GIF
 
 ## Day 2 PM: Agent + evals + docs

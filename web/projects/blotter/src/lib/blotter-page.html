@@ -3,6 +3,9 @@
   @if (failed()) {
     <p role="alert">Could not load quotes. Retrying…</p>
   }
+  @if (viewChartFailed()) {
+    <p role="alert">Open Instrument Detail to view the chart.</p>
+  }
   <div
     #trigger="cdkContextMenuTriggerFor"
     [cdkContextMenuTriggerFor]="rowMenu"

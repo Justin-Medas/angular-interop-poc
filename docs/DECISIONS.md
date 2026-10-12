@@ -268,3 +268,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Alternatives rejected:** committing reports to a `gh-pages` branch (generated files in git history); a PR-time preview (needs per-PR paths and cleanup, beyond a POC).
 - **Consequences:** the site reflects `main` only. Its E2E step is `continue-on-error` because `ci.yml` is the gate; a flaky E2E must not block the report. Re-running the tests costs about two extra minutes per merge.
 
+## #35 Blotter raises ViewChart directly; E2E scans wait for transitions
+- **Context:** E2E-3 found that Blotter's `viewChart` output had no consumer, so the row menu did nothing in the real app (#28 deferred the wiring). A second finding: E2E-12 failed deterministically because axe scanned the theme toggle mid colour transition and measured blended colours.
+- **Decision:** `BlotterPage.onViewChart` calls `InteropService.raiseViewChart` and the `viewChart` output is removed. A `NoAppsFound` rejection sets an alert ("Open Instrument Detail to view the chart."), so the failure is visible. `expectNoA11yViolations` waits until no CSS animations or transitions are running before scanning.
+- **Alternatives rejected:** keeping the output and wiring it in the shell route (routes cannot bind component outputs); disabling transitions in E2E (hides the real behaviour; reduced motion has its own test).
+- **Consequences:** E2E locally reuses any server already on :4200 (`reuseExistingServer`), so a leftover `ng serve` with the local config silently runs FDC3 instead of in-memory. Stop it before running E2E.
+
