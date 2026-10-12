@@ -30,14 +30,22 @@ const QUOTES = [
 ];
 
 const broadcasts: { ticker: string; name?: string }[] = [];
+const raised: string[] = [];
+let raiseError: Error | null = null;
 const fakeInterop = {
   broadcastInstrument: async (ref: { ticker: string; name?: string }) => void broadcasts.push(ref),
+  raiseViewChart: async (ticker: string) => {
+    if (raiseError) throw raiseError;
+    raised.push(ticker);
+  },
 };
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
 async function render(settings: Partial<BlotterSettings> = {}) {
   broadcasts.length = 0;
+  raised.length = 0;
+  raiseError = null;
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(),
@@ -150,22 +158,28 @@ describe('FR15 BlotterPage row context menu', () => {
     expect(menuItems()).toEqual(['View chart']);
   });
 
-  it('FR15 View chart emits viewChart with the row symbol', async () => {
-    const { host, fixture } = await renderWithRows();
-    const emitted: string[] = [];
-    fixture.componentInstance.viewChart.subscribe((s) => emitted.push(s));
+  it('FR4 FR15 View chart raises the ViewChart intent with the row symbol', async () => {
+    const { host } = await renderWithRows();
     rightClick(row(host, 'MSFT'));
     await settle();
     (document.querySelector('[role="menuitem"]') as HTMLElement).click();
     await settle();
-    expect(emitted).toEqual(['MSFT']);
+    expect(raised).toEqual(['MSFT']);
     expect(document.querySelector('[role="menu"]')).toBeNull();
   });
 
+  it('FR4 an unhandled ViewChart (NoAppsFound) shows an alert instead of failing silently', async () => {
+    const { host } = await renderWithRows();
+    raiseError = new Error('NoAppsFound');
+    rightClick(row(host, 'MSFT'));
+    await settle();
+    (document.querySelector('[role="menuitem"]') as HTMLElement).click();
+    await settle();
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain('Open Instrument Detail');
+  });
+
   it('FR15 View chart does nothing when the menu was opened outside any row', async () => {
-    const { host, fixture } = await renderWithRows();
-    const emitted: string[] = [];
-    fixture.componentInstance.viewChart.subscribe((s) => emitted.push(s));
+    const { host } = await renderWithRows();
     // A row menu opened and closed first must not leave its row behind.
     rightClick(row(host, 'AAPL'));
     await settle();
@@ -177,7 +191,7 @@ describe('FR15 BlotterPage row context menu', () => {
     await settle();
     (document.querySelector('[role="menuitem"]') as HTMLElement).click();
     await settle();
-    expect(emitted).toEqual([]);
+    expect(raised).toEqual([]);
   });
 
   it('FR15 Shift+F10 on the focused row opens the menu', async () => {
