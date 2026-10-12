@@ -1,0 +1,407 @@
+{
+  "model": "claude-sonnet-5-5",
+  "recordedAt": "2026-10-12T22:05:16Z",
+  "cases": {
+    "blotter-all": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"blotter\",\"payload\":{\"symbols\":null}}],\"rationale\":\"Showing your full watchlist in the blotter grid.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"blotter\",\"payload\":{\"symbols\":null}}],\"rationale\":\"Showing your full watchlist in the blotter.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"blotter\",\"payload\":{\"symbols\":null}}],\"rationale\":\"Showing your full watchlist in the blotter.\"}"
+        }
+      ]
+    ],
+    "chart-explicit-range": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"5D\",\"symbol\":\"NVDA\"}}],\"rationale\":\"Showing NVDA's price chart over the last 5 days.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"5D\",\"symbol\":\"NVDA\"}}],\"rationale\":\"Showing a 5-day price chart for NVDA.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"5D\",\"symbol\":\"NVDA\"}}],\"rationale\":\"Showing a 5-day price chart for NVDA as requested.\"}"
+        }
+      ]
+    ],
+    "company-name-to-ticker": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"GS\"}}],\"rationale\":\"Showing the quote details for Goldman Sachs (GS).\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"GS\"}}],\"rationale\":\"Showing the quote for Goldman Sachs (GS).\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"GS\"}}],\"rationale\":\"Showing the quote for Goldman Sachs Group Inc. (GS).\"}"
+        }
+      ]
+    ],
+    "compare-two": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"JPM\",\"GS\"]}}],\"rationale\":\"Showing JPM and GS quote cards side by side for comparison.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"JPM\",\"GS\"]}}],\"rationale\":\"Showing JPMorgan Chase and Goldman Sachs quote cards side by side.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"JPM\",\"GS\"]}}],\"rationale\":\"Showing JPMorgan Chase and Goldman Sachs quotes side by side.\"}"
+        }
+      ]
+    ],
+    "ctx-chart-this": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1D\",\"symbol\":\"TSLA\"}}],\"rationale\":\"Charting the context instrument TSLA over the default 1D range.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1D\",\"symbol\":\"TSLA\"}}],\"rationale\":\"Charting the context instrument TSLA over the default 1D range.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1D\",\"symbol\":\"TSLA\"}}],\"rationale\":\"Showing a 1D price chart for TSLA, the instrument currently in context.\"}"
+        }
+      ]
+    ],
+    "ctx-compare-with": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"AAPL\",\"NVDA\"]}}],\"rationale\":\"Comparing the context ticker AAPL with NVIDIA (NVDA) side by side.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"AAPL\",\"NVDA\"]}}],\"rationale\":\"Comparing the context ticker AAPL with NVIDIA (NVDA) side by side.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"AAPL\",\"NVDA\"]}}],\"rationale\":\"Comparing the context ticker AAPL with NVIDIA (NVDA) side by side.\"}"
+        }
+      ]
+    ],
+    "ctx-details": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"MSFT\"}}],\"rationale\":\"Showing the quote details for MSFT, the instrument currently in context.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"MSFT\"}}],\"rationale\":\"Showing the quote details for MSFT, the instrument currently in context.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"MSFT\"}}],\"rationale\":\"Showing the quote details for MSFT, the instrument currently in context.\"}"
+        }
+      ]
+    ],
+    "ctx-override": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1D\",\"symbol\":\"MSFT\"}}],\"rationale\":\"Showing a 1D price chart for MSFT, the instrument named in your request.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1D\",\"symbol\":\"MSFT\"}}],\"rationale\":\"Showing a 1D price chart for MSFT, the instrument named in your request.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1D\",\"symbol\":\"MSFT\"}}],\"rationale\":\"Showing a 1D price chart for MSFT, the instrument named in your request.\"}"
+        }
+      ]
+    ],
+    "data-best-chart": [
+      [
+        {
+          "toolUseId": "toolu_017HdY4UMeTpt1pgNPDqcERi"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1M\",\"symbol\":\"NVDA\"}}],\"rationale\":\"NVDA is your best performer today (+2.31%), so here is its 1-month chart.\"}"
+        }
+      ],
+      [
+        {
+          "toolUseId": "toolu_013SJTwmS6eP2qdRkwwfHFMY"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1M\",\"symbol\":\"NVDA\"}}],\"rationale\":\"NVDA is your best performer today (+2.31%), so here is its 1M chart.\"}"
+        }
+      ],
+      [
+        {
+          "toolUseId": "toolu_01AFbfyMuePtgzffTMAKRQ7r"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1M\",\"symbol\":\"NVDA\"}}],\"rationale\":\"NVDA is your best performer today (+2.31%), so here is its 1-month chart.\"}"
+        }
+      ]
+    ],
+    "data-top-two-compare": [
+      [
+        {
+          "toolUseId": "toolu_014NL8TYUDbBKdvZr1p4SzRA"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"NVDA\",\"AAPL\"]}}],\"rationale\":\"Your two biggest gainers today are NVDA (+2.31%) and AAPL (+0.85%), shown side by side.\"}"
+        }
+      ],
+      [
+        {
+          "toolUseId": "toolu_01JHtYwWm2qK5aZUNeLTZGj2"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"NVDA\",\"AAPL\"]}}],\"rationale\":\"Your two biggest gainers today are NVDA (+2.31%) and AAPL (+0.85%), shown side by side.\"}"
+        }
+      ],
+      [
+        {
+          "toolUseId": "toolu_01HRdBStBdM3JPuf5zYbGuo4"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"compare\",\"payload\":{\"symbols\":[\"NVDA\",\"AAPL\"]}}],\"rationale\":\"Your two biggest gainers today are NVDA (+2.31%) and AAPL (+0.85%), shown side by side.\"}"
+        }
+      ]
+    ],
+    "data-worst": [
+      [
+        {
+          "toolUseId": "toolu_01HxnKHLuBeAv5qWu4p12FQr"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"TSLA\"}}],\"rationale\":\"TSLA is your worst performer today at -3.12%, so here is its quote.\"}"
+        }
+      ],
+      [
+        {
+          "toolUseId": "toolu_01MQSNcr4mMveACCHUjTnFSD"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"TSLA\"}}],\"rationale\":\"TSLA is your worst performer today at -3.12%, so here is its quote.\"}"
+        }
+      ],
+      [
+        {
+          "toolUseId": "toolu_01SUMZNgnMovRgWt3RNcrwSs"
+        },
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"TSLA\"}}],\"rationale\":\"TSLA is your worst performer today at -3.12%, so here is its quote.\"}"
+        }
+      ]
+    ],
+    "detail-explicit": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"AAPL\"}}],\"rationale\":\"Showing the current quote for Apple (AAPL).\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"AAPL\"}}],\"rationale\":\"Showing the current quote for Apple Inc. (AAPL).\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"AAPL\"}}],\"rationale\":\"Showing the current quote for Apple (AAPL).\"}"
+        }
+      ]
+    ],
+    "injection": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"I can only show market data views such as the watchlist, quotes, charts, movers, and comparisons. I can't change my rules or return other modules.\"}}],\"rationale\":\"The request tries to override the rules and is outside the supported market data views.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"I can't change my instructions or return modules outside this workspace. I can show quotes, charts, comparisons, movers, or your watchlist instead.\"}}],\"rationale\":\"The request tries to override the rules and isn't a market data view, so it is out of scope.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"I can only show market data views such as the watchlist, quotes, charts, movers and comparisons, so I can't do that request.\"}}],\"rationale\":\"The request is outside the supported market-data views, so no module is shown.\"}"
+        }
+      ]
+    ],
+    "losers": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"down\",\"limit\":5}}],\"rationale\":\"Showing the biggest decliners in your watchlist.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"down\",\"limit\":5}}],\"rationale\":\"Showing the biggest decliners in your watchlist.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"down\",\"limit\":5}}],\"rationale\":\"Showing the biggest decliners in your watchlist.\"}"
+        }
+      ]
+    ],
+    "movers-both-default": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"both\",\"limit\":5}}],\"rationale\":\"Showing the top gainers and losers in your watchlist.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"both\",\"limit\":5}}],\"rationale\":\"Showing the top gainers and losers in your watchlist.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"both\",\"limit\":5}}],\"rationale\":\"Showing the top gainers and losers in your watchlist.\"}"
+        }
+      ]
+    ],
+    "movers-up": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"up\",\"limit\":3}}],\"rationale\":\"Showing the top 3 gainers in your watchlist today.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"up\",\"limit\":3}}],\"rationale\":\"Showing the top 3 gainers in your watchlist today.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"watchlist-movers\",\"payload\":{\"direction\":\"up\",\"limit\":3}}],\"rationale\":\"Showing the top 3 gainers in your watchlist today.\"}"
+        }
+      ]
+    ],
+    "oos-trade": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"This demo only shows market data and can't place trades.\"}}],\"rationale\":\"Trading requests are out of scope, so no market data view is shown.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"This demo only shows market data and can't place trades.\"}}],\"rationale\":\"Trading requests are out of scope, so no modules are shown.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"This demo only displays market data and can't place trades or execute orders.\"}}],\"rationale\":\"Trading requests are out of scope, so no modules are shown.\"}"
+        }
+      ]
+    ],
+    "oos-unrelated": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"I can only show market data for the instruments in this demo's watchlist, so I can't write a haiku.\"}}],\"rationale\":\"Writing a haiku is not a market-data viewing request, so it is out of scope.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"I can only show market data for the watchlist, such as quotes, charts, movers and comparisons. I can't write haiku.\"}}],\"rationale\":\"Writing a haiku isn't a market-data view, so it's out of scope.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"I can only show market data for the instruments in this demo, so I can't write a haiku. I can show quotes, charts, comparisons or watchlist movers instead.\"}}],\"rationale\":\"Writing a haiku isn't a market data view, so it's out of scope.\"}"
+        }
+      ]
+    ],
+    "plan-detail-and-chart": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"AAPL\"}},{\"module\":\"price-chart\",\"payload\":{\"range\":\"5D\",\"symbol\":\"AAPL\"}}],\"rationale\":\"Showing Apple's quote details alongside a 5-day price chart.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"AAPL\"}},{\"module\":\"price-chart\",\"payload\":{\"range\":\"5D\",\"symbol\":\"AAPL\"}}],\"rationale\":\"Showing Apple's quote details alongside a 5-day price chart.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"AAPL\"}},{\"module\":\"price-chart\",\"payload\":{\"range\":\"5D\",\"symbol\":\"AAPL\"}}],\"rationale\":\"Showing Apple's quote details alongside a 5-day price chart.\"}"
+        }
+      ]
+    ],
+    "plan-link-windows": [
+      [
+        {
+          "text": "{\"fdc3Action\":{\"ticker\":\"TSLA\",\"type\":\"broadcastInstrument\"},\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"TSLA\"}}],\"rationale\":\"Showing Tesla's quote and broadcasting TSLA to your other windows.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":{\"ticker\":\"TSLA\",\"type\":\"broadcastInstrument\"},\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"TSLA\"}}],\"rationale\":\"Showing Tesla's quote and broadcasting TSLA to your other windows.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":{\"ticker\":\"TSLA\",\"type\":\"broadcastInstrument\"},\"modules\":[{\"module\":\"instrument-detail\",\"payload\":{\"symbol\":\"TSLA\"}}],\"rationale\":\"Showing Tesla's quote and broadcasting TSLA to your other windows.\"}"
+        }
+      ]
+    ],
+    "range-month": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1M\",\"symbol\":\"AMZN\"}}],\"rationale\":\"Showing Amazon's price chart over the past month.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1M\",\"symbol\":\"AMZN\"}}],\"rationale\":\"Showing Amazon's price chart over the past month.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"price-chart\",\"payload\":{\"range\":\"1M\",\"symbol\":\"AMZN\"}}],\"rationale\":\"Showing Amazon's price chart over the last month.\"}"
+        }
+      ]
+    ],
+    "unknown-ticker": [
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"Ford isn't in this demo's data. Available instruments are AAPL, MSFT, NVDA, TSLA, JPM, GS, AMZN, GOOGL, META and XOM.\"}}],\"rationale\":\"Ford is outside the demo's instrument universe, so there is nothing to show.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"Ford isn't in this demo's data. Available instruments are AAPL, MSFT, NVDA, TSLA, JPM, GS, AMZN, GOOGL, META and XOM.\"}}],\"rationale\":\"Ford is outside the demo's instrument universe, so there is nothing to display.\"}"
+        }
+      ],
+      [
+        {
+          "text": "{\"fdc3Action\":null,\"modules\":[{\"module\":\"none\",\"payload\":{\"reason\":\"Ford isn't in this demo's data. Available instruments are AAPL, MSFT, NVDA, TSLA, JPM, GS, AMZN, GOOGL, META and XOM.\"}}],\"rationale\":\"Ford is outside the demo's instrument universe, so there is nothing to show.\"}"
+        }
+      ]
+    ]
+  }
+}
