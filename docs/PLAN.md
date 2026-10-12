@@ -48,7 +48,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] Blotter broadcasts `fdc3.instrument`; Detail listens (FR2, FR3). Detail shows the quote only; tabs and chart land with FR12
 - [x] Detail Quote and Chart tabs with `poc-line-chart` and range switch (FR12); `ViewChart` handled (FR4). Component level; E2E lands with E2E-1 to E2E-5
 - [x] E2E-1 to E2E-5 with axe scans and keyboard paths (`web/e2e/blotter-detail.e2e.ts`); Blotter now raises `ViewChart` through `InteropService` (DECISIONS #35). Forced-colors and reduced-motion E2E checks remain with the visual job
-- [ ] Register apps in Sail from `specs/appd.json`; verify across two tabs; record a GIF
+- [x] Register apps in Sail from `specs/appd.json`; verified in real Sail (directory `http://localhost:8080/appd/v2/apps`): Blotter broadcast updates Detail (FR2/FR3), row-menu `ViewChart` goes through Sail's resolver and Detail opens the chart (FR4); evidence `docs/media/sail-viewchart.jpg`. Both apps ran as panels in one Sail tab, which Sail links itself. Still manual: record the README GIF
 
 ## Day 2 PM: Agent + evals + docs
 - [x] Deterministic fallback F1–F7 (FR19) and semantic checks S1–S8 (FR20), table-driven tests
