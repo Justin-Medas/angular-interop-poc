@@ -1,6 +1,7 @@
-// Shell chrome (FR11, FR14): header with title, environment badge and theme toggle, plus the routed workspace.
+// Shell chrome (FR11, FR14): header with title, environment and interop badges, and theme toggle, plus the routed workspace.
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { INTEROP } from '@poc/interop';
 import { PocBadge } from '@poc/ui';
 import { RuntimeConfigStore } from '../config/runtime-config';
 import { ThemeToggle } from '../config/theme-toggle';
@@ -15,6 +16,9 @@ import { ThemeToggle } from '../config/theme-toggle';
 })
 export class ShellLayout {
   private readonly store = inject(RuntimeConfigStore);
+  private readonly interop = inject(INTEROP);
+  /** FR14: which transport is live, as text for the interop badge. */
+  protected readonly interopStatus = this.interop.status;
   /** Text for the environment badge (local, docker, ci, …); empty when no config loaded. */
   protected readonly environment = computed(() => this.store.config()?.environment ?? '');
 }

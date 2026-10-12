@@ -1,0 +1,21 @@
+<h2>Workspace</h2>
+<poc-command-bar
+  [pending]="pending()"
+  [describedBy]="error() ? errorId : null"
+  (submitted)="submit($event)"
+/>
+@if (error(); as message) {
+  <poc-card heading="Request failed">
+    <p role="alert" [id]="errorId">{{ message }}</p>
+  </poc-card>
+}
+<!-- The region is always in the DOM so assistive tech notices its text changing (NFR-A6). -->
+<p class="rationale" aria-live="polite">{{ response()?.plan?.rationale }}</p>
+@if (syncFailed()) {
+  <p role="alert">Could not sync other windows.</p>
+}
+@if (response(); as r) {
+  <poc-plan-view [response]="r" (rendered)="onRendered()" />
+} @else {
+  <p>No modules loaded yet.</p>
+}

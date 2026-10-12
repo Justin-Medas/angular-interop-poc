@@ -1,8 +1,9 @@
 <header>
   <h1>Interop Workspace</h1>
   @if (environment(); as env) {
-    <poc-badge [text]="env" />
+    <poc-badge data-testid="environment-badge" [text]="env" />
   }
+  <poc-badge data-testid="interop-badge" [text]="'Interop: ' + interopStatus()" />
   <poc-theme-toggle />
 </header>
 <main>

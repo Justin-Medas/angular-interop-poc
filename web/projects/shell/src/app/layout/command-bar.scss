@@ -1,0 +1,29 @@
+/* Styles for the command bar. The input is a native control styled from tokens, with the shared focus ring. */
+label {
+  display: block;
+  margin-block-end: var(--poc-space-1);
+  font-size: var(--poc-text-sm);
+}
+
+.row {
+  display: flex;
+  gap: var(--poc-space-2);
+}
+
+input {
+  flex: 1;
+  min-height: var(--poc-size-target);
+  padding: var(--poc-space-1) var(--poc-space-3);
+  border: var(--poc-border-width) solid var(--poc-color-border-control);
+  border-radius: var(--poc-radius-sm);
+  background: var(--poc-color-surface);
+  color: var(--poc-color-text);
+  font: inherit;
+  outline: var(--poc-focus-ring-idle);
+  transition: var(--poc-transition-focus);
+}
+
+input:focus-visible {
+  outline: var(--poc-focus-ring);
+  outline-offset: var(--poc-focus-offset);
+}

@@ -36,7 +36,9 @@ describe('FR14 shell layout at /', () => {
 
   it('FR14 shows the environment from runtime config as a badge with text', async () => {
     const el = await visit('/', { environment: 'docker' });
-    expect(el.querySelector('header poc-badge')?.textContent?.trim()).toBe('docker');
+    expect(el.querySelector('header [data-testid="environment-badge"]')?.textContent?.trim()).toBe(
+      'docker',
+    );
   });
 
   it('FR14 shows no environment badge when no config is loaded', async () => {
@@ -52,7 +54,9 @@ describe('FR14 shell layout at /', () => {
     TestBed.inject(RuntimeConfigStore).config.set(null);
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/');
-    expect(harness.fixture.nativeElement.querySelector('header poc-badge')).toBeNull();
+    expect(
+      harness.fixture.nativeElement.querySelector('header [data-testid="environment-badge"]'),
+    ).toBeNull();
   });
 
   it('FR11 puts the theme toggle in the header', async () => {
@@ -66,6 +70,14 @@ describe('FR14 shell layout at /', () => {
     const el = await visit('/');
     expect(el.querySelector('main h2')?.textContent).toBe('Workspace');
     expect(el.querySelector('main')?.textContent).toContain('No modules loaded yet');
+    expect(el.querySelector('main [role="search"]')).not.toBeNull();
+  });
+
+  it('FR14 shows the interop status as a badge with text', async () => {
+    const el = await visit('/');
+    expect(el.querySelector('header [data-testid="interop-badge"]')?.textContent).toContain(
+      'in-memory',
+    );
   });
 
   it('NFR-A2 has no axe violations', async () => {

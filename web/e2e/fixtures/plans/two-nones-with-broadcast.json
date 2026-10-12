@@ -1,0 +1,14 @@
+{
+  "plan": {
+    "modules": [
+      { "module": "none", "payload": { "reason": "First card reason." } },
+      { "module": "none", "payload": { "reason": "Second card reason." } }
+    ],
+    "fdc3Action": { "type": "broadcastInstrument", "ticker": "TSLA" },
+    "rationale": "Showing two cards and syncing TSLA."
+  },
+  "source": "model",
+  "model": "claude-sonnet-5-5",
+  "latencyMs": 800,
+  "toolCalls": 1
+}
