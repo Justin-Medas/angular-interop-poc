@@ -1,9 +1,9 @@
-// Blotter micro-app (FR1, FR2, FR15). Lists the watchlist from GET /quotes, broadcasts the selected instrument through
+// Blotter micro-app (FR1, FR2, FR4, FR15). Lists the watchlist from GET /quotes, broadcasts the selected instrument through
 // INTEROP, and offers a row menu whose "View chart" raises the ViewChart intent. Knows nothing about AG Grid or FDC3:
 // it uses poc-data-table and the INTEROP token only (NFR-ARCH2).
 import { HttpClient } from '@angular/common/http';
 import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
-import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { INTEROP } from '@poc/interop';
 import { PocColumn, PocDataTable, PocRowContextMenu } from '@poc/ui';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -47,8 +47,8 @@ export class BlotterPage {
   /** The row the open menu belongs to; cleared when the menu closes so a stale row cannot be charted. */
   protected readonly menuRow = signal<Quote | null>(null);
 
-  /** Raised by the menu's "View chart" item. The interop block turns it into the ViewChart intent. */
-  readonly viewChart = output<string>();
+  /** Set when ViewChart found no handler (NoAppsFound), so the failure is visible rather than swallowed. */
+  protected readonly viewChartFailed = signal(false);
 
   constructor() {
     const { apiBaseUrl, pollIntervalMs } = this.settings;
@@ -83,9 +83,12 @@ export class BlotterPage {
     if (e.source === 'keyboard') menu.open({ x: e.x, y: e.y });
   }
 
-  /** "View chart" item. Does nothing when no row is set, e.g. a right-click on the header (DECISIONS #28). */
+  /** "View chart" item (FR4, FR15): raises the ViewChart intent. Does nothing when no row is set, e.g. a right-click on the header (DECISIONS #28). */
   protected onViewChart(): void {
     const row = this.menuRow();
-    if (row) this.viewChart.emit(row.symbol);
+    if (!row) return;
+    this.viewChartFailed.set(false);
+    // Rejects with NoAppsFound when no Detail is open (fdc3-contract.md §5); say so instead of doing nothing.
+    this.interop.raiseViewChart(row.symbol).catch(() => this.viewChartFailed.set(true));
   }
 }
