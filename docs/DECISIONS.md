@@ -286,3 +286,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision:** Whole-word means literal: `\b` around the keyword, so plurals do not match (`losers` falls to F7). The limit is the first integer that lies in 1–10, skipping others, so it can never violate S6. Payloads are `map[string]any` and the checks accept both Go-built and JSON-decoded values.
 - **Alternatives rejected:** auto-matching plurals (a silent spec change; propose it in SPEC §7.4 first); clamping out-of-range integers (would invent a limit the user never asked for).
 - **Consequences:** "biggest losers" gets the F7 message in fallback. A test pins this so widening is a deliberate spec edit.
+
+## #38 Day-2 API checks: structured output + strict tool, and nested `anyOf`, both work
+- **Context:** SPEC §9 had two open checks that could have forced the `submit_plan` variant (§7.2) or a flattened `ModuleRequest`.
+- **Decision:** Keep the §7.2 design unchanged. On 2026-10-12 a live probe sent the unmodified `specs/agent-tool-schema.json` as `output_config.format` (`effort: low`, no `thinking`, `tool_choice` auto) with the strict `get_watchlist_quotes` tool to `claude-sonnet-5-5` and `claude-opus-5-5`. For "Chart my worst performer", both models made one tool call, then returned JSON with a `price-chart` module for the lowest-`changePct` symbol. For a multi-module prompt with an explicit share request, both returned `compare` + `watchlist-movers` and `fdc3Action: broadcastInstrument` with defaults applied, and made no tool call.
+- **Alternatives rejected:** the `submit_plan` tool variant and a flattened schema; neither is needed.
+- **Consequences:** the probe covered the happy path only (3 of 6 module variants exercised). Semantic checks S1–S8 and the 4th-call tool limit still need the agent tests. The agent p95 check (§9) is still open.
