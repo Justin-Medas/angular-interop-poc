@@ -148,8 +148,8 @@ describe('FR13 price-chart module', () => {
 describe('FR13 watchlist-movers module', () => {
   const ALL = [AAPL, MSFT, NVDA, TSLA, GS];
   const symbols = (host: HTMLElement, group: string) =>
-    Array.from(host.querySelectorAll(`[data-testid="${group}"] li`)).map((li) =>
-      li.textContent!.trim().slice(0, 4).trim(),
+    Array.from(host.querySelectorAll(`[data-testid="${group}"] li`)).map(
+      (li) => li.textContent!.trim().split(/\s/)[0],
     );
 
   it('FR13 up ranks the top N gainers by change %', async () => {

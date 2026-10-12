@@ -8,6 +8,13 @@ export type ModuleLoader = () => Promise<Type<unknown>>;
 /** The modules the shell can render. Each component takes one required `payload` input. */
 export const MODULE_LOADERS: Readonly<Record<string, ModuleLoader>> = {
   none: () => import('./none-module').then((m) => m.NoneModule),
+  blotter: () => import('./blotter-module').then((m) => m.BlotterModule),
+  'instrument-detail': () =>
+    import('./instrument-detail-module').then((m) => m.InstrumentDetailModule),
+  'price-chart': () => import('./price-chart-module').then((m) => m.PriceChartModule),
+  'watchlist-movers': () =>
+    import('./watchlist-movers-module').then((m) => m.WatchlistMoversModule),
+  compare: () => import('./compare-module').then((m) => m.CompareModule),
 };
 
 /** Looks up a loader by own property only, so names like `constructor` are unknown rather than inherited. */
