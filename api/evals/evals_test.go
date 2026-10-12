@@ -20,7 +20,9 @@ func resp(source string, tools int, action *agent.Action, mods ...agent.Module) 
 	return agent.Response{Source: source, ToolCalls: tools, Plan: agent.Plan{Modules: mods, FDC3Action: action}}
 }
 
-func mod(name string, payload map[string]any) agent.Module { return agent.Module{Module: name, Payload: payload} }
+func mod(name string, payload map[string]any) agent.Module {
+	return agent.Module{Module: name, Payload: payload}
+}
 
 func TestGrade_FR9(t *testing.T) {
 	tsla := &agent.Action{Type: "broadcastInstrument", Ticker: "TSLA"}
@@ -109,7 +111,7 @@ cases:
     expect: { modules: [{ module: price-chart, payload: { symbol: AAPL, range: "1D" } }], source: fallback }
 `
 
-const blotterPlan = `{"modules":[{"module":"blotter","payload":{}}],"fdc3Action":null,"rationale":"Opening the watchlist."}`
+const blotterPlan = `{"modules":[{"module":"blotter","payload":{"symbols":null}}],"fdc3Action":null,"rationale":"Opening the watchlist."}`
 
 func writeFile(t *testing.T, dir, name, body string) string {
 	t.Helper()
@@ -320,4 +322,17 @@ type errClient struct{}
 
 func (errClient) Next(context.Context, string, []agent.Message) (agent.Reply, error) {
 	return agent.Reply{}, errors.New("boom")
+}
+
+func TestRun_FR9_LiveWithoutRecordLeavesNoFile(t *testing.T) {
+	dir := t.TempDir()
+	cases := writeFile(t, dir, "cases.yaml", miniCases)
+	rec := filepath.Join(dir, "rec.json")
+	stubLive(t, blotterPlan)
+	if code, out, _ := exec("-cases", cases, "-mode", "live", "-recordings", rec); code != 0 {
+		t.Fatalf("exit %d\n%s", code, out)
+	}
+	if _, err := os.Stat(rec); err == nil {
+		t.Error("recordings written without -record")
+	}
 }
