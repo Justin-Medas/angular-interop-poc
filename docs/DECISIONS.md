@@ -280,3 +280,9 @@ Format: context → decision → consequences. Add entries; don't rewrite histor
 - **Decision:** `scripts/visual.mjs` builds the API for `linux/amd64` on the host, then runs the suite with `docker run --platform linux/amd64`, a named volume for Linux `node_modules`, and the image tag derived from the exact `@playwright/test` version. The CI job uses the same image as a `container` and `setup-go`; a script test fails if the two tags drift. `web/.gitignore` no longer ignores `__screenshots__/` so baselines are committed.
 - **Alternatives rejected:** mocking the API in the tests (snapshots would not show real mock data); installing Go inside the container on every local run (slow, network-dependent); native arm64 baselines (CI would fail on pixel noise).
 - **Consequences:** a local run on Apple silicon is slow the first time (emulation plus `npm ci`, about 30 minutes here), about 40 s afterwards. Baselines generated locally have not yet been compared with a real CI run, so the first CI run is the proof.
+
+## #37 Fallback keywords match literally; limit skips out-of-range integers
+- **Context:** SPEC §7.4 says every keyword matches whole words only, and F4's limit is "the first integer 1–10 in the prompt". Two readings were open: does `gainers` match `gainer`, and is `buy 100 … top 4` limit 4 or none?
+- **Decision:** Whole-word means literal: `\b` around the keyword, so plurals do not match (`losers` falls to F7). The limit is the first integer that lies in 1–10, skipping others, so it can never violate S6. Payloads are `map[string]any` and the checks accept both Go-built and JSON-decoded values.
+- **Alternatives rejected:** auto-matching plurals (a silent spec change; propose it in SPEC §7.4 first); clamping out-of-range integers (would invent a limit the user never asked for).
+- **Consequences:** "biggest losers" gets the F7 message in fallback. A test pins this so widening is a deliberate spec edit.
