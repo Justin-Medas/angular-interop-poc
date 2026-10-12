@@ -164,3 +164,6 @@ func TestContract_FR5_PutThenGetAndQuotesFollow(t *testing.T) {
 func TestServer_NFRP2_TickModeStartsTicker(t *testing.T) {
 	New(config.Config{MockTick: true, MockNow: defaultNow}) // must not panic; ticker goroutine runs until exit
 }
+
+// jsonschemaParse decodes JSON the way the compiler expects (numbers as json.Number).
+func jsonschemaParse(b []byte) (any, error) { return jsonschema.UnmarshalJSON(strings.NewReader(string(b))) }

@@ -34,6 +34,7 @@ type Message struct {
 	Role      string // "user" or "assistant"
 	Text      string
 	ToolUseID string
+	Raw       any // client-private form of an assistant turn, echoed back verbatim (see Reply.Raw)
 }
 
 // Reply is the model's next turn. At most one of ToolUseID (it wants get_watchlist_quotes) and
@@ -42,6 +43,9 @@ type Reply struct {
 	Text      string
 	ToolUseID string
 	Refused   bool
+	// Raw is the client's own representation of this turn. The loop stores it in the assistant
+	// Message untouched, so a client can echo content it does not model (e.g. signed thinking blocks).
+	Raw any
 }
 
 // ModelClient sends the conversation so far and returns the model's next turn. Implementations
@@ -149,7 +153,7 @@ func (a *Agent) SelectModule(ctx context.Context, req Request) Response {
 		}
 		calls++
 		msgs = append(msgs,
-			Message{Role: "assistant", ToolUseID: reply.ToolUseID, Text: reply.Text},
+			Message{Role: "assistant", ToolUseID: reply.ToolUseID, Text: reply.Text, Raw: reply.Raw},
 			Message{Role: "user", ToolUseID: reply.ToolUseID, Text: a.watchlistQuotes()})
 	}
 }
