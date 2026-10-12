@@ -1,0 +1,11 @@
+{
+  "plan": {
+    "modules": [{ "module": "hologram", "payload": {} }],
+    "fdc3Action": null,
+    "rationale": "A module the shell does not know."
+  },
+  "source": "model",
+  "model": "claude-sonnet-5-5",
+  "latencyMs": 500,
+  "toolCalls": 0
+}

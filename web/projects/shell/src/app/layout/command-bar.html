@@ -1,0 +1,14 @@
+<form role="search" aria-label="Command bar" (submit)="onSubmit($event, box)">
+  <label [for]="inputId">Ask the workspace</label>
+  <div class="row">
+    <input
+      #box
+      [id]="inputId"
+      type="text"
+      maxlength="500"
+      autocomplete="off"
+      [attr.aria-describedby]="describedBy()"
+    />
+    <poc-button type="submit" [busy]="pending()">Ask</poc-button>
+  </div>
+</form>

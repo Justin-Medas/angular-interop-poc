@@ -1,0 +1,14 @@
+/* Styles for the plan metadata strip and module list. */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--poc-space-3);
+  margin-block-end: var(--poc-space-3);
+  color: var(--poc-color-text-muted);
+  font-size: var(--poc-text-sm);
+}
+
+.slot {
+  margin-block-end: var(--poc-space-4);
+}

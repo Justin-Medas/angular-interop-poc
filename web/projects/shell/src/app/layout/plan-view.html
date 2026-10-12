@@ -1,0 +1,15 @@
+@let r = response();
+<div class="meta" data-testid="plan-meta">
+  <poc-badge [text]="r.source" [tone]="r.source === 'model' ? 'ok' : 'warn'" />
+  @if (r.source === 'model') {
+    <span>Model: {{ r.model }}</span>
+  } @else {
+    <span>Reason: {{ r.fallbackReason }}</span>
+  }
+  <span>Tool calls: {{ r.toolCalls }}</span>
+</div>
+@for (m of r.plan.modules; track m; let i = $index) {
+  <div class="slot" [attr.data-module]="m.module">
+    <poc-module-slot [request]="m" (ready)="onSlotReady(i, $event)" />
+  </div>
+}

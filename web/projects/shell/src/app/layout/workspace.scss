@@ -1,0 +1,14 @@
+/* Styles for the workspace column. */
+:host {
+  display: block;
+}
+
+poc-command-bar,
+poc-card {
+  display: block;
+  margin-block-end: var(--poc-space-4);
+}
+
+.rationale {
+  margin-block: var(--poc-space-3);
+}

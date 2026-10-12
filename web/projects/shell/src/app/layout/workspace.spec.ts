@@ -65,10 +65,7 @@ async function ask(
   await fixture.whenStable();
 }
 
-async function reply(
-  t: ReturnType<typeof setup>,
-  response: WorkspacePlanResponse,
-): Promise<void> {
+async function reply(t: ReturnType<typeof setup>, response: WorkspacePlanResponse): Promise<void> {
   t.http.expectOne('http://api.test/agent/select-module').flush(response);
   await t.fixture.whenStable();
   await new Promise((r) => setTimeout(r));
@@ -135,7 +132,10 @@ describe('FR14 command bar', () => {
     vi.useFakeTimers();
     try {
       const t = setup();
-      await ask(t, 'slow');
+      // No whenStable here: it waits for the pending request, which only the fake clock can end.
+      const input = t.host.querySelector('input') as HTMLInputElement;
+      input.value = 'slow';
+      input.form!.requestSubmit();
       vi.advanceTimersByTime(15_000);
       t.fixture.detectChanges();
       expect(t.host.querySelector('[role="alert"]')?.textContent).toContain('took too long');
@@ -193,6 +193,16 @@ describe('FR8 plan renderer', () => {
     expect(first.querySelector('[role="alert"]')?.textContent).toContain('Unknown module');
     expect(first.textContent).toContain('hologram');
     expect(t.host.textContent).toContain('still here');
+  });
+
+  it('FR8 treats inherited object keys like "constructor" as unknown modules', async () => {
+    const t = setup();
+    await ask(t, 'proto');
+    await reply(t, {
+      ...NONE,
+      plan: { ...NONE.plan, modules: [{ module: 'constructor', payload: {} } as never] },
+    });
+    expect(t.host.querySelector('[role="alert"]')?.textContent).toContain('Unknown module');
   });
 
   it('FR8 replaces the previous plan when a new one arrives', async () => {
