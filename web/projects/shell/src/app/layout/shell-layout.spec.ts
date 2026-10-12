@@ -66,6 +66,14 @@ describe('FR14 shell layout at /', () => {
     const el = await visit('/');
     expect(el.querySelector('main h2')?.textContent).toBe('Workspace');
     expect(el.querySelector('main')?.textContent).toContain('No modules loaded yet');
+    expect(el.querySelector('main [role="search"]')).not.toBeNull();
+  });
+
+  it('FR14 shows the interop status as a badge with text', async () => {
+    const el = await visit('/');
+    expect(el.querySelector('header [data-testid="interop-badge"]')?.textContent).toContain(
+      'in-memory',
+    );
   });
 
   it('NFR-A2 has no axe violations', async () => {
