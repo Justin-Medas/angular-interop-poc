@@ -1,5 +1,5 @@
 # Test pipeline for every PR and push to main (specs/testing.md §8). Jobs: lint (format, static analysis, security,
-# code-documentation rules), unit-go, unit-web, e2e (ubuntu + windows), visual (pinned Playwright container). Native-quickstart smoke tests live in fresh-clone.yml.
+# code-documentation rules), unit-go, unit-web, e2e (ubuntu + windows), visual (pinned Playwright container), evals (fallback + replay). Native-quickstart smoke tests live in fresh-clone.yml.
 name: ci
 on:
   pull_request:
@@ -157,3 +157,24 @@ jobs:
           path: |
             web/playwright-report
             web/test-results
+  # Evals (specs/testing.md §7). fallback is deterministic and always runs. replay needs the committed recordings
+  # (api/evals/recordings/recordings.json, from a live -record run), so it starts running as soon as that file exists
+  # (DECISIONS #41). The key-holding live job is separate and not part of this job, so no secret is in scope here.
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.sum }
+      - name: fallback cases
+        working-directory: api
+        run: go run ./evals -mode fallback -report eval-report-fallback.md
+      - name: replay cases
+        if: ${{ hashFiles('api/evals/recordings/recordings.json') != '' }}
+        working-directory: api
+        run: go run ./evals -mode replay -report eval-report-replay.md
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: eval-report
+          path: api/eval-report-*.md

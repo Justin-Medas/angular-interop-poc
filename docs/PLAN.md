@@ -57,7 +57,8 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] Shell command bar, plan renderer (1–3 modules, live region, focus), `fdc3Action`, badges (FR8, FR14, FR17). Renderer ships with the `none` module; the rest of FR13 and the 3 plan-screen snapshots follow (DECISIONS #40)
 - [x] Module components: `blotter`, `instrument-detail`, `price-chart`, `watchlist-movers`, `compare` (FR13; component level, the 3 plan-screen snapshots follow)
 - [ ] E2E-6 to E2E-9 are done with stubbed plan fixtures (`web/e2e/fixtures/plans`); the fixture contract test remains
-- [ ] Eval runner (`live` / `replay` / `fallback`), recordings, `evals` CI job → `docs/eval-report.md`, model ≥ 90%, fallback 100%
+- [x] Eval runner (`live` / `replay` / `fallback`, `-record`, `-report`) and `evals` CI job (fallback now; replay once recordings exist) (FR9, DECISIONS #41)
+- [ ] Live eval run with `-record` (needs `ANTHROPIC_API_KEY`): commit `api/evals/recordings/recordings.json` and `docs/eval-report.md`; model ≥ 90%, fallback 100%; then the key-holding `live` CI job
 - [ ] At the end only: one live eval run with `AGENT_MODEL=claude-opus-5-5`, compare with the default, and record the demo model in DECISIONS #20
 - [ ] `mutation` CI job (non-blocking)
 - [ ] Screen-reader pass (VoiceOver, NVDA) → `docs/a11y-report.md`
