@@ -34,7 +34,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	if err := compiler.AddResource("agent-tool-schema.json", parsed); err != nil {
+	if err := compiler.AddResource(specBase+"agent-tool-schema.json", parsed); err != nil {
 		panic(err)
 	}
 }

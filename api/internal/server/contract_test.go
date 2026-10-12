@@ -14,6 +14,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// specBase is the agent schema's $id directory. Serving openapi.yaml from the same base makes its
+// relative $ref "./agent-tool-schema.json" resolve to the schema registered under that $id.
+const specBase = "https://poc.local/specs/"
+
 // Contract tests: real responses are validated against specs/openapi.yaml (OpenAPI 3.1 schemas are
 // JSON Schema 2020-12, so jsonschema/v6 validates them directly; DECISIONS #17).
 var compiler = func() *jsonschema.Compiler {
@@ -32,7 +36,7 @@ var compiler = func() *jsonschema.Compiler {
 	}
 	c := jsonschema.NewCompiler()
 	c.AssertFormat()
-	if err := c.AddResource("openapi.yaml", parsed); err != nil {
+	if err := c.AddResource(specBase+"openapi.yaml", parsed); err != nil {
 		panic(err)
 	}
 	return c
@@ -40,7 +44,7 @@ var compiler = func() *jsonschema.Compiler {
 
 func validate(t *testing.T, ref string, body []byte) {
 	t.Helper()
-	s, err := compiler.Compile("openapi.yaml#" + ref)
+	s, err := compiler.Compile(specBase + "openapi.yaml#" + ref)
 	if err != nil {
 		t.Fatalf("compile %s: %v", ref, err)
 	}
@@ -166,4 +170,6 @@ func TestServer_NFRP2_TickModeStartsTicker(t *testing.T) {
 }
 
 // jsonschemaParse decodes JSON the way the compiler expects (numbers as json.Number).
-func jsonschemaParse(b []byte) (any, error) { return jsonschema.UnmarshalJSON(strings.NewReader(string(b))) }
+func jsonschemaParse(b []byte) (any, error) {
+	return jsonschema.UnmarshalJSON(strings.NewReader(string(b)))
+}
