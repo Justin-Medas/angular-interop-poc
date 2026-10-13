@@ -57,8 +57,6 @@ jobs:
         working-directory: web
         run: >
           npx stryker run ${{ matrix.config }} --mutate '${{ matrix.mutate }}'
-          --jsonReporter.fileName reports/mutation/${{ matrix.name }}.json
-          --htmlReporter.fileName reports/mutation/${{ matrix.name }}.html
       - name: summary
         if: always()
         run: node scripts/mutation-summary.mjs >> "$GITHUB_STEP_SUMMARY"
