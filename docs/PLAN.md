@@ -59,7 +59,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] E2E-6 to E2E-9 are done with stubbed plan fixtures (`web/e2e/fixtures/plans`); the fixture contract test guards them
 - [x] Eval runner (`live` / `replay` / `fallback`, `-record`, `-report`) and `evals` CI job (fallback now; replay once recordings exist) (FR9, DECISIONS #41)
 - [x] Live eval run with `-record`: recordings and `docs/eval-report.md` committed; model 100% (66/66), fallback 100% (12/12), replay reproduces it offline
-- [ ] Key-holding `live` CI job (team.md secret rules)
+- [x] Key-holding `live` CI job in its own workflow `eval-live.yml` (PR path filter, nightly, manual dispatch; team.md secret rules). Needs the `ANTHROPIC_API_KEY` repo secret set once: `gh secret set ANTHROPIC_API_KEY`
 - [ ] At the end only: one live eval run with `AGENT_MODEL=claude-opus-5-5`, compare with the default, and record the demo model in DECISIONS #20
 - [ ] `mutation` CI job (non-blocking)
 - [ ] Screen-reader pass (VoiceOver, NVDA) → `docs/a11y-report.md`

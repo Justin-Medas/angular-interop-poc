@@ -1,0 +1,48 @@
+# Live evals against real Claude (specs/testing.md §7, FR9). The only workflow that holds ANTHROPIC_API_KEY, so it
+# is separate from ci.yml and follows team.md's secret rules:
+#   - the key is set only in the one step that needs it, never at workflow or job level;
+#   - no `pull_request_target` trigger, so PR code from forks never runs with the secret;
+#   - every action is pinned by commit SHA (the tag is in the comment);
+#   - the report and artifacts never contain the key or request headers (the runner writes neither).
+# Uses the default model (claude-sonnet-5-5) unless a manual run passes agent_model (DECISIONS #20).
+name: eval-live
+on:
+  pull_request:
+    paths:
+      - 'api/internal/agent/**'
+      - 'specs/agent-tool-schema.json'
+      - 'specs/mock-data.yaml'
+      - 'specs/evals/**'
+  schedule:
+    - cron: '17 3 * * *' # nightly
+  workflow_dispatch:
+    inputs:
+      agent_model:
+        description: 'Model override (default claude-sonnet-5-5)'
+        required: false
+        default: ''
+concurrency:
+  group: eval-live-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    # Fork PRs get no secrets; skip them instead of failing on an empty key.
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.sum }
+      - name: live cases (66 requests)
+        working-directory: api
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AGENT_MODEL: ${{ inputs.agent_model }}
+        run: go run ./evals -mode live -report eval-report-live.md
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: eval-report-live
+          path: api/eval-report-live.md
