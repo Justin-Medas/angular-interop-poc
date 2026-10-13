@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Installs FINOS FDC3 Sail (the browser Desktop Agent) at a pinned commit into .sail/fdc3-sail.
 // Cross-platform: plain Node + git, no bash. Safe to re-run; skips work that's already done.
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
+import { withPocDirectory } from './sail-patch.mjs';
 
 // Bump deliberately, and record why in docs/DECISIONS.md.
 const SAIL_REPO = 'https://github.com/finos/FDC3-Sail.git';
@@ -38,7 +39,18 @@ if (currentSha() !== SAIL_SHA) {
   console.log(`✓ FDC3 Sail already at ${SAIL_SHA.slice(0, 7)}`);
 }
 
-if (!existsSync(join(dir, 'packages', 'web', 'dist'))) {
+// Pre-register our app directory in Sail's defaults so Blotter and Detail appear without a manual
+// Settings step (DECISIONS #42). A changed file means the existing build is stale.
+const statePath = join(dir, 'packages', 'common', 'src', 'LocalStorageClientState.ts');
+const original = readFileSync(statePath, 'utf8');
+const patched = withPocDirectory(original);
+const patchChanged = patched !== original;
+if (patchChanged) {
+  writeFileSync(statePath, patched);
+  console.log('→ Patched Sail default directories to include the POC app directory');
+}
+
+if (patchChanged || !existsSync(join(dir, 'packages', 'web', 'dist'))) {
   console.log('→ Installing and building FDC3 Sail (first run takes a minute or two)');
   run('npm', ['ci', '--no-audit', '--no-fund']);
   run('npm', ['run', 'build']);

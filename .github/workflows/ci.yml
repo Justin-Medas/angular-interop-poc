@@ -41,7 +41,7 @@ jobs:
           cache-dependency-path: web/package-lock.json
       # File headers for every covered file type (NFR-C1, NFR-C4), and a test that the checker itself works.
       - name: file header comments
-        run: node scripts/check-comments.mjs && node --test scripts/check-comments.test.mjs
+        run: node scripts/check-comments.mjs && node --test scripts/check-comments.test.mjs scripts/sail-patch.test.mjs
       - name: web dependencies
         working-directory: web
         run: npm ci
