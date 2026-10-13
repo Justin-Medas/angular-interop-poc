@@ -63,7 +63,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [ ] At the end only: one live eval run with `AGENT_MODEL=claude-opus-5-5`, compare with the default, and record the demo model in DECISIONS #20
 - [x] `mutation` CI job (non-blocking): StrykerJS on interop adapters (85%) and shell registry/loader (89%), gremlins on the Go fallback + semantic validator (100%); `mutation.yml`, DECISIONS #43
 - [ ] Screen-reader pass (VoiceOver, NVDA) → `docs/a11y-report.md`
-- [ ] README: architecture diagram, setup, honest limitations
+- [x] README: architecture diagram, setup, honest limitations
 - [ ] Fresh-clone rehearsal: clone into a temp dir, follow the README quickstart verbatim (Docker path and native path)
 - [ ] Demo recording (~4 min, follows SPEC §4)
 - [ ] Interview prep: `/explain` on shell, blotter, interop service, agent handler, tokens
