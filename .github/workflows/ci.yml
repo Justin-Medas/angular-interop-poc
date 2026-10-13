@@ -159,7 +159,7 @@ jobs:
             web/test-results
   # Evals (specs/testing.md §7). fallback is deterministic and always runs. replay needs the committed recordings
   # (api/evals/recordings/recordings.json, from a live -record run), so it starts running as soon as that file exists
-  # (DECISIONS #41). The key-holding live job is separate and not part of this job, so no secret is in scope here.
+  # (DECISIONS #41). The key-holding live job is `eval-live.yml`, separate from this job, so no secret is in scope here.
   evals:
     runs-on: ubuntu-latest
     steps:
