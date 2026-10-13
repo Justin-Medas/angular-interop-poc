@@ -21,10 +21,26 @@ concurrency:
 permissions:
   contents: read
 jobs:
-  mutation:
+  # inPlace Stryker runs are serial, so wall-clock time is cut by splitting the mutants across parallel jobs
+  # (the slowest slice is about 4 minutes instead of 11 serial).
+  stryker:
+    name: stryker ${{ matrix.name }}
     runs-on: ubuntu-latest
     continue-on-error: true # NFR-T7: reports, never blocks
-    timeout-minutes: 60
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: interop-a
+            config: stryker.interop.config.json
+            mutate: "projects/interop/src/lib/in-memory-interop.service.ts,projects/interop/src/lib/interop.service.ts,projects/interop/src/lib/get-agent.ts"
+          - name: interop-b
+            config: stryker.interop.config.json
+            mutate: "projects/interop/src/lib/fdc3-interop.service.ts,projects/interop/src/lib/failover-interop.service.ts,projects/interop/src/lib/provide-interop.ts"
+          - name: shell
+            config: stryker.shell.config.json
+            mutate: "projects/shell/src/app/modules/module-registry.ts,projects/shell/src/app/modules/load.ts"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -34,35 +50,44 @@ jobs:
             cache: npm,
             cache-dependency-path: web/package-lock.json,
           }
-      - uses: actions/setup-go@v7
-        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.sum }
       - run: npm ci
         working-directory: web
       # inPlace: the shell tests import ../specs through the @specs alias, which a Stryker sandbox copy would lack.
-      - name: stryker interop adapters
+      - name: stryker
         working-directory: web
-        continue-on-error: true
-        run: npx stryker run stryker.interop.config.json
-      - name: stryker shell plan-to-component mapping
-        working-directory: web
-        continue-on-error: true
-        run: npx stryker run stryker.shell.config.json
+        run: >
+          npx stryker run ${{ matrix.config }} --mutate '${{ matrix.mutate }}'
+          --jsonReporter.fileName reports/mutation/${{ matrix.name }}.json
+          --htmlReporter.fileName reports/mutation/${{ matrix.name }}.html
+      - name: summary
+        if: always()
+        run: node scripts/mutation-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: mutation-${{ matrix.name }}
+          path: web/reports/mutation/
+
+  gremlins:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.sum }
       # gremlins is pinned and run with `go run`, so nothing is installed globally (DECISIONS #19).
       - name: gremlins fallback router + semantic validator
         working-directory: api
-        continue-on-error: true
         run: >
           go run github.com/go-gremlins/gremlins/cmd/gremlins@v0.6.0 unleash ./internal/agent
           -E '(handler|agent|anthropic|plan|prompt)\.go$' -o ../gremlins.json | tee ../gremlins.txt
       - name: summary
         if: always()
         run: |
-          node scripts/mutation-summary.mjs >> "$GITHUB_STEP_SUMMARY"
-          { echo '### Go mutation testing (gremlins)'; echo '```'; tail -6 gremlins.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY" || true
+          { echo '### Go mutation testing (gremlins)'; echo '```'; tail -6 gremlins.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: mutation-reports
-          path: |
-            web/reports/mutation/
-            gremlins.json
+          name: mutation-gremlins
+          path: gremlins.json
