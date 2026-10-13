@@ -33,3 +33,9 @@ test('FR2 patching twice changes nothing more (setup is safe to re-run)', () => 
 test('FR2 an unrecognised upstream file fails loudly instead of silently skipping the patch', () => {
   assert.throws(() => withPocDirectory('export const x = 1'), /DEFAULT_DIRECTORIES/);
 });
+
+test('FR2 a CRLF checkout (Windows autocrlf) is patched and keeps its CRLF endings', () => {
+  const out = withPocDirectory(upstream.replace(/\n/g, '\r\n'));
+  assert.ok(out.includes(`url: "${POC_DIRECTORY_URL}"`));
+  assert.ok(!/[^\r]\n/.test(out), 'every line ending stays CRLF');
+});
