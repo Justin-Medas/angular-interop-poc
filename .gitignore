@@ -100,3 +100,7 @@ aidlc/diagnostics/
 # Pinned FDC3 Sail checkout (scripts/setup-sail.mjs)
 .sail/
 /site/
+
+# StrykerJS output (specs/testing.md §9)
+.stryker-tmp/
+reports/

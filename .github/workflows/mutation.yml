@@ -1,0 +1,68 @@
+# Mutation testing (specs/testing.md §9, NFR-T7). Proves the tests check results, not just execute lines.
+# Non-blocking by design: it is a separate workflow with continue-on-error steps, so a low score never fails a PR.
+# Scope: interop adapters + shell plan-to-component mapping (StrykerJS), Go fallback router + semantic validator (gremlins).
+# Runs on relevant path changes and weekly; the score and surviving mutants land in the job summary.
+name: mutation
+on:
+  pull_request:
+    paths:
+      - "web/projects/interop/**"
+      - "web/projects/shell/src/app/modules/**"
+      - "web/stryker.*.json"
+      - "api/internal/agent/fallback*.go"
+      - "api/internal/agent/semantic*.go"
+      - ".github/workflows/mutation.yml"
+  schedule:
+    - cron: "41 4 * * 1" # weekly, Monday
+  workflow_dispatch:
+concurrency:
+  group: mutation-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  mutation:
+    runs-on: ubuntu-latest
+    continue-on-error: true # NFR-T7: reports, never blocks
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          {
+            node-version-file: .nvmrc,
+            cache: npm,
+            cache-dependency-path: web/package-lock.json,
+          }
+      - uses: actions/setup-go@v7
+        with: { go-version-file: api/go.mod, cache-dependency-path: api/go.sum }
+      - run: npm ci
+        working-directory: web
+      # inPlace: the shell tests import ../specs through the @specs alias, which a Stryker sandbox copy would lack.
+      - name: stryker interop adapters
+        working-directory: web
+        continue-on-error: true
+        run: npx stryker run stryker.interop.config.json
+      - name: stryker shell plan-to-component mapping
+        working-directory: web
+        continue-on-error: true
+        run: npx stryker run stryker.shell.config.json
+      # gremlins is pinned and run with `go run`, so nothing is installed globally (DECISIONS #19).
+      - name: gremlins fallback router + semantic validator
+        working-directory: api
+        continue-on-error: true
+        run: >
+          go run github.com/go-gremlins/gremlins/cmd/gremlins@v0.6.0 unleash ./internal/agent
+          -E '(handler|agent|anthropic|plan|prompt)\.go$' -o ../gremlins.json | tee ../gremlins.txt
+      - name: summary
+        if: always()
+        run: |
+          node scripts/mutation-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+          { echo '### Go mutation testing (gremlins)'; echo '```'; tail -6 gremlins.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: mutation-reports
+          path: |
+            web/reports/mutation/
+            gremlins.json
