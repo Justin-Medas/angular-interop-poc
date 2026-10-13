@@ -6,14 +6,11 @@
 /** The directory URL served by the Go API (specs/fdc3-contract.md): Blotter and Detail app entries. */
 export const POC_DIRECTORY_URL = 'http://localhost:8080/appd/v2/apps';
 
-const ANCHOR = 'const DEFAULT_DIRECTORIES: Directory[] = [\n';
+// The line ending is captured because a Windows checkout with autocrlf has CRLF, and the entry must match it.
+const ANCHOR = /const DEFAULT_DIRECTORIES: Directory\[\] = \[(\r?\n)/;
 
-const ENTRY = `  {
-    label: "POC Blotter and Detail",
-    url: "${POC_DIRECTORY_URL}",
-    active: true,
-  },
-`;
+const entry = (eol) =>
+  ['  {', '    label: "POC Blotter and Detail",', `    url: "${POC_DIRECTORY_URL}",`, '    active: true,', '  },', ''].join(eol);
 
 /**
  * Returns Sail's LocalStorageClientState.ts source with the POC directory first in DEFAULT_DIRECTORIES.
@@ -22,8 +19,8 @@ const ENTRY = `  {
  */
 export function withPocDirectory(source) {
   if (source.includes(POC_DIRECTORY_URL)) return source;
-  if (!source.includes(ANCHOR)) {
+  if (!ANCHOR.test(source)) {
     throw new Error('Sail source has no DEFAULT_DIRECTORIES array; update scripts/sail-patch.mjs for the new SHA');
   }
-  return source.replace(ANCHOR, ANCHOR + ENTRY);
+  return source.replace(ANCHOR, (head, eol) => head + entry(eol));
 }
