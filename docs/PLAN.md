@@ -61,7 +61,7 @@ Update checkboxes as work lands. If a block overruns by more than 50%, cut from 
 - [x] Live eval run with `-record`: recordings and `docs/eval-report.md` committed; model 100% (66/66), fallback 100% (12/12), replay reproduces it offline
 - [x] Key-holding `live` CI job in its own workflow `eval-live.yml` (PR path filter, nightly, manual dispatch; team.md secret rules). Needs the `ANTHROPIC_API_KEY` repo secret set once: `gh secret set ANTHROPIC_API_KEY`
 - [ ] At the end only: one live eval run with `AGENT_MODEL=claude-opus-5-5`, compare with the default, and record the demo model in DECISIONS #20
-- [ ] `mutation` CI job (non-blocking)
+- [x] `mutation` CI job (non-blocking): StrykerJS on interop adapters (85%) and shell registry/loader (89%), gremlins on the Go fallback + semantic validator (100%); `mutation.yml`, DECISIONS #43
 - [ ] Screen-reader pass (VoiceOver, NVDA) → `docs/a11y-report.md`
 - [ ] README: architecture diagram, setup, honest limitations
 - [ ] Fresh-clone rehearsal: clone into a temp dir, follow the README quickstart verbatim (Docker path and native path)
