@@ -13,7 +13,7 @@ There is one Angular application (`shell`). Blotter and Detail are libraries, ea
 
 Modules the shell renders inside itself share the shell's connection and therefore act as `poc-shell`. The shell is never a `ViewChart` handler; Detail is the only one.
 
-The app directory JSON lives in `specs/appd.json` (AppD v2) and is served by the Go API at `GET /appd/v2/apps`. In Sail, open the ⋯ settings, choose Directories, add `http://localhost:8080/appd/v2/apps`, and enable it.
+The app directory JSON lives in `specs/appd.json` (AppD v2) and is served by the Go API at `GET /appd/v2/apps`. `npm run setup` patches the pinned Sail so this directory is a default in any browser with no saved Sail state (DECISIONS #42). A browser that already has saved state needs it added once: ⋯ settings, Directories, add `http://localhost:8080/appd/v2/apps`, enable it.
 
 ## 2. Contexts
 Use standard types only.
