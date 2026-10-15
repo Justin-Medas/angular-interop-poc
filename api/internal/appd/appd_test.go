@@ -2,6 +2,7 @@ package appd
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -26,5 +27,25 @@ func TestRegister_FR18_ServesDirectoryJSON(t *testing.T) {
 	mux.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/appd/v2/apps", nil))
 	if w.Code != 200 || w.Header().Get("Content-Type") != "application/json" || !bytes.Equal(w.Body.Bytes(), appdJSON) {
 		t.Errorf("status %d, type %q", w.Code, w.Header().Get("Content-Type"))
+	}
+}
+
+// Sail shows the directory icon in its app launcher, so every app must declare one (FR18).
+func TestEmbedded_FR18_EveryAppDeclaresAnIcon(t *testing.T) {
+	var dir struct {
+		Applications []struct {
+			AppID string `json:"appId"`
+			Icons []struct {
+				Src string `json:"src"`
+			} `json:"icons"`
+		} `json:"applications"`
+	}
+	if err := json.Unmarshal(appdJSON, &dir); err != nil {
+		t.Fatal(err)
+	}
+	for _, a := range dir.Applications {
+		if len(a.Icons) == 0 || a.Icons[0].Src == "" {
+			t.Errorf("%s declares no icon", a.AppID)
+		}
 	}
 }
